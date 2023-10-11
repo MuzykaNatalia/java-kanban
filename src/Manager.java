@@ -1,17 +1,19 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Manager {
     protected HashMap<Integer, Task> mapTasks = new HashMap<>();
     protected HashMap<Integer, Subtask> mapSubtask = new HashMap<>();
     protected HashMap<Integer, Epic> mapEpic = new HashMap<>();
-    protected int id = 1;
+    protected HashMap<Integer, ArrayList<Integer>> mapOfSubtaskIdEpic = new HashMap<>(); // <номер Epic <список Subtask>>
+    protected int number = 1;
 
-    public int getId() {
-        return id;
+    public int getNumber() {
+        return number;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public HashMap<Integer, Task> getMapTasks() {
@@ -42,12 +44,24 @@ public class Manager {
         return mapTasks;
     }
 
+    public HashMap<Integer, Epic> getListOfEpic() { //получить список всех Epic
+        return mapEpic;
+    }
+
     public HashMap<Integer, Subtask> getListOfSubtask() { //получить список всех Subtask
         return mapSubtask;
     }
 
-    public HashMap<Integer, Epic> getListOfEpic() { //получить список всех Epic
-        return mapEpic;
+    public ArrayList<Subtask> getListOfAllEpicSubtask(int idEpic) { // получить список всех подзадач эпика
+        ArrayList<Subtask> listOfAllEpicSubtask = new ArrayList<>();
+
+        for (Subtask subtask : mapSubtask.values()) {
+            if (subtask.id == idEpic) {
+                listOfAllEpicSubtask.add(subtask);
+            }
+        }
+
+        return listOfAllEpicSubtask;
     }
 
     public void deleteAllTasks() { //удалить все Tasks
@@ -62,57 +76,107 @@ public class Manager {
         mapEpic.clear();
     }
 
-    public Task getTheTaskById(int id) { //показать Tasks по id
-        return mapTasks.get(id);
+    public Task getTheTaskById(int idTask) { //показать Tasks по id
+        return mapTasks.get(idTask);
     }
 
-    public Subtask getTheSubtaskById(int id) { //показать Subtask по id
-        return mapSubtask.get(id);
+    public Subtask getTheSubtaskById(int idSubtask) { //показать Subtask по id
+        return mapSubtask.get(idSubtask);
     }
 
-    public Epic getTheEpicById(int id) { //показать Epic по id
-        return mapEpic.get(id);
+    public Epic getTheEpicById(int idEpic) { //показать Epic по id
+        return mapEpic.get(idEpic);
     }
 
     public void addTask(Task task) { //создать Tasks
-        task.idTask = id;
-        mapTasks.put(task.idTask, task);
-        setId(++id);
+        task.id = number;
+        mapTasks.put(task.id, task);
+        setNumber(++number);
     }
 
-    public void addSubtask(Subtask subtask) { //создать Subtask
-        subtask.idTask = id;
-        mapSubtask.put(subtask.idTask, subtask);
-        setId(++id);
+    public int addSubtask(Subtask subtask) { //создать Subtask
+        subtask.id = number;
+        mapSubtask.put(subtask.id, subtask);
+        setNumber(++number);
+
+        Epic epic = mapEpic.get(subtask.idEpic);
+        ArrayList<Integer> addIdSubtask = epic.listOfSubtaskIdEpic;
+        addIdSubtask.add(subtask.id);
+        mapOfSubtaskIdEpic.put(epic.id, addIdSubtask);
+
+        return subtask.id;
     }
 
-    public void addEpic(Epic epic) { //создать Tasks
-        epic.idTask = id;
-        mapEpic.put(epic.idTask, epic);
-        setId(++id);
+    public int addEpic(Epic epic) { //создать Epic
+        epic.listOfSubtaskIdEpic = new ArrayList<>();
+
+        epic.id = number;
+        mapEpic.put(epic.id, epic);
+        mapOfSubtaskIdEpic.put(epic.id, epic.listOfSubtaskIdEpic);
+        setNumber(++number);
+
+        return epic.id;
     }
 
     public void updateTask(Task task) { //обновление данных Tasks
-        mapTasks.put(task.idTask, task);
+        mapTasks.put(task.id, task);
     }
 
     public void updateSubtask(Subtask subtask) { //обновление данных Subtask
-        mapSubtask.put(subtask.idTask, subtask);
+        mapSubtask.put(subtask.id, subtask);
     }
 
     public void updateEpic(Epic epic) { //обновление данных Epic
-        mapEpic.put(epic.idTask, epic);
+        int statusNew = 0;
+        int statusDone = 0;
+
+        if (epic.listOfSubtaskIdEpic.isEmpty() || epic.listOfSubtaskIdEpic == null) {
+            epic.status = "NEW";
+            mapEpic.put(epic.id, epic);
+            return;
+        } else {
+            for (Integer idSubtask : epic.listOfSubtaskIdEpic) {
+                Subtask subtask = mapSubtask.get(idSubtask);
+                    if (subtask.status.equals("DONE")) {
+                        statusDone++;
+                    } else if (subtask.status.equals("NEW")) {
+                        statusNew++;
+                    } else {
+                        continue;
+                    }
+                }
+            }
+
+            if (statusNew == epic.listOfSubtaskIdEpic.size() - 1) {
+                epic.status = "NEW";
+            } else if (statusDone == epic.listOfSubtaskIdEpic.size() - 1) {
+                epic.status = "DONE";
+            } else {
+                epic.status = "IN_PROGRESS";
+            }
+
+        mapEpic.put(epic.id, epic);
     }
 
-    public void deleteTaskById(int id) { //удалить Tasks по id
-        mapTasks.remove(id);
+    public void deleteTaskById(int idTask) { //удалить Tasks по id
+        mapTasks.remove(idTask);
     }
 
-    public void deleteSubtaskById(int id) { //удалить Subtask по id
-        mapSubtask.remove(id);
+    public void deleteSubtaskById(int idSubtask) { //удалить Subtask по id
+        Subtask subtask = mapSubtask.get(idSubtask);
+        int idEpic = subtask.idEpic;
+        Epic epic = mapEpic.get(idEpic);
+        ArrayList<Integer> listIdSubtask = epic.listOfSubtaskIdEpic;
+        listIdSubtask.remove(idSubtask);
+        epic.listOfSubtaskIdEpic = listIdSubtask;
+        mapEpic.put(idEpic, epic);
+        mapOfSubtaskIdEpic.put(idEpic, listIdSubtask);
+
+        mapSubtask.remove(idSubtask);
+
     }
 
-    public void deleteEpicById(int id) { //удалить Epic по id
-        mapEpic.remove(id);
+    public void deleteEpicById(int idEpic) { //удалить Epic по id
+        mapEpic.remove(idEpic);
     }
 }

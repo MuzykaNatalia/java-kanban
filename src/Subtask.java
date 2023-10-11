@@ -1,20 +1,17 @@
 public class Subtask extends Task {
 
-    public Subtask(String nameSubtask, String descriptionSubtask, String statusSubtask) {
-        super(nameSubtask, descriptionSubtask, statusSubtask);
-    }
-
-    public Subtask(int idSubtask, String nameSubtask, String descriptionSubtask, String statusSubtask) { //для проверки обновления
-        super(idSubtask, nameSubtask, descriptionSubtask, statusSubtask);
+    public Subtask(String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) {
+        super(nameSubtask, descriptionSubtask, statusSubtask, idEpic);
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "idSubtask=" + idTask+
-                ", nameSubtask='" + nameTask + '\'' +
-                ", descriptionSubtask='" + descriptionTask + '\'' +
-                ", statusSubtask='" + statusTask + '\'' +
+                "idSubtask=" + id +
+                ", idEpic=" + idEpic +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

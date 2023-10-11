@@ -1,54 +1,57 @@
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Task extends Manager {
-    protected int idTask;
-    protected String nameTask; //имя
-    protected String descriptionTask; //описание
-    protected String statusTask; // статус
+    protected int id;
+    protected int idEpic;
+    protected ArrayList<Integer> listOfSubtaskIdEpic;
+    protected String name;
+    protected String description;
+    protected String status;
 
-    public Task(String nameTask, String descriptionTask, String statusTask) {
-        this.nameTask = nameTask;
-        this.descriptionTask = descriptionTask;
-        this.statusTask = statusTask;
+    public Task(String name, String description, String status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
 
-    public Task(int idTask, String nameTask, String descriptionTask, String statusTask) { //для проверки обновления
-        this.idTask = idTask;
-        this.nameTask = nameTask;
-        this.descriptionTask = descriptionTask;
-        this.statusTask = statusTask;
+    public Task(String name, String description, String status, int idEpic) { // для Subtask
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.idEpic = idEpic;
     }
 
-    public int getIdTask() {
-        return idTask;
+    public int getId() {
+        return id;
     }
 
-    public void setIdTask(int idTask) {
-        this.idTask = idTask;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getNameTask() {
-        return nameTask;
+    public String getName() {
+        return name;
     }
 
-    public void setNameTask(String nameTask) {
-        this.nameTask = nameTask;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDescriptionTask() {
-        return descriptionTask;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescriptionTask(String descriptionTask) {
-        this.descriptionTask = descriptionTask;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getStatusTask() {
-        return statusTask;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStatusTask(String statusTask) {
-        this.statusTask = statusTask;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
@@ -56,21 +59,22 @@ public class Task extends Manager {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return idTask == task.idTask && Objects.equals(nameTask, task.nameTask) && Objects.equals(descriptionTask, task.descriptionTask) && Objects.equals(statusTask, task.statusTask);
+        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description)
+                && Objects.equals(status, task.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idTask, nameTask, descriptionTask, statusTask);
+        return Objects.hash(id, name, description, status);
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "idTask=" + idTask +
-                ", nameTask='" + nameTask + '\'' +
-                ", descriptionTask='" + descriptionTask + '\'' +
-                ", statusTask='" + statusTask + '\'' +
+                "id=" + id +
+                ", nameTask='" + name + '\'' +
+                ", descriptionTask='" + description + '\'' +
+                ", statusTask='" + status + '\'' +
                 '}';
     }
 }
