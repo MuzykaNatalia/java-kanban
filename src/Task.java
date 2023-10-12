@@ -4,22 +4,26 @@ import java.util.Objects;
 public class Task extends Manager {
     protected int id;
     protected int idEpic;
-    protected ArrayList<Integer> listOfSubtaskIdEpic;
     protected String name;
     protected String description;
     protected String status;
 
-    public Task(String name, String description, String status) {
+    public Task(String name, String description, String status) { // для создания Task и Epic и обновления Task
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(String name, String description, String status, int idEpic) { // для Subtask
+    public Task(String name, String description, String status, int idEpic) { // для создания и обновления Subtask
         this.name = name;
         this.description = description;
         this.status = status;
         this.idEpic = idEpic;
+    }
+
+    public Task(String name, String description) { // для обновления Epic
+        this.name = name;
+        this.description = description;
     }
 
     public int getId() {
