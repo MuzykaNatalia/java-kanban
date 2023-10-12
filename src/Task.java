@@ -8,20 +8,28 @@ public class Task extends Manager {
     protected String description;
     protected String status;
 
-    public Task(String name, String description, String status) { // для создания Task и Epic и обновления Task
+    public Task(String name, String description, String status) { // для создания Task и Epic
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(String name, String description, String status, int idEpic) { // для создания и обновления Subtask
+    public Task(int id, String name, String description, String status) { // для обновления Task и Subtask
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
+    public Task(String name, String description, String status, int idEpic) { // для создания Subtask
         this.name = name;
         this.description = description;
         this.status = status;
         this.idEpic = idEpic;
     }
 
-    public Task(String name, String description) { // для обновления Epic
+    public Task(int idEpic, String name, String description) { // для обновления Epic
+        this.idEpic = idEpic;
         this.name = name;
         this.description = description;
     }

@@ -53,8 +53,8 @@ public class Manager {
         return mapTasks.get(idTask);
     }
 
-    public HashMap<Integer, Task> getListOfTasks() { //получить список всех Tasks
-        return mapTasks;
+    public ArrayList<Task> getListOfTasks() { //получить список всех Tasks
+        return new ArrayList<>(mapTasks.values());
     }
 
     public void updateTask(Task task) { //обновление данных Tasks
