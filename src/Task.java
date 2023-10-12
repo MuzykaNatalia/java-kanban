@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Task extends Manager {
@@ -29,7 +28,7 @@ public class Task extends Manager {
     }
 
     public Task(int idEpic, String name, String description) { // для проверки обновления Epic
-        this.idEpic = idEpic;
+        this.id = idEpic;
         this.name = name;
         this.description = description;
     }

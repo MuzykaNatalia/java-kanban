@@ -4,7 +4,7 @@ public class Epic extends Task {
         super(nameEpic, descriptionEpic, statusEpic);
     }
 
-    public Epic(int idEpic, String nameEpic, String descriptionEpic) { // для обновления
+    public Epic(int idEpic, String nameEpic, String descriptionEpic) { // для проверки обновления
         super(idEpic, nameEpic, descriptionEpic);
     }
 
@@ -12,7 +12,6 @@ public class Epic extends Task {
     public String toString() {
         return "Epic{" +
                 "id=" + id +
-                ", idEpic=" + idEpic +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
