@@ -4,8 +4,8 @@ public class Epic extends Task {
         super(nameEpic, descriptionEpic, statusEpic);
     }
 
-    public Epic(String nameEpic, String descriptionEpic) { // для обновления
-        super(nameEpic, descriptionEpic);
+    public Epic(int idEpic, String nameEpic, String descriptionEpic) { // для обновления
+        super(idEpic, nameEpic, descriptionEpic);
     }
 
     @Override

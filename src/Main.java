@@ -8,6 +8,7 @@ public class Main {
         manager.addTask(new Task("dinner", "drink a glass of wine with lobsters", "NEW"));
         System.out.println(manager.getTheTaskById(2));
         System.out.println(manager.getListOfTasks());
-        manager.updateTask(
+        manager.updateTask(new Task(1,"breakfast", "drink a glass of water", "NEW"));
+        System.out.println(manager.getTheTaskById(1));
     }
 }
