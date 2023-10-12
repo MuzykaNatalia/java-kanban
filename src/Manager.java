@@ -190,4 +190,14 @@ public class Manager {
         mapSubtask.clear();
         mapOfSubtaskIdEpic.clear();
     }
+
+    public void deleteAllSubtasksOfAnEpic(int idEpic) { //удалить все Subtask для конкретного Epic
+        ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(idEpic);
+
+        for (Integer idSubtask : listOfSubtaskIdEpic) {
+            mapSubtask.remove(idSubtask);
+        }
+
+        mapOfSubtaskIdEpic.remove(idEpic);
+    }
 }
