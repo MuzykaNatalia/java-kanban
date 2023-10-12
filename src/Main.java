@@ -28,19 +28,14 @@ public class Main {
         manager.deleteAllEpic();
         System.out.println(manager.getListOfEpic());*/
 
-        Epic epic_1 = new Epic("cook Olivier", "prepare Olivier for guests' arrival", "NEW");
-        Epic epic_2 = new Epic("cleaning","carry out general cleaning", "NEW");
-        int idEpic_1 = manager.addEpic(epic_1);
-        int idEpic_2 = manager.addEpic(epic_2);
 
-        Subtask subtask3 = new Subtask("cook", "boil potatoes and eggs", "NEW", idEpic_1);
-        Subtask subtask4 = new Subtask("cut", "chop all the vegetables and eggs", "NEW", idEpic_1);
-        Subtask subtask5 = new Subtask("add", "add peas, mayonnaise and salt", "NEW", idEpic_1);
-        int idSubtask3 = manager.addSubtask(subtask3);
-        int idSubtask4 = manager.addSubtask(subtask4);
-        int idSubtask5 = manager.addSubtask(subtask5);
+        /*Epic epic_2 = new Epic("cleaning","carry out general cleaning", "NEW");
 
-        Subtask subtask6 = new Subtask("bathroom", "clean the bathroom", "NEW", idEpic_2);
+        int idEpic_2 = manager.addEpic(epic_2);*/
+
+
+
+        /*Subtask subtask6 = new Subtask("bathroom", "clean the bathroom", "NEW", idEpic_2);
         Subtask subtask7 = new Subtask("kitchen", "clean the kitchen", "NEW", idEpic_2);
         Subtask subtask8 = new Subtask("bedroom", "clean the bedroom", "NEW", idEpic_2);
         int idSubtask6 = manager.addSubtask(subtask6);
@@ -57,17 +52,23 @@ public class Main {
         System.out.println(manager.getListOfSubtask());
         manager.deleteAllSubtasksOfAnEpic(idEpic_1);
         System.out.println(manager.getListOfSubtask());
-        System.out.println(manager.getListOfAllEpicSubtask(idEpic_1));
-        System.out.println(manager.getListOfTasks());
+        System.out.println(manager.getListOfAllEpicSubtask(idEpic_2));*/
 
+        Epic epic_1 = new Epic("cook Olivier", "prepare Olivier for guests' arrival", "NEW");
+        int idEpic_1 = manager.addEpic(epic_1);
 
+        Subtask subtask3 = new Subtask("cook", "boil potatoes and eggs", "NEW", idEpic_1);
+        Subtask subtask4 = new Subtask("cut", "chop all the vegetables and eggs", "NEW", idEpic_1);
+        Subtask subtask5 = new Subtask("add", "add peas, mayonnaise and salt", "NEW", idEpic_1);
+        int idSubtask3 = manager.addSubtask(subtask3);
+        int idSubtask4 = manager.addSubtask(subtask4);
+        int idSubtask5 = manager.addSubtask(subtask5);
 
+        manager.updateSubtask(new Subtask(idSubtask3, "boil eggs", "the potatoes are already cooked", "DONE", idEpic_1));
+        manager.updateSubtask(new Subtask(idSubtask4, "cut1", "chop all the vegetables and eggs", "DONE", idEpic_1));
+        manager.updateSubtask(new Subtask(idSubtask5, "add1", "add peas, mayonnaise and salt", "NEW", idEpic_1));
 
-
-
-
-
-
+        System.out.println(manager.getListOfEpic());
 
 
     }

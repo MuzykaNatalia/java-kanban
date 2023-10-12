@@ -112,9 +112,9 @@ public class Manager {
             }
         }
 
-        if (statusNew == listOfSubtaskIdEpic.size() - 1) {
+        if (statusNew == listOfSubtaskIdEpic.size()) {
             epic.status = NEW;
-        } else if (statusDone == listOfSubtaskIdEpic.size() - 1) {
+        } else if (statusDone == listOfSubtaskIdEpic.size()) {
             epic.status = DONE;
         } else {
             epic.status = IN_PROGRESS;

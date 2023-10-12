@@ -13,7 +13,7 @@ public class Task extends Manager {
         this.status = status;
     }
 
-    public Task(int id, String name, String description, String status) { // для проверки обновления Task и Subtask
+    public Task(int id, String name, String description, String status) { // для проверки обновления Task
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,6 +21,14 @@ public class Task extends Manager {
     }
 
     public Task(String name, String description, String status, int idEpic) { // для создания Subtask
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.idEpic = idEpic;
+    }
+
+    public Task(int id, String name, String description, String status, int idEpic) { // для проверки обновления Subtask
+        this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
