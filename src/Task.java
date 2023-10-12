@@ -7,27 +7,27 @@ public class Task extends Manager {
     protected String description;
     protected String status;
 
-    public Task(String name, String description, String status) { // для создания Task и Epic
+    public Task(String name, String description, String status) { //для создания Task и Epic
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(int id, String name, String description, String status) { // для проверки обновления Task
+    public Task(int id, String name, String description, String status) { //для обновления Task
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(String name, String description, String status, int idEpic) { // для создания Subtask
+    public Task(String name, String description, String status, int idEpic) { //для создания Subtask
         this.name = name;
         this.description = description;
         this.status = status;
         this.idEpic = idEpic;
     }
 
-    public Task(int id, String name, String description, String status, int idEpic) { // для проверки обновления Subtask
+    public Task(int id, String name, String description, String status, int idEpic) { //для обновления Subtask
         this.id = id;
         this.name = name;
         this.description = description;
@@ -35,7 +35,7 @@ public class Task extends Manager {
         this.idEpic = idEpic;
     }
 
-    public Task(int idEpic, String name, String description) { // для проверки обновления Epic
+    public Task(int idEpic, String name, String description) { //для обновления Epic
         this.id = idEpic;
         this.name = name;
         this.description = description;

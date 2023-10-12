@@ -1,11 +1,11 @@
 public class Subtask extends Task {
 
-    public Subtask(String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) { // для создания Subtask
-        super(nameSubtask, descriptionSubtask, statusSubtask, idEpic);
+    public Subtask(String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) {
+        super(nameSubtask, descriptionSubtask, statusSubtask, idEpic); //для создания Subtask
     }
 
-    public Subtask(int id, String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) { //для проверки обновления Subtask
-        super(id, nameSubtask, descriptionSubtask, statusSubtask, idEpic);
+    public Subtask(int id, String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) {
+        super(id, nameSubtask, descriptionSubtask, statusSubtask, idEpic); //для обновления Subtask
     }
 
     @Override

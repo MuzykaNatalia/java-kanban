@@ -5,7 +5,7 @@ public class Manager {
     public static final String  NEW = "NEW";
     public static final String  IN_PROGRESS = "IN_PROGRESS";
     public static final String  DONE = "DONE";
-    protected HashMap<Integer, ArrayList<Integer>> mapOfSubtaskIdEpic = new HashMap<>(); // <номер id Epic <список id Subtask для одного Epic>>
+    protected HashMap<Integer, ArrayList<Integer>> mapOfSubtaskIdEpic = new HashMap<>();
     protected HashMap<Integer, Task> mapTasks = new HashMap<>();
     protected HashMap<Integer, Subtask> mapSubtask = new HashMap<>();
     protected HashMap<Integer, Epic> mapEpic = new HashMap<>();
@@ -43,7 +43,7 @@ public class Manager {
         this.mapEpic = mapEpic;
     }
 
-    public int addTask(Task task) { //создать Tasks
+    public int addTask(Task task) {
         task.id = number;
         mapTasks.put(task.id, task);
         setNumber(++number);
@@ -51,27 +51,27 @@ public class Manager {
         return task.id;
     }
 
-    public Task getTheTaskById(int idTask) { //показать Tasks по id
+    public Task getTheTaskById(int idTask) {
         return mapTasks.get(idTask);
     }
 
-    public ArrayList<Task> getListOfTasks() { //получить список всех Tasks
+    public ArrayList<Task> getListOfTasks() {
         return new ArrayList<>(mapTasks.values());
     }
 
-    public void updateTask(Task task) { //обновление данных Tasks
+    public void updateTask(Task task) {
         mapTasks.put(task.id, task);
     }
 
-    public void deleteTaskById(int idTask) { //удалить Tasks по id
+    public void deleteTaskById(int idTask) {
         mapTasks.remove(idTask);
     }
 
-    public void deleteAllTasks() { //удалить все Tasks
+    public void deleteAllTasks() {
         mapTasks.clear();
     }
 
-    public int addEpic(Epic epic) { //создать Epic
+    public int addEpic(Epic epic) {
         ArrayList<Integer> listOfSubtaskIdEpic = new ArrayList<>();
 
         epic.id = number;
@@ -82,15 +82,15 @@ public class Manager {
         return epic.id;
     }
 
-    public Epic getTheEpicById(int idEpic) { //показать Epic по id
+    public Epic getTheEpicById(int idEpic) {
         return mapEpic.get(idEpic);
     }
 
-    public ArrayList<Epic> getListOfEpic() { //получить список всех Epic
+    public ArrayList<Epic> getListOfEpic() {
         return new ArrayList<>(mapEpic.values());
     }
 
-    public void updateEpic(Epic epic) { //обновление данных Epic
+    public void updateEpic(Epic epic) {
         ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(epic.id);
         int statusNew = 0;
         int statusDone = 0;
@@ -123,7 +123,7 @@ public class Manager {
         mapEpic.put(epic.id, epic);
     }
 
-    public void deleteEpicById(int idEpic) { //удалить Epic по id
+    public void deleteEpicById(int idEpic) {
         ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(idEpic);
 
         for (Integer idSubtask : listOfSubtaskIdEpic) {
@@ -134,13 +134,13 @@ public class Manager {
         mapEpic.remove(idEpic);
     }
 
-    public void deleteAllEpic() { //удалить все Epic
+    public void deleteAllEpic() {
         mapEpic.clear();
         mapSubtask.clear();
         mapOfSubtaskIdEpic.clear();
     }
 
-    public ArrayList<Subtask> getListOfAllEpicSubtask(int idEpic) { // получить список всех подзадач эпика
+    public ArrayList<Subtask> getListOfAllEpicSubtask(int idEpic) {
         ArrayList<Subtask> listOfAllEpicSubtask = new ArrayList<>();
         ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(idEpic);
 
@@ -153,7 +153,7 @@ public class Manager {
         return listOfAllEpicSubtask;
     }
 
-    public int addSubtask(Subtask subtask) { //создать Subtask
+    public int addSubtask(Subtask subtask) {
         subtask.id = number;
         mapSubtask.put(subtask.id, subtask);
         setNumber(++number);
@@ -165,15 +165,15 @@ public class Manager {
         return subtask.id;
     }
 
-    public Subtask getTheSubtaskById(int idSubtask) { //показать Subtask по id
+    public Subtask getTheSubtaskById(int idSubtask) {
         return mapSubtask.get(idSubtask);
     }
 
-    public ArrayList<Subtask> getListOfSubtask() { //получить список всех Subtask
+    public ArrayList<Subtask> getListOfSubtask() {
         return new ArrayList<>(mapSubtask.values());
     }
 
-    public void updateSubtask(Subtask subtask) { //обновление данных Subtask
+    public void updateSubtask(Subtask subtask) {
         mapSubtask.put(subtask.id, subtask);
 
         if (subtask.status.equals(DONE)) {
@@ -182,7 +182,7 @@ public class Manager {
         }
     }
 
-    public void deleteSubtaskById(int idSubtask) { //удалить Subtask по id
+    public void deleteSubtaskById(int idSubtask) {
         Subtask subtask = mapSubtask.get(idSubtask);
         ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(subtask.idEpic);
 
@@ -197,12 +197,12 @@ public class Manager {
         mapSubtask.remove(idSubtask);
     }
 
-    public void deleteAllSubtask() { //удалить все Subtask
+    public void deleteAllSubtask() {
         mapSubtask.clear();
         mapOfSubtaskIdEpic.clear();
     }
 
-    public void deleteAllSubtasksOfAnEpic(int idEpic) { //удалить все Subtask для конкретного Epic
+    public void deleteAllSubtasksOfAnEpic(int idEpic) {
         ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(idEpic);
 
         if (listOfSubtaskIdEpic != null) {

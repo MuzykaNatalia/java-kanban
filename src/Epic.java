@@ -1,10 +1,10 @@
 public class Epic extends Task {
 
-    public Epic(String nameEpic, String descriptionEpic, String statusEpic) { // для создания Epic
+    public Epic(String nameEpic, String descriptionEpic, String statusEpic) { //для создания Epic
         super(nameEpic, descriptionEpic, statusEpic);
     }
 
-    public Epic(int idEpic, String nameEpic, String descriptionEpic) { // для проверки обновления
+    public Epic(int idEpic, String nameEpic, String descriptionEpic) { //для обновления Epic
         super(idEpic, nameEpic, descriptionEpic);
     }
 
