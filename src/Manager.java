@@ -11,12 +11,12 @@ public class Manager {
     protected HashMap<Integer, Epic> mapEpic = new HashMap<>();
     protected int number = 1;
 
-    public int getNumber() {
-        return number;
+    public HashMap<Integer, ArrayList<Integer>> getMapOfSubtaskIdEpic() {
+        return mapOfSubtaskIdEpic;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
+    public void setMapOfSubtaskIdEpic(HashMap<Integer, ArrayList<Integer>> mapOfSubtaskIdEpic) {
+        this.mapOfSubtaskIdEpic = mapOfSubtaskIdEpic;
     }
 
     public HashMap<Integer, Task> getMapTasks() {
@@ -41,6 +41,14 @@ public class Manager {
 
     public void setMapEpic(HashMap<Integer, Epic> mapEpic) {
         this.mapEpic = mapEpic;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public int addTask(Task task) {
@@ -176,7 +184,7 @@ public class Manager {
     public void updateSubtask(Subtask subtask) {
         mapSubtask.put(subtask.id, subtask);
 
-        if (subtask.status.equals(DONE)) {
+        if (!subtask.status.equals(NEW)) {
             Epic epic = mapEpic.get(subtask.idEpic);
             updateEpic(epic);
         }
