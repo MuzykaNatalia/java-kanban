@@ -195,11 +195,18 @@ public class Manager {
 
         mapOfSubtaskIdEpic.put(subtask.idEpic, listOfSubtaskIdEpic);
         mapSubtask.remove(idSubtask);
+
+        Epic epic = mapEpic.get(subtask.idEpic);
+        updateEpic(epic);
     }
 
     public void deleteAllSubtask() {
         mapSubtask.clear();
         mapOfSubtaskIdEpic.clear();
+
+        for (Epic epic : mapEpic.values()) {
+            updateEpic(epic);
+        }
     }
 
     public void deleteAllSubtasksOfAnEpic(int idEpic) {
@@ -212,5 +219,8 @@ public class Manager {
 
             mapOfSubtaskIdEpic.remove(idEpic);
         }
+
+        Epic epic = mapEpic.get(idEpic);
+        updateEpic(epic);
     }
 }
