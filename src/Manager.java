@@ -95,7 +95,7 @@ public class Manager {
         int statusNew = 0;
         int statusDone = 0;
 
-        if (listOfSubtaskIdEpic.isEmpty()) {
+        if (listOfSubtaskIdEpic == null || listOfSubtaskIdEpic.isEmpty()) {
             epic.status = NEW;
             mapEpic.put(epic.id, epic);
             return;
