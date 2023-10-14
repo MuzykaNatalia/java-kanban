@@ -89,16 +89,11 @@ public class Manager {
                 for (Integer idSubtask : epic.listIdSubtask) {
                     mapSubtask.remove(idSubtask);
                 }
-                epic.clearIdSubtask(); // проверить надо ли это или это излишнее
             }
             mapEpic.remove(idEpic);
     }
 
     public void deleteAllEpic() {
-        for (Epic epic : mapEpic.values()) { // проверить надо ли это или это излишнее
-            epic.clearIdSubtask();
-        }
-
         mapEpic.clear();
         mapSubtask.clear();
     }
