@@ -1,13 +1,14 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
-    protected ArrayList<Integer> listIdSubtask = new ArrayList<>();
+    protected ArrayList<Integer> listIdSubtask;
 
-    public Epic(String name, String description, String status) { //для создания Epic
+    public Epic(String name, String description, String status) {
         super(name, description, status);
     }
 
-    public Epic(int id, String name, String description, String status) { //для обновления Epic
+    public Epic(int id, String name, String description, String status) {
         super(id, name, description, status);
     }
 
@@ -29,6 +30,20 @@ public class Epic extends Task {
 
     public void setListIdSubtask(ArrayList<Integer> listIdSubtask) {
         this.listIdSubtask = listIdSubtask;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(listIdSubtask, epic.listIdSubtask);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), listIdSubtask);
     }
 
     @Override
