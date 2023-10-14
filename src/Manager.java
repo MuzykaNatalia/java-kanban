@@ -85,12 +85,13 @@ public class Manager {
     public void deleteEpicById(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
 
-        for (Integer idSubtask : epic.listIdSubtask) {
-            mapSubtask.remove(idSubtask);
-        }
-
-        epic.clearIdSubtask(); // проверить надо ли это или это излишнее
-        mapEpic.remove(idEpic);
+            if (epic.listIdSubtask != null) {
+                for (Integer idSubtask : epic.listIdSubtask) {
+                    mapSubtask.remove(idSubtask);
+                }
+                epic.clearIdSubtask(); // проверить надо ли это или это излишнее
+            }
+            mapEpic.remove(idEpic);
     }
 
     public void deleteAllEpic() {
