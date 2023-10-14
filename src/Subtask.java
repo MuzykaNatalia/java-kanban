@@ -1,11 +1,22 @@
 public class Subtask extends Task {
+    protected int idEpic;
 
-    public Subtask(String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) {
-        super(nameSubtask, descriptionSubtask, statusSubtask, idEpic); //для создания Subtask
+    public Subtask(String name, String description, String status, int idEpic) {
+        super(name, description, status); //для создания Subtask
+        this.idEpic = idEpic;
     }
 
-    public Subtask(int id, String nameSubtask, String descriptionSubtask, String statusSubtask, int idEpic) {
-        super(id, nameSubtask, descriptionSubtask, statusSubtask, idEpic); //для обновления Subtask
+    public Subtask(int id, String name, String description, String status, int idEpic) {
+        super(id, name, description, status); //для обновления Subtask
+        this.idEpic = idEpic;
+    }
+
+    public int getIdEpic() {
+        return idEpic;
+    }
+
+    public void setIdEpic(int idEpic) {
+        this.idEpic = idEpic;
     }
 
     @Override
@@ -16,6 +27,6 @@ public class Subtask extends Task {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
-                '}';
+                "}";
     }
 }

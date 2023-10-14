@@ -11,50 +11,9 @@ public class Manager {
     protected HashMap<Integer, Epic> mapEpic = new HashMap<>();
     protected int number = 1;
 
-    public HashMap<Integer, ArrayList<Integer>> getMapOfSubtaskIdEpic() {
-        return mapOfSubtaskIdEpic;
-    }
-
-    public void setMapOfSubtaskIdEpic(HashMap<Integer, ArrayList<Integer>> mapOfSubtaskIdEpic) {
-        this.mapOfSubtaskIdEpic = mapOfSubtaskIdEpic;
-    }
-
-    public HashMap<Integer, Task> getMapTasks() {
-        return mapTasks;
-    }
-
-    public void setMapTasks(HashMap<Integer, Task> mapTasks) {
-        this.mapTasks = mapTasks;
-    }
-
-    public HashMap<Integer, Subtask> getMapSubtask() {
-        return mapSubtask;
-    }
-
-    public void setMapSubtask(HashMap<Integer, Subtask> mapSubtask) {
-        this.mapSubtask = mapSubtask;
-    }
-
-    public HashMap<Integer, Epic> getMapEpic() {
-        return mapEpic;
-    }
-
-    public void setMapEpic(HashMap<Integer, Epic> mapEpic) {
-        this.mapEpic = mapEpic;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public int addTask(Task task) {
-        task.id = number;
+        task.id = number++;
         mapTasks.put(task.id, task);
-        setNumber(++number);
 
         return task.id;
     }
@@ -79,23 +38,51 @@ public class Manager {
         mapTasks.clear();
     }
 
-    public int addEpic(Epic epic) {
-        ArrayList<Integer> listOfSubtaskIdEpic = new ArrayList<>();
-
-        epic.id = number;
-        mapEpic.put(epic.id, epic);
-        mapOfSubtaskIdEpic.put(epic.id, listOfSubtaskIdEpic);
-        setNumber(++number);
-
-        return epic.id;
-    }
-
     public Epic getTheEpicById(int idEpic) {
         return mapEpic.get(idEpic);
     }
 
     public ArrayList<Epic> getListOfEpic() {
         return new ArrayList<>(mapEpic.values());
+    }
+
+    public Subtask getTheSubtaskById(int idSubtask) {
+        return mapSubtask.get(idSubtask);
+    }
+
+    public ArrayList<Subtask> getListOfSubtask() {
+        return new ArrayList<>(mapSubtask.values());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public int addEpic(Epic epic) {
+        ArrayList<Integer> listOfSubtaskIdEpic = new ArrayList<>();
+
+        epic.id = number++;
+        mapEpic.put(epic.id, epic);
+        mapOfSubtaskIdEpic.put(epic.id, listOfSubtaskIdEpic);
+
+        return epic.id;
     }
 
     public void updateEpic(Epic epic) {
@@ -162,23 +149,14 @@ public class Manager {
     }
 
     public int addSubtask(Subtask subtask) {
-        subtask.id = number;
+        subtask.id = number++;
         mapSubtask.put(subtask.id, subtask);
-        setNumber(++number);
 
         ArrayList<Integer> listOfSubtaskIdEpic = mapOfSubtaskIdEpic.get(subtask.idEpic);
         listOfSubtaskIdEpic.add(subtask.id);
         mapOfSubtaskIdEpic.put(subtask.idEpic, listOfSubtaskIdEpic);
 
         return subtask.id;
-    }
-
-    public Subtask getTheSubtaskById(int idSubtask) {
-        return mapSubtask.get(idSubtask);
-    }
-
-    public ArrayList<Subtask> getListOfSubtask() {
-        return new ArrayList<>(mapSubtask.values());
     }
 
     public void updateSubtask(Subtask subtask) {
@@ -230,5 +208,41 @@ public class Manager {
 
         Epic epic = mapEpic.get(idEpic);
         updateEpic(epic);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public HashMap<Integer, Subtask> getMapSubtask() {
+        return mapSubtask;
+    }
+
+    public void setMapSubtask(HashMap<Integer, Subtask> mapSubtask) {
+        this.mapSubtask = mapSubtask;
+    }
+
+    public HashMap<Integer, Epic> getMapEpic() {
+        return mapEpic;
+    }
+
+    public void setMapEpic(HashMap<Integer, Epic> mapEpic) {
+        this.mapEpic = mapEpic;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 }

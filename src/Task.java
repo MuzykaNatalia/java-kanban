@@ -1,13 +1,12 @@
 import java.util.Objects;
 
-public class Task extends Manager {
+public class Task {
     protected int id;
-    protected int idEpic;
     protected String name;
     protected String description;
     protected String status;
 
-    public Task(String name, String description, String status) { //для создания Task и Epic
+    public Task(String name, String description, String status) { //для создания Task
         this.name = name;
         this.description = description;
         this.status = status;
@@ -18,27 +17,6 @@ public class Task extends Manager {
         this.name = name;
         this.description = description;
         this.status = status;
-    }
-
-    public Task(String name, String description, String status, int idEpic) { //для создания Subtask
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.idEpic = idEpic;
-    }
-
-    public Task(int id, String name, String description, String status, int idEpic) { //для обновления Subtask
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.idEpic = idEpic;
-    }
-
-    public Task(int idEpic, String name, String description) { //для обновления Epic
-        this.id = idEpic;
-        this.name = name;
-        this.description = description;
     }
 
     public int getId() {
@@ -94,6 +72,6 @@ public class Task extends Manager {
                 ", nameTask='" + name + '\'' +
                 ", descriptionTask='" + description + '\'' +
                 ", statusTask='" + status + '\'' +
-                '}';
+                "}";
     }
 }
