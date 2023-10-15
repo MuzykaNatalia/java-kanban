@@ -121,8 +121,6 @@ public class Manager {
                 epic.setStatus(IN_PROGRESS);
             }
         }
-
-        mapEpic.put(idEpic, epic);
     }
 
     public void deleteEpicById(int idEpic) {
@@ -238,29 +236,5 @@ public class Manager {
             epic.clearIdSubtask();
         }
         updateEpicStatus(epic.getId());
-    }
-
-    public HashMap<Integer, Subtask> getMapSubtask() {
-        return mapSubtask;
-    }
-
-    public void setMapSubtask(HashMap<Integer, Subtask> mapSubtask) {
-        this.mapSubtask = mapSubtask;
-    }
-
-    public HashMap<Integer, Epic> getMapEpic() {
-        return mapEpic;
-    }
-
-    public void setMapEpic(HashMap<Integer, Epic> mapEpic) {
-        this.mapEpic = mapEpic;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
     }
 }
