@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Manager {
     public static final String  NEW = "NEW";
@@ -78,25 +79,18 @@ public class Manager {
 
     public void updateEpicStatus(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
-        int statusNew = 0;
-        int statusDone = 0;
+        HashSet<String> listStatusEpic = new HashSet<>();
 
         if (epic.getListIdSubtask() == null || epic.getListIdSubtask().isEmpty()) {
             epic.setStatus(NEW);
         } else {
             for (Integer idSubtask : epic.getListIdSubtask()) {
                 Subtask subtask = mapSubtask.get(idSubtask);
-                if (subtask.getStatus().equals(DONE)) {
-                    statusDone++;
-                } else if (subtask.getStatus().equals(NEW)) {
-                    statusNew++;
-                } else {
-                    continue;
-                }
+                listStatusEpic.add(subtask.getStatus());
             }
-            if (statusNew == epic.getListIdSubtask().size()) {
+            if (listStatusEpic.size() == 1 && listStatusEpic.contains(NEW)) {
                 epic.setStatus(NEW);
-            } else if (statusDone == epic.getListIdSubtask().size()) {
+            } else if (listStatusEpic.size() == 1 && listStatusEpic.contains(DONE)) {
                 epic.setStatus(DONE);
             } else {
                 epic.setStatus(IN_PROGRESS);
