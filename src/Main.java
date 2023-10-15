@@ -1,3 +1,8 @@
+import ru.yandex.practicum.kanban.manager.Manager;
+import ru.yandex.practicum.kanban.tasks.Task;
+import ru.yandex.practicum.kanban.tasks.Epic;
+import ru.yandex.practicum.kanban.tasks.Subtask;
+
 public class Main {
 
     public static void main(String[] args) {

@@ -1,3 +1,5 @@
+package ru.yandex.practicum.kanban.tasks;
+
 import java.util.Objects;
 
 public class Task {
@@ -6,13 +8,13 @@ public class Task {
     protected String description;
     protected String status;
 
-    public Task(String name, String description, String status) { //для создания Task
+    public Task(String name, String description, String status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(int id, String name, String description, String status) { //для обновления Task
+    public Task(int id, String name, String description, String status) {
         this.id = id;
         this.name = name;
         this.description = description;

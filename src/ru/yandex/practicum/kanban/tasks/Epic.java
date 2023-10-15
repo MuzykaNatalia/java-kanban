@@ -1,3 +1,5 @@
+package ru.yandex.practicum.kanban.tasks;
+
 import java.util.ArrayList;
 import java.util.Objects;
 

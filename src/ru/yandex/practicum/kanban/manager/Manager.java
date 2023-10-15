@@ -1,3 +1,8 @@
+package ru.yandex.practicum.kanban.manager;
+
+import ru.yandex.practicum.kanban.tasks.Task;
+import ru.yandex.practicum.kanban.tasks.Epic;
+import ru.yandex.practicum.kanban.tasks.Subtask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
