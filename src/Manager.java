@@ -11,10 +11,14 @@ public class Manager {
     protected int number = 1;
 
     public int addTask(Task task) {
-        task.id = number++;
-        mapTasks.put(task.id, task);
+        if (task != null) {
+            task.setId(number++);
+            mapTasks.put(task.getId(), task);
 
-        return task.id;
+            return task.getId();
+        } else {
+            throw new RuntimeException("No such task");
+        }
     }
 
     public Task getTheTaskById(int idTask) {
@@ -26,7 +30,11 @@ public class Manager {
     }
 
     public void updateTask(Task task) {
-        mapTasks.put(task.id, task);
+        if (task != null) {
+            mapTasks.put(task.getId(), task);
+        } else {
+            throw new RuntimeException("No such task");
+        }
     }
 
     public void deleteTaskById(int idTask) {
@@ -38,11 +46,15 @@ public class Manager {
     }
 
     public int addEpic(Epic epic) {
-        epic.id = number++;
-        epic.listIdSubtask = new ArrayList<>();
-        mapEpic.put(epic.id, epic);
+        if (epic != null) {
+            epic.setId(number++);
+            epic.setListIdSubtask(new ArrayList<>());
+            mapEpic.put(epic.getId(), epic);
 
-        return epic.id;
+            return epic.getId();
+        } else {
+            throw new RuntimeException("No such epic");
+        }
     }
 
     public Epic getTheEpicById(int idEpic) {
@@ -55,10 +67,10 @@ public class Manager {
 
     public void updateEpic(Epic epic) {
         if (epic != null) {
-            Epic epicUpdate = mapEpic.get(epic.id);
+            Epic epicUpdate = mapEpic.get(epic.getId());
             epicUpdate.setName(epic.getName());
             epicUpdate.setDescription(epic.getDescription());
-            mapEpic.put(epicUpdate.id, epicUpdate);
+            mapEpic.put(epicUpdate.getId(), epicUpdate);
         } else {
             throw new RuntimeException("No such epic");
         }
@@ -69,25 +81,25 @@ public class Manager {
         int statusNew = 0;
         int statusDone = 0;
 
-        if (epic.listIdSubtask == null || epic.listIdSubtask.isEmpty()) {
-            epic.status = NEW;
+        if (epic.getListIdSubtask() == null || epic.getListIdSubtask().isEmpty()) {
+            epic.setStatus(NEW);
         } else {
-            for (Integer idSubtask : epic.listIdSubtask) {
+            for (Integer idSubtask : epic.getListIdSubtask()) {
                 Subtask subtask = mapSubtask.get(idSubtask);
-                if (subtask.status.equals(DONE)) {
+                if (subtask.getStatus().equals(DONE)) {
                     statusDone++;
-                } else if (subtask.status.equals(NEW)) {
+                } else if (subtask.getStatus().equals(NEW)) {
                     statusNew++;
                 } else {
                     continue;
                 }
             }
-            if (statusNew == epic.listIdSubtask.size()) {
-                epic.status = NEW;
-            } else if (statusDone == epic.listIdSubtask.size()) {
-                epic.status = DONE;
+            if (statusNew == epic.getListIdSubtask().size()) {
+                epic.setStatus(NEW);
+            } else if (statusDone == epic.getListIdSubtask().size()) {
+                epic.setStatus(DONE);
             } else {
-                epic.status = IN_PROGRESS;
+                epic.setStatus(IN_PROGRESS);
             }
         }
 
@@ -97,8 +109,8 @@ public class Manager {
     public void deleteEpicById(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
 
-            if (epic.listIdSubtask != null) {
-                for (Integer idSubtask : epic.listIdSubtask) {
+            if (epic.getListIdSubtask() != null) {
+                for (Integer idSubtask : epic.getListIdSubtask()) {
                     mapSubtask.remove(idSubtask);
                 }
             }
@@ -111,17 +123,18 @@ public class Manager {
     }
 
     public Integer addSubtask(Subtask subtask) {
-        Epic epic = mapEpic.get(subtask.idEpic);
+        if (subtask != null) {
+            subtask.setId(number++);
+            mapSubtask.put(subtask.getId(), subtask);
 
-        if (epic == null) {
-            throw new RuntimeException("No such epic: " + subtask.idEpic);
+            Epic epic = mapEpic.get(subtask.getIdEpic());
+            epic.addIdSubtask(subtask.getId());
+            updateEpicStatus(subtask.getIdEpic());
+
+            return subtask.getId();
+        } else {
+            throw new RuntimeException("No such subtask");
         }
-        subtask.id = number++;
-        mapSubtask.put(subtask.id, subtask);
-        epic.addIdSubtask(subtask.id);
-        updateEpicStatus(subtask.idEpic);
-
-        return subtask.id;
     }
 
     public Subtask getTheSubtaskById(int idSubtask) {
@@ -136,8 +149,8 @@ public class Manager {
         ArrayList<Subtask> listOfAllEpicSubtask = new ArrayList<>();
         Epic epic = mapEpic.get(idEpic);
 
-        if (epic.listIdSubtask != null) {
-            for (Integer idSubtask : epic.listIdSubtask) {
+        if (epic.getListIdSubtask() != null) {
+            for (Integer idSubtask : epic.getListIdSubtask()) {
                 Subtask subtask = mapSubtask.get(idSubtask);
                 listOfAllEpicSubtask.add(subtask);
             }
@@ -146,25 +159,29 @@ public class Manager {
     }
 
     public void updateSubtask(Subtask subtask) {
-        mapSubtask.put(subtask.id, subtask);
+        if (subtask != null) {
+            mapSubtask.put(subtask.getId(), subtask);
 
-        if (!subtask.status.equals(NEW)) {
-            updateEpicStatus(subtask.idEpic);
+            if (!subtask.getStatus().equals(NEW)) {
+                updateEpicStatus(subtask.getIdEpic());
+            }
+        } else {
+            throw new RuntimeException("No such subtask");
         }
     }
 
     public void deleteSubtaskById(int idSubtask) {
         Subtask subtask = mapSubtask.get(idSubtask);
-        Epic epic = mapEpic.get(subtask.idEpic);
+        Epic epic = mapEpic.get(subtask.getIdEpic());
         epic.removeIdSubtask(idSubtask);
         mapSubtask.remove(idSubtask);
-        updateEpicStatus(epic.id);
+        updateEpicStatus(epic.getId());
     }
 
     public void deleteAllSubtask() {
         for (Epic epic : mapEpic.values()) {
             epic.clearIdSubtask();
-            updateEpicStatus(epic.id);
+            updateEpicStatus(epic.getId());
         }
         mapSubtask.clear();
     }
@@ -172,13 +189,13 @@ public class Manager {
     public void deleteAllSubtasksOfAnEpic(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
 
-        if (epic.listIdSubtask != null) {
-            for (Integer idSubtask : epic.listIdSubtask) {
+        if (epic.getListIdSubtask() != null) {
+            for (Integer idSubtask : epic.getListIdSubtask()) {
                 mapSubtask.remove(idSubtask);
             }
             epic.clearIdSubtask();
         }
-        updateEpicStatus(epic.id);
+        updateEpicStatus(epic.getId());
     }
 
     public HashMap<Integer, Subtask> getMapSubtask() {
