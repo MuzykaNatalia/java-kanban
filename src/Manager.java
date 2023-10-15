@@ -54,7 +54,14 @@ public class Manager {
     }
 
     public void updateEpic(Epic epic) {
-        mapEpic.put(epic.id, epic);
+        if (epic != null) {
+            Epic epicUpdate = mapEpic.get(epic.id);
+            epicUpdate.setName(epic.getName());
+            epicUpdate.setDescription(epic.getDescription());
+            mapEpic.put(epicUpdate.id, epicUpdate);
+        } else {
+            throw new RuntimeException("No such epic");
+        }
     }
 
     public void updateEpicStatus(int idEpic) {

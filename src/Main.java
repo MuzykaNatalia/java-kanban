@@ -3,17 +3,18 @@ public class Main {
     public static void main(String[] args) {
         Manager manager = new Manager();
 
-        int idTask1 = manager.addTask(new Task("breakfast", "to drink coffee", "NEW"));
+        /*int idTask1 = manager.addTask(new Task("breakfast", "to drink coffee", "NEW"));
         int idTask2 = manager.addTask(new Task("lunch", "eat chicken with potatoes", "NEW"));
         int idTask3 = manager.addTask(new Task("dinner", "drink a glass of wine with lobsters", "NEW"));
+
         System.out.println(manager.getTheTaskById(idTask2));
         System.out.println(manager.getListOfTasks());
-        manager.updateTask(new Task(idTask1,"breakfast", "drink a glass of water", "NEW"));
+        manager.updateTask(new Task(idTask1,"breakfast", "drink a glass of water", "DONE"));
         System.out.println(manager.getTheTaskById(idTask1));
         manager.deleteTaskById(idTask3);
         System.out.println(manager.getListOfTasks());
         manager.deleteAllTasks();
-        System.out.println(manager.getListOfTasks());
+        System.out.println(manager.getListOfTasks());*/
 
         Epic epic1 = new Epic("make soup", "prepare soup for husband's arrival", "NEW");
         Epic epic2 = new Epic("drive","pack your things for a trip", "NEW");
