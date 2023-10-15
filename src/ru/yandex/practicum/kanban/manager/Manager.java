@@ -35,6 +35,16 @@ public class Manager {
         return new ArrayList<>(mapTasks.values());
     }
 
+    public void printAllTasks() {
+        if (mapTasks != null && !mapTasks.isEmpty()) {
+            for (Task task : mapTasks.values()) {
+                System.out.println(task);
+            }
+        } else {
+            System.out.println("No tasks");
+        }
+    }
+
     public void updateTask(Task task) {
         if (task != null) {
             mapTasks.put(task.getId(), task);
@@ -69,6 +79,16 @@ public class Manager {
 
     public ArrayList<Epic> getListOfEpic() {
         return new ArrayList<>(mapEpic.values());
+    }
+
+    public void printAllEpic() {
+        if (mapEpic != null && !mapEpic.isEmpty()){
+            for (Epic epic : mapEpic.values()) {
+                System.out.println(epic);
+            }
+        } else {
+            System.out.println("No epic tasks");
+        }
     }
 
     public void updateEpic(Epic epic) {
@@ -144,6 +164,16 @@ public class Manager {
         return new ArrayList<>(mapSubtask.values());
     }
 
+    public void printAllSubtask() {
+        if (mapSubtask != null && !mapSubtask.isEmpty()) {
+            for (Subtask subtask : mapSubtask.values()) {
+                System.out.println(subtask);
+            }
+        } else {
+            System.out.println("No subtasks");
+        }
+    }
+
     public ArrayList<Subtask> getListOfAllEpicSubtask(int idEpic) {
         ArrayList<Subtask> listOfAllEpicSubtask = new ArrayList<>();
         Epic epic = mapEpic.get(idEpic);
@@ -154,7 +184,20 @@ public class Manager {
                 listOfAllEpicSubtask.add(subtask);
             }
         }
+
         return listOfAllEpicSubtask;
+    }
+
+    public void printListOfAllEpicSubtask(int idEpic) {
+        ArrayList<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
+
+        if (listOfAllEpicSubtask != null && !listOfAllEpicSubtask.isEmpty()) {
+            for (Subtask subtask : listOfAllEpicSubtask) {
+                System.out.println(subtask);
+            }
+        } else {
+            System.out.println("No subtasks for epic task №" + idEpic);
+        }
     }
 
     public void updateSubtask(Subtask subtask) {
