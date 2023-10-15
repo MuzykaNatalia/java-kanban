@@ -12,15 +12,15 @@ public class Epic extends Task {
         super(id, name, description, status);
     }
 
-    public void addIdSubtask(int id) { // добавление id Subtask в ArrayList<Integer> listIdSubtask
+    public void addIdSubtask(int id) {
         listIdSubtask.add(id);
     }
 
-    public void removeIdSubtask(int id) { // удаление id Subtask из ArrayList<Integer> listIdSubtask
+    public void removeIdSubtask(int id) {
         listIdSubtask.remove(Integer.valueOf(id));
     }
 
-    public void clearIdSubtask() { // очистка спика id Subtask ArrayList<Integer> listIdSubtask
+    public void clearIdSubtask() {
         listIdSubtask.clear();
     }
 
