@@ -5,7 +5,6 @@ import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Manager {
     public static final String  NEW = "NEW";
@@ -64,7 +63,6 @@ public class Manager {
     public int addEpic(Epic epic) {
         if (epic != null) {
             epic.setId(number++);
-            epic.setListIdSubtask(new ArrayList<>());
             mapEpic.put(epic.getId(), epic);
 
             return epic.getId();
@@ -102,36 +100,44 @@ public class Manager {
         }
     }
 
-    public void updateEpicStatus(int idEpic) {
+    protected void updateEpicStatus(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
-        HashSet<String> setStatusEpic = new HashSet<>();
+        int statusNew = 0;
+        int statusDone = 0;
 
-        if (epic.getListIdSubtask() == null || epic.getListIdSubtask().isEmpty()) {
+        if (epic.getListIdSubtask().isEmpty()) {
             epic.setStatus(NEW);
+            return;
         } else {
             for (Integer idSubtask : epic.getListIdSubtask()) {
                 Subtask subtask = mapSubtask.get(idSubtask);
-                setStatusEpic.add(subtask.getStatus());
+                if (subtask.getStatus().equals(DONE)) {
+                    statusDone++;
+                } else if (subtask.getStatus().equals(NEW)) {
+                    statusNew++;
+                } else {
+                    continue;
+                }
             }
-            if (setStatusEpic.size() == 1 && setStatusEpic.contains(NEW)) {
-                epic.setStatus(NEW);
-            } else if (setStatusEpic.size() == 1 && setStatusEpic.contains(DONE)) {
-                epic.setStatus(DONE);
-            } else {
-                epic.setStatus(IN_PROGRESS);
-            }
+        }
+
+        if (statusNew == epic.getListIdSubtask().size()) {
+            epic.setStatus(NEW);
+        } else if (statusDone == epic.getListIdSubtask().size()) {
+            epic.setStatus(DONE);
+        } else {
+            epic.setStatus(IN_PROGRESS);
         }
     }
 
     public void deleteEpicById(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
 
-            if (epic.getListIdSubtask() != null) {
-                for (Integer idSubtask : epic.getListIdSubtask()) {
-                    mapSubtask.remove(idSubtask);
-                }
-            }
-            mapEpic.remove(idEpic);
+        for (Integer idSubtask : epic.getListIdSubtask()) {
+            mapSubtask.remove(idSubtask);
+        }
+
+        mapEpic.remove(idEpic);
     }
 
     public void deleteAllEpic() {
@@ -176,11 +182,9 @@ public class Manager {
         ArrayList<Subtask> listOfAllEpicSubtask = new ArrayList<>();
         Epic epic = mapEpic.get(idEpic);
 
-        if (epic.getListIdSubtask() != null) {
-            for (Integer idSubtask : epic.getListIdSubtask()) {
-                Subtask subtask = mapSubtask.get(idSubtask);
-                listOfAllEpicSubtask.add(subtask);
-            }
+        for (Integer idSubtask : epic.getListIdSubtask()) {
+            Subtask subtask = mapSubtask.get(idSubtask);
+            listOfAllEpicSubtask.add(subtask);
         }
 
         return listOfAllEpicSubtask;
@@ -189,7 +193,7 @@ public class Manager {
     public void printListOfAllEpicSubtask(int idEpic) {
         ArrayList<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
 
-        if (listOfAllEpicSubtask != null && !listOfAllEpicSubtask.isEmpty()) {
+        if (!listOfAllEpicSubtask.isEmpty()) {
             for (Subtask subtask : listOfAllEpicSubtask) {
                 System.out.println(subtask);
             }
@@ -210,8 +214,10 @@ public class Manager {
     public void deleteSubtaskById(int idSubtask) {
         Subtask subtask = mapSubtask.get(idSubtask);
         Epic epic = mapEpic.get(subtask.getIdEpic());
+
         epic.removeIdSubtask(idSubtask);
         mapSubtask.remove(idSubtask);
+
         updateEpicStatus(epic.getId());
     }
 
@@ -226,12 +232,11 @@ public class Manager {
     public void deleteAllSubtasksOfAnEpic(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
 
-        if (epic.getListIdSubtask() != null) {
-            for (Integer idSubtask : epic.getListIdSubtask()) {
-                mapSubtask.remove(idSubtask);
-            }
-            epic.clearIdSubtask();
+        for (Integer idSubtask : epic.getListIdSubtask()) {
+            mapSubtask.remove(idSubtask);
         }
+
+        epic.clearIdSubtask();
         updateEpicStatus(epic.getId());
     }
 }

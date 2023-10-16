@@ -22,6 +22,7 @@ public class Main {
 
         manager.deleteAllTasks();
         System.out.println(manager.getListOfTasks());
+        manager.printAllTasks();
 
         int idEpic1 = manager.addEpic(new Epic("make soup", "prepare soup for husband's arrival", "NEW"));
         int idEpic2 = manager.addEpic(new Epic("drive","pack your things for a trip", "NEW"));
@@ -39,6 +40,7 @@ public class Main {
 
         manager.deleteAllEpic();
         System.out.println(manager.getListOfEpic());
+        manager.printAllEpic();
 
         int idEpic3 = manager.addEpic(new Epic("cook Olivier", "prepare Olivier for guests' arrival", "NEW"));
         int idSubtask1 = manager.addSubtask(new Subtask("cook", "boil potatoes and eggs", "NEW", idEpic3));
@@ -62,6 +64,7 @@ public class Main {
         manager.deleteAllSubtask();
         System.out.println(manager.getTheEpicById(idEpic3));
         System.out.println(manager.getListOfSubtask());
+        manager.printAllSubtask();
 
         int idEpic4 = manager.addEpic(new Epic("cleaning","carry out general cleaning", "NEW"));
         int idSubtask4 = manager.addSubtask(new Subtask("bathroom", "clean the bathroom", "NEW", idEpic4));
@@ -70,6 +73,7 @@ public class Main {
         System.out.println(manager.getListOfEpic());
         System.out.println(manager.getListOfSubtask());
         System.out.println(manager.getListOfAllEpicSubtask(idEpic4));
+        System.out.println(manager.getListOfAllEpicSubtask(idEpic3));
 
         manager.updateSubtask(new Subtask(idSubtask4, "bathroom", "clean the bathroom", "DONE", idEpic4));
         manager.updateSubtask(new Subtask(idSubtask5, "kitchen", "clean the kitchen", "DONE", idEpic4));
@@ -84,5 +88,6 @@ public class Main {
         System.out.println(manager.getTheEpicById(idEpic4));
         System.out.println(manager.getListOfSubtask());
         System.out.println(manager.getListOfAllEpicSubtask(idEpic4));
+        manager.printListOfAllEpicSubtask(idEpic4);
     }
 }
