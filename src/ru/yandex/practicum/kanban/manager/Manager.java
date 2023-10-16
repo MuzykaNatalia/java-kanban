@@ -104,18 +104,18 @@ public class Manager {
 
     public void updateEpicStatus(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
-        HashSet<String> listStatusEpic = new HashSet<>();
+        HashSet<String> setStatusEpic = new HashSet<>();
 
         if (epic.getListIdSubtask() == null || epic.getListIdSubtask().isEmpty()) {
             epic.setStatus(NEW);
         } else {
             for (Integer idSubtask : epic.getListIdSubtask()) {
                 Subtask subtask = mapSubtask.get(idSubtask);
-                listStatusEpic.add(subtask.getStatus());
+                setStatusEpic.add(subtask.getStatus());
             }
-            if (listStatusEpic.size() == 1 && listStatusEpic.contains(NEW)) {
+            if (setStatusEpic.size() == 1 && setStatusEpic.contains(NEW)) {
                 epic.setStatus(NEW);
-            } else if (listStatusEpic.size() == 1 && listStatusEpic.contains(DONE)) {
+            } else if (setStatusEpic.size() == 1 && setStatusEpic.contains(DONE)) {
                 epic.setStatus(DONE);
             } else {
                 epic.setStatus(IN_PROGRESS);
@@ -201,10 +201,7 @@ public class Manager {
     public void updateSubtask(Subtask subtask) {
         if (subtask != null) {
             mapSubtask.put(subtask.getId(), subtask);
-
-            if (!subtask.getStatus().equals(NEW)) {
-                updateEpicStatus(subtask.getIdEpic());
-            }
+            updateEpicStatus(subtask.getIdEpic());
         } else {
             throw new RuntimeException("No such subtask");
         }
