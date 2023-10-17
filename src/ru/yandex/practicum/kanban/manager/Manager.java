@@ -35,12 +35,8 @@ public class Manager {
     }
 
     public void printAllTasks() {
-        if (mapTasks != null && !mapTasks.isEmpty()) {
-            for (Task task : mapTasks.values()) {
-                System.out.println(task);
-            }
-        } else {
-            System.out.println("No tasks");
+        for (Task task : mapTasks.values()) {
+            System.out.println(task);
         }
     }
 
@@ -80,12 +76,8 @@ public class Manager {
     }
 
     public void printAllEpic() {
-        if (mapEpic != null && !mapEpic.isEmpty()){
-            for (Epic epic : mapEpic.values()) {
-                System.out.println(epic);
-            }
-        } else {
-            System.out.println("No epic tasks");
+        for (Epic epic : mapEpic.values()) {
+            System.out.println(epic);
         }
     }
 
@@ -169,12 +161,8 @@ public class Manager {
     }
 
     public void printAllSubtask() {
-        if (mapSubtask != null && !mapSubtask.isEmpty()) {
-            for (Subtask subtask : mapSubtask.values()) {
-                System.out.println(subtask);
-            }
-        } else {
-            System.out.println("No subtasks");
+        for (Subtask subtask : mapSubtask.values()) {
+            System.out.println(subtask);
         }
     }
 
@@ -193,12 +181,8 @@ public class Manager {
     public void printListOfAllEpicSubtask(int idEpic) {
         ArrayList<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
 
-        if (!listOfAllEpicSubtask.isEmpty()) {
-            for (Subtask subtask : listOfAllEpicSubtask) {
-                System.out.println(subtask);
-            }
-        } else {
-            System.out.println("No subtasks for epic task №" + idEpic);
+        for (Subtask subtask : listOfAllEpicSubtask) {
+            System.out.println(subtask);
         }
     }
 
