@@ -1,17 +1,20 @@
 package ru.yandex.practicum.kanban.tasks;
 
+import ru.yandex.practicum.kanban.manager.StatusesTask;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    protected ArrayList<Integer> listIdSubtask;
+    protected List<Integer> listIdSubtask;
 
-    public Epic(String name, String description, String status) {
+    public Epic(String name, String description, StatusesTask status) {
         super(name, description, status);
         listIdSubtask = new ArrayList<>();
     }
 
-    public Epic(int id, String name, String description, String status) {
+    public Epic(int id, String name, String description, StatusesTask status) {
         super(id, name, description, status);
     }
 
@@ -27,11 +30,11 @@ public class Epic extends Task {
         listIdSubtask.clear();
     }
 
-    public ArrayList<Integer> getListIdSubtask() {
+    public List<Integer> getListIdSubtask() {
         return listIdSubtask;
     }
 
-    public void setListIdSubtask(ArrayList<Integer> listIdSubtask) {
+    public void setListIdSubtask(List<Integer> listIdSubtask) {
         this.listIdSubtask = listIdSubtask;
     }
 

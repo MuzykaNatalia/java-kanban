@@ -1,16 +1,18 @@
 package ru.yandex.practicum.kanban.tasks;
 
+import ru.yandex.practicum.kanban.manager.StatusesTask;
+
 import java.util.Objects;
 
 public class Subtask extends Task {
     protected int idEpic;
 
-    public Subtask(String name, String description, String status, int idEpic) {
+    public Subtask(String name, String description, StatusesTask status, int idEpic) {
         super(name, description, status);
         this.idEpic = idEpic;
     }
 
-    public Subtask(int id, String name, String description, String status, int idEpic) {
+    public Subtask(int id, String name, String description, StatusesTask status, int idEpic) {
         super(id, name, description, status);
         this.idEpic = idEpic;
     }

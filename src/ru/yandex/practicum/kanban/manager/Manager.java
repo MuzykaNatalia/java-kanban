@@ -5,14 +5,13 @@ import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Manager {
-    public static final String  NEW = "NEW";
-    public static final String  IN_PROGRESS = "IN_PROGRESS";
-    public static final String  DONE = "DONE";
-    protected HashMap<Integer, Task> mapTasks = new HashMap<>();
-    protected HashMap<Integer, Subtask> mapSubtask = new HashMap<>();
-    protected HashMap<Integer, Epic> mapEpic = new HashMap<>();
+    protected Map<Integer, Task> mapTasks = new HashMap<>();
+    protected Map<Integer, Subtask> mapSubtask = new HashMap<>();
+    protected Map<Integer, Epic> mapEpic = new HashMap<>();
     protected int number = 1;
 
     public int addTask(Task task) {
@@ -30,7 +29,7 @@ public class Manager {
         return mapTasks.get(idTask);
     }
 
-    public ArrayList<Task> getListOfTasks() {
+    public List<Task> getListOfTasks() {
         return new ArrayList<>(mapTasks.values());
     }
 
@@ -71,7 +70,7 @@ public class Manager {
         return mapEpic.get(idEpic);
     }
 
-    public ArrayList<Epic> getListOfEpic() {
+    public List<Epic> getListOfEpic() {
         return new ArrayList<>(mapEpic.values());
     }
 
@@ -98,14 +97,14 @@ public class Manager {
         int statusDone = 0;
 
         if (epic.getListIdSubtask().isEmpty()) {
-            epic.setStatus(NEW);
+            epic.setStatus(StatusesTask.NEW);
             return;
         } else {
             for (Integer idSubtask : epic.getListIdSubtask()) {
                 Subtask subtask = mapSubtask.get(idSubtask);
-                if (subtask.getStatus().equals(DONE)) {
+                if (subtask.getStatus().equals(StatusesTask.DONE)) {
                     statusDone++;
-                } else if (subtask.getStatus().equals(NEW)) {
+                } else if (subtask.getStatus().equals(StatusesTask.NEW)) {
                     statusNew++;
                 } else {
                     continue;
@@ -114,11 +113,11 @@ public class Manager {
         }
 
         if (statusNew == epic.getListIdSubtask().size()) {
-            epic.setStatus(NEW);
+            epic.setStatus(StatusesTask.NEW);
         } else if (statusDone == epic.getListIdSubtask().size()) {
-            epic.setStatus(DONE);
+            epic.setStatus(StatusesTask.DONE);
         } else {
-            epic.setStatus(IN_PROGRESS);
+            epic.setStatus(StatusesTask.IN_PROGRESS);
         }
     }
 
@@ -156,7 +155,7 @@ public class Manager {
         return mapSubtask.get(idSubtask);
     }
 
-    public ArrayList<Subtask> getListOfSubtask() {
+    public List<Subtask> getListOfSubtask() {
         return new ArrayList<>(mapSubtask.values());
     }
 
@@ -166,8 +165,8 @@ public class Manager {
         }
     }
 
-    public ArrayList<Subtask> getListOfAllEpicSubtask(int idEpic) {
-        ArrayList<Subtask> listOfAllEpicSubtask = new ArrayList<>();
+    public List<Subtask> getListOfAllEpicSubtask(int idEpic) {
+        List<Subtask> listOfAllEpicSubtask = new ArrayList<>();
         Epic epic = mapEpic.get(idEpic);
 
         for (Integer idSubtask : epic.getListIdSubtask()) {
@@ -179,7 +178,7 @@ public class Manager {
     }
 
     public void printListOfAllEpicSubtask(int idEpic) {
-        ArrayList<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
+        List<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
 
         for (Subtask subtask : listOfAllEpicSubtask) {
             System.out.println(subtask);

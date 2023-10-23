@@ -1,20 +1,21 @@
 package ru.yandex.practicum.kanban.tasks;
 
+import ru.yandex.practicum.kanban.manager.StatusesTask;
 import java.util.Objects;
 
 public class Task {
     protected int id;
     protected String name;
     protected String description;
-    protected String status;
+    protected StatusesTask status;
 
-    public Task(String name, String description, String status) {
+    public Task(String name, String description, StatusesTask status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
 
-    public Task(int id, String name, String description, String status) {
+    public Task(int id, String name, String description, StatusesTask status) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -45,11 +46,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public StatusesTask getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusesTask status) {
         this.status = status;
     }
 
@@ -58,8 +59,9 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description)
-                && Objects.equals(status, task.status);
+        return id == task.id && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description)
+                && status == task.status;
     }
 
     @Override
