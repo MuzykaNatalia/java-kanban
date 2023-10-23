@@ -1,15 +1,13 @@
-import ru.yandex.practicum.kanban.manager.Manager;
+import ru.yandex.practicum.kanban.manager.InMemoryTaskManager;
 import ru.yandex.practicum.kanban.manager.StatusesTask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 
-
-
 public class Main {
 
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        InMemoryTaskManager manager = new InMemoryTaskManager();
 
         int idTask1 = manager.addTask(new Task("breakfast", "to drink coffee", StatusesTask.NEW));
         int idTask2 = manager.addTask(new Task("lunch", "eat chicken with potatoes", StatusesTask.NEW));
