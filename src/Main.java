@@ -93,11 +93,25 @@ public class Main {
         System.out.println(manager.getHistory());*/
         int idTask2 = manager.addTask(new Task("lunch", "eat chicken with potatoes", StatusesTask.NEW));
         int idEpic3 = manager.addEpic(new Epic("cook Olivier", "prepare Olivier for guests' arrival", StatusesTask.NEW));
+        int idTask4 = manager.addTask(new Task("lunch", "eat chicken with potatoes", StatusesTask.NEW));
+        int idEpic5 = manager.addEpic(new Epic("cook Olivier", "prepare Olivier for guests' arrival", StatusesTask.NEW));
+        int idTask6 = manager.addTask(new Task("lunch", "eat chicken with potatoes", StatusesTask.NEW));
+        int idEpic7 = manager.addEpic(new Epic("cook Olivier", "prepare Olivier for guests' arrival", StatusesTask.NEW));
+        int idTask8 = manager.addTask(new Task("lunch", "eat chicken with potatoes", StatusesTask.NEW));
+        int idEpic9 = manager.addEpic(new Epic("cook Olivier", "prepare Olivier for guests' arrival", StatusesTask.NEW));
         int idSubtask1 = manager.addSubtask(new Subtask("cook", "boil potatoes and eggs", StatusesTask.NEW, idEpic3));
         int idSubtask2 = manager.addSubtask(new Subtask("cut", "chop all the vegetables and eggs", StatusesTask.NEW, idEpic3));
         int idSubtask3 = manager.addSubtask(new Subtask("add", "add peas, mayonnaise and salt", StatusesTask.NEW, idEpic3));
+
+
         System.out.println(manager.getTheTaskById(idTask2));
         System.out.println(manager.getTheEpicById(idEpic3));
+        System.out.println(manager.getTheTaskById(idTask4));
+        System.out.println(manager.getTheEpicById(idEpic5));
+        System.out.println(manager.getTheTaskById(idTask6));
+        System.out.println(manager.getTheEpicById(idEpic7));
+        System.out.println(manager.getTheTaskById(idTask8));
+        System.out.println(manager.getTheEpicById(idEpic9));
         System.out.println(manager.getTheSubtaskById(idSubtask1));
         System.out.println(manager.getTheSubtaskById(idSubtask2));
         System.out.println(manager.getTheSubtaskById(idSubtask3));

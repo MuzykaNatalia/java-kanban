@@ -1,7 +1,6 @@
 package ru.yandex.practicum.kanban.manager;
 
 import ru.yandex.practicum.kanban.tasks.Task;
-
 import java.util.LinkedList;
 import java.util.List;
 
