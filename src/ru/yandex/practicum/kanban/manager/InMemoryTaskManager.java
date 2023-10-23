@@ -3,16 +3,41 @@ package ru.yandex.practicum.kanban.manager;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Task> mapTasks = new HashMap<>();
     protected Map<Integer, Subtask> mapSubtask = new HashMap<>();
     protected Map<Integer, Epic> mapEpic = new HashMap<>();
+    protected HistoryManager history = Managers.getDefaultHistory();
+    protected List<Task> listHistory = history.getHistory();
     protected int number = 1;
+
+    @Override
+    public List<Task> getHistory() {
+        return listHistory;
+    }
+
+    @Override
+    public Task getTheTaskById(int idTask) {
+        Task task = mapTasks.get(idTask);
+        history.add(task);
+        return mapTasks.get(idTask);
+    }
+
+    @Override
+    public Epic getTheEpicById(int idEpic) {
+        Task task = mapEpic.get(idEpic);
+        history.add(task);
+        return mapEpic.get(idEpic);
+    }
+
+    @Override
+    public Subtask getTheSubtaskById(int idSubtask) {
+        Task task = mapSubtask.get(idSubtask);
+        history.add(task);
+        return mapSubtask.get(idSubtask);
+    }
 
     @Override
     public int addTask(Task task) {
@@ -24,11 +49,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             throw new RuntimeException("No such task");
         }
-    }
-
-    @Override
-    public Task getTheTaskById(int idTask) {
-        return mapTasks.get(idTask);
     }
 
     @Override
@@ -72,11 +92,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             throw new RuntimeException("No such epic");
         }
-    }
-
-    @Override
-    public Epic getTheEpicById(int idEpic) {
-        return mapEpic.get(idEpic);
     }
 
     @Override
@@ -134,11 +149,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             throw new RuntimeException("No such subtask");
         }
-    }
-
-    @Override
-    public Subtask getTheSubtaskById(int idSubtask) {
-        return mapSubtask.get(idSubtask);
     }
 
     @Override

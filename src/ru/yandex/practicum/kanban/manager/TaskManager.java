@@ -6,6 +6,7 @@ import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.List;
 
 public interface TaskManager {
+    List<Task> getHistory();
     int addTask(Task task);
 
     Task getTheTaskById(int idTask);
