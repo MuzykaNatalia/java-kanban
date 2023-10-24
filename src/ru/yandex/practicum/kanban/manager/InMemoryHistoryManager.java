@@ -1,5 +1,5 @@
 package ru.yandex.practicum.kanban.manager;
-
+/** InMemoryHistoryManager и HistoryManager лучше вынести в отдельный пакет или оставить в этом?*/
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.LinkedList;
 import java.util.List;

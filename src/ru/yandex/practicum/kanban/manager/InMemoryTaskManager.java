@@ -19,6 +19,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public void printHistoryManager(List<Task> tasks) {
+        for (Task task : tasks) {
+            System.out.println(task);
+        }
+    }
+
+    @Override
     public Task getTheTaskById(int idTask) {
         history.add(mapTasks.get(idTask));
         return mapTasks.get(idTask);
@@ -255,10 +262,26 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(StatusesTask.IN_PROGRESS);
         }
     }
+    /**я оптимизировала метод обновления статуса эпика, теперь он проще, я могу им заменить существующий?*/
+    /*protected void updateEpicStatus(int idEpic) {
+        Epic epic = mapEpic.get(idEpic);
+        HashSet<StatusesTask> setStatusEpic = new HashSet<>();
 
-    public void printHistoryManager(List<Task> tasks) {
-        for (Task task : tasks) {
-            System.out.println(task);
+        if (epic.getListIdSubtask().isEmpty()) {
+            epic.setStatus(StatusesTask.NEW);
+        } else {
+            for (Integer idSubtask : epic.getListIdSubtask()) {
+                Subtask subtask = mapSubtask.get(idSubtask);
+                setStatusEpic.add(subtask.getStatus());
+            }
+
+            if (setStatusEpic.size() == 1) {
+                for (StatusesTask status : setStatusEpic) {
+                    epic.setStatus(status);
+                }
+            } else {
+                epic.setStatus(StatusesTask.IN_PROGRESS);
+            }
         }
-    }
+    }*/
 }

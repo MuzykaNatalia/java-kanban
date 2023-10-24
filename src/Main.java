@@ -1,5 +1,6 @@
-import ru.yandex.practicum.kanban.manager.InMemoryTaskManager;
+import ru.yandex.practicum.kanban.manager.Managers;
 import ru.yandex.practicum.kanban.manager.StatusesTask;
+import ru.yandex.practicum.kanban.manager.TaskManager;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
@@ -7,7 +8,7 @@ import ru.yandex.practicum.kanban.tasks.Subtask;
 public class Main {
 
     public static void main(String[] args) {
-        InMemoryTaskManager manager = new InMemoryTaskManager();
+        TaskManager manager = Managers.getDefault();
         // проверка истории просмотров задач
         int idTask_1 = manager.addTask(new Task("1", "1", StatusesTask.NEW));
         int idEpic_2 = manager.addEpic(new Epic("2", "2", StatusesTask.NEW));
@@ -24,20 +25,20 @@ public class Main {
         int idEpic_13 = manager.addEpic(new Epic("13", "13", StatusesTask.NEW));
         int idSubtask_14 = manager.addSubtask(new Subtask("14", "14", StatusesTask.NEW, idEpic_2));
 
-        manager.getTheTaskById(idTask_1);
-        manager.getTheEpicById(idEpic_2);
-        manager.getTheTaskById(idTask_3);
-        manager.getTheEpicById(idEpic_4);
-        manager.getTheTaskById(idTask_5);
-        manager.getTheEpicById(idEpic_6);
-        manager.getTheTaskById(idTask_7);
-        manager.getTheEpicById(idEpic_8);
-        manager.getTheSubtaskById(idSubtask_9);
-        manager.getTheSubtaskById(idSubtask_10);
-        manager.getTheSubtaskById(idSubtask_11);
-        manager.getTheTaskById(idTask_12);
-        manager.getTheEpicById(idEpic_13);
-        manager.getTheSubtaskById(idSubtask_14);
+        Task task_1 = manager.getTheTaskById(idTask_1);
+        Epic epic_2 = manager.getTheEpicById(idEpic_2);
+        Task task_3 = manager.getTheTaskById(idTask_3);
+        Epic epic_4 = manager.getTheEpicById(idEpic_4);
+        Task task_5 = manager.getTheTaskById(idTask_5);
+        Epic epic_6 = manager.getTheEpicById(idEpic_6);
+        Task task_7 = manager.getTheTaskById(idTask_7);
+        Epic epic_8 = manager.getTheEpicById(idEpic_8);
+        Subtask subtask_9 = manager.getTheSubtaskById(idSubtask_9);
+        Subtask subtask_10 = manager.getTheSubtaskById(idSubtask_10);
+        Subtask subtask_11 = manager.getTheSubtaskById(idSubtask_11);
+        Task task_12 = manager.getTheTaskById(idTask_12);
+        Epic epic_13 = manager.getTheEpicById(idEpic_13);
+        Subtask subtask_14 = manager.getTheSubtaskById(idSubtask_14);
         manager.printHistoryManager(manager.getHistory());
         /*
         // общая проверка работоспособности треккера задач
@@ -121,7 +122,6 @@ public class Main {
         System.out.println(manager.getTheEpicById(idEpic9));
         System.out.println(manager.getListOfSubtask());
         System.out.println(manager.getListOfAllEpicSubtask(idEpic9));
-        manager.printListOfAllEpicSubtask(idEpic9);
-        */
+        manager.printListOfAllEpicSubtask(idEpic9);*/
     }
 }
