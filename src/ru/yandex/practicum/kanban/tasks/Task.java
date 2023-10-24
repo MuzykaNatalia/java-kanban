@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kanban.tasks;
 
-import ru.yandex.practicum.kanban.manager.StatusesTask;
 import java.util.Objects;
 
 public class Task {

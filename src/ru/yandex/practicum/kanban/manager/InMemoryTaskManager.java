@@ -1,5 +1,7 @@
 package ru.yandex.practicum.kanban.manager;
 
+import ru.yandex.practicum.kanban.manager.history.HistoryManager;
+import ru.yandex.practicum.kanban.tasks.StatusesTask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
@@ -10,39 +12,47 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Subtask> mapSubtask = new HashMap<>();
     protected Map<Integer, Epic> mapEpic = new HashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
-    protected List<Task> listHistory = history.getHistory();
     protected int number = 1;
 
     @Override
     public List<Task> getHistory() {
-        return listHistory;
-    }
-
-    @Override
-    public void printHistoryManager(List<Task> tasks) {
-        for (Task task : tasks) {
-            System.out.println(task);
-        }
+        return history.getHistory();
     }
 
     @Override
     public Task getTheTaskById(int idTask) {
-        history.add(mapTasks.get(idTask));
-        return mapTasks.get(idTask);
+        Task task = mapTasks.get(idTask);
+
+        if (task != null) {
+            history.add(task);
+            return task;
+        } else {
+            throw new RuntimeException("No such task");
+        }
     }
 
     @Override
     public Epic getTheEpicById(int idEpic) {
         Task task = mapEpic.get(idEpic);
-        history.add(task);
-        return mapEpic.get(idEpic);
+
+        if (task != null) {
+            history.add(task);
+            return mapEpic.get(idEpic);
+        } else {
+            throw new RuntimeException("No such epic");
+        }
     }
 
     @Override
     public Subtask getTheSubtaskById(int idSubtask) {
         Task task = mapSubtask.get(idSubtask);
-        history.add(task);
-        return mapSubtask.get(idSubtask);
+
+        if (task != null) {
+            history.add(task);
+            return mapSubtask.get(idSubtask);
+        } else {
+            throw new RuntimeException("No such subtask");
+        }
     }
 
     @Override
@@ -235,36 +245,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void updateEpicStatus(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
-        int statusNew = 0;
-        int statusDone = 0;
-
-        if (epic.getListIdSubtask().isEmpty()) {
-            epic.setStatus(StatusesTask.NEW);
-            return;
-        } else {
-            for (Integer idSubtask : epic.getListIdSubtask()) {
-                Subtask subtask = mapSubtask.get(idSubtask);
-                if (subtask.getStatus().equals(StatusesTask.DONE)) {
-                    statusDone++;
-                } else if (subtask.getStatus().equals(StatusesTask.NEW)) {
-                    statusNew++;
-                } else {
-                    continue;
-                }
-            }
-        }
-
-        if (statusNew == epic.getListIdSubtask().size()) {
-            epic.setStatus(StatusesTask.NEW);
-        } else if (statusDone == epic.getListIdSubtask().size()) {
-            epic.setStatus(StatusesTask.DONE);
-        } else {
-            epic.setStatus(StatusesTask.IN_PROGRESS);
-        }
-    }
-    /**я оптимизировала метод обновления статуса эпика, теперь он проще, я могу им заменить существующий?*/
-    /*protected void updateEpicStatus(int idEpic) {
-        Epic epic = mapEpic.get(idEpic);
         HashSet<StatusesTask> setStatusEpic = new HashSet<>();
 
         if (epic.getListIdSubtask().isEmpty()) {
@@ -283,5 +263,5 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStatus(StatusesTask.IN_PROGRESS);
             }
         }
-    }*/
+    }
 }

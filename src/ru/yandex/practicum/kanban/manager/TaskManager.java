@@ -8,8 +8,6 @@ import java.util.List;
 public interface TaskManager {
     List<Task> getHistory();
 
-    void printHistoryManager(List<Task> tasks);
-
     int addTask(Task task);
 
     Task getTheTaskById(int idTask);

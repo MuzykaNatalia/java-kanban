@@ -1,5 +1,5 @@
 import ru.yandex.practicum.kanban.manager.Managers;
-import ru.yandex.practicum.kanban.manager.StatusesTask;
+import ru.yandex.practicum.kanban.tasks.StatusesTask;
 import ru.yandex.practicum.kanban.manager.TaskManager;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
@@ -39,7 +39,7 @@ public class Main {
         Task task_12 = manager.getTheTaskById(idTask_12);
         Epic epic_13 = manager.getTheEpicById(idEpic_13);
         Subtask subtask_14 = manager.getTheSubtaskById(idSubtask_14);
-        manager.printHistoryManager(manager.getHistory());
+        System.out.println(manager.getHistory());
         /*
         // общая проверка работоспособности треккера задач
         int idTask1 = manager.addTask(new Task("breakfast", "to drink coffee", StatusesTask.NEW));

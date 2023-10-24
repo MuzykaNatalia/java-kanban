@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kanban.manager;
+package ru.yandex.practicum.kanban.manager.history;
 
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.List;
