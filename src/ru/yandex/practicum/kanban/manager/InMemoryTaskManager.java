@@ -20,8 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTheTaskById(int idTask) {
-        Task task = mapTasks.get(idTask);
-        history.add(task);
+        history.add(mapTasks.get(idTask));
         return mapTasks.get(idTask);
     }
 
@@ -254,6 +253,12 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(StatusesTask.DONE);
         } else {
             epic.setStatus(StatusesTask.IN_PROGRESS);
+        }
+    }
+
+    public void printHistoryManager(List<Task> tasks) {
+        for (Task task : tasks) {
+            System.out.println(task);
         }
     }
 }
