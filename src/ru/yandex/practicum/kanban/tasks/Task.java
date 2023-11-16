@@ -72,9 +72,9 @@ public class Task {
     public String toString() {
         return "Task{" +
                 "id=" + id +
-                ", nameTask='" + name + '\'' +
-                ", descriptionTask='" + description + '\'' +
-                ", statusTask='" + status + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
                 "}";
     }
 }

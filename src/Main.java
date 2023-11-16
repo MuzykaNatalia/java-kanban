@@ -11,35 +11,94 @@ public class Main {
         TaskManager manager = Managers.getDefault();
         // проверка истории просмотров задач
         int idTask_1 = manager.addTask(new Task("1", "1", StatusesTask.NEW));
-        int idEpic_2 = manager.addEpic(new Epic("2", "2", StatusesTask.NEW));
-        int idTask_3 = manager.addTask(new Task("3", "3", StatusesTask.NEW));
-        int idEpic_4 = manager.addEpic(new Epic("4", "4", StatusesTask.NEW));
-        int idTask_5 = manager.addTask(new Task("5", "5", StatusesTask.NEW));
-        int idEpic_6 = manager.addEpic(new Epic("6", "6", StatusesTask.NEW));
-        int idTask_7 = manager.addTask(new Task("7", "7", StatusesTask.NEW));
-        int idEpic_8 = manager.addEpic(new Epic("8", "8", StatusesTask.NEW));
-        int idSubtask_9 = manager.addSubtask(new Subtask("9", "9", StatusesTask.NEW, idEpic_2));
-        int idSubtask_10 = manager.addSubtask(new Subtask("10", "10", StatusesTask.NEW, idEpic_2));
-        int idSubtask_11 = manager.addSubtask(new Subtask("11", "11", StatusesTask.NEW, idEpic_2));
-        int idTask_12 = manager.addTask(new Task("12", "12", StatusesTask.NEW));
-        int idEpic_13 = manager.addEpic(new Epic("13", "13", StatusesTask.NEW));
-        int idSubtask_14 = manager.addSubtask(new Subtask("14", "14", StatusesTask.NEW, idEpic_2));
+        int idTask_2 = manager.addTask(new Task("2", "2", StatusesTask.NEW));
+        int idEpic_3 = manager.addEpic(new Epic("3", "3", StatusesTask.NEW));
+        int idSubtask_4 = manager.addSubtask(new Subtask("4", "4", StatusesTask.NEW, idEpic_3));
+        int idSubtask_5 = manager.addSubtask(new Subtask("5", "5", StatusesTask.NEW, idEpic_3));
+        int idSubtask_6 = manager.addSubtask(new Subtask("6", "6", StatusesTask.NEW, idEpic_3));
+        int idEpic_7 = manager.addEpic(new Epic("7", "7", StatusesTask.NEW));
+        int idSubtask_8 = manager.addSubtask(new Subtask("8", "8", StatusesTask.NEW, idEpic_7));
+        int idSubtask_9 = manager.addSubtask(new Subtask("9", "9", StatusesTask.NEW, idEpic_7));
+        int idEpic_10 = manager.addEpic(new Epic("10", "10", StatusesTask.NEW));
+        int idTask_11 = manager.addTask(new Task("11", "11", StatusesTask.NEW));
+        int idEpic_12 = manager.addEpic(new Epic("12", "12", StatusesTask.NEW));
+        int idSubtask_13 = manager.addSubtask(new Subtask("13", "13", StatusesTask.NEW, idEpic_12));
+        int idSubtask_14 = manager.addSubtask(new Subtask("14", "14", StatusesTask.NEW, idEpic_12));
+        int idEpic_15 = manager.addEpic(new Epic("15", "15", StatusesTask.NEW));
+        int idSubtask_16 = manager.addSubtask(new Subtask("16", "16", StatusesTask.NEW, idEpic_12));
+        int idSubtask_17 = manager.addSubtask(new Subtask("17", "17", StatusesTask.NEW, idEpic_15));
 
-        Task task_1 = manager.getTheTaskById(idTask_1);
-        Epic epic_2 = manager.getTheEpicById(idEpic_2);
-        Task task_3 = manager.getTheTaskById(idTask_3);
-        Epic epic_4 = manager.getTheEpicById(idEpic_4);
-        Task task_5 = manager.getTheTaskById(idTask_5);
-        Epic epic_6 = manager.getTheEpicById(idEpic_6);
-        Task task_7 = manager.getTheTaskById(idTask_7);
-        Epic epic_8 = manager.getTheEpicById(idEpic_8);
-        Subtask subtask_9 = manager.getTheSubtaskById(idSubtask_9);
-        Subtask subtask_10 = manager.getTheSubtaskById(idSubtask_10);
-        Subtask subtask_11 = manager.getTheSubtaskById(idSubtask_11);
-        Task task_12 = manager.getTheTaskById(idTask_12);
-        Epic epic_13 = manager.getTheEpicById(idEpic_13);
-        Subtask subtask_14 = manager.getTheSubtaskById(idSubtask_14);
-        System.out.println(manager.getHistory());
+        manager.getTheTaskById(idTask_1);
+        manager.getTheTaskById(idTask_2);
+        manager.getTheEpicById(idEpic_3);
+        manager.getTheSubtaskById(idSubtask_4);
+        manager.getTheSubtaskById(idSubtask_5);
+        manager.getTheSubtaskById(idSubtask_6);
+        manager.getTheEpicById(idEpic_7);
+        manager.getTheSubtaskById(idSubtask_8);
+        manager.getTheSubtaskById(idSubtask_9);
+        manager.getTheEpicById(idEpic_10);
+        manager.getTheTaskById(idTask_11);
+        manager.getTheEpicById(idEpic_12);
+        manager.getTheSubtaskById(idSubtask_13);
+        manager.getTheSubtaskById(idSubtask_14);
+        manager.getTheEpicById(idEpic_15);
+        manager.getTheSubtaskById(idSubtask_16);
+        manager.getTheSubtaskById(idSubtask_17);
+
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.getTheTaskById(idTask_1);
+        manager.getTheTaskById(idTask_2);
+        manager.getTheEpicById(idEpic_3);
+        manager.getTheSubtaskById(idSubtask_4);
+        manager.getTheSubtaskById(idSubtask_5);
+        manager.getTheSubtaskById(idSubtask_6);
+        manager.getTheTaskById(idTask_1);
+        manager.getTheEpicById(idEpic_7);
+        manager.getTheSubtaskById(idSubtask_8);
+        manager.getTheSubtaskById(idSubtask_9);
+        manager.getTheSubtaskById(idSubtask_5);
+        manager.getTheEpicById(idEpic_10);
+        manager.getTheTaskById(idTask_11);
+        manager.getTheEpicById(idEpic_12);
+        manager.getTheSubtaskById(idSubtask_13);
+        manager.getTheSubtaskById(idSubtask_14);
+        manager.getTheEpicById(idEpic_15);
+        manager.getTheSubtaskById(idSubtask_16);
+        manager.getTheSubtaskById(idSubtask_17);
+        manager.getTheEpicById(idEpic_3);
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteTaskById(idTask_1);
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteAllTasks();
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteEpicById(idEpic_7);
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteSubtaskById(idSubtask_13);
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteAllSubtasksOfAnEpic(idEpic_12);
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteAllSubtask();
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
+
+        manager.deleteAllEpic();
+        manager.getHistory().forEach(System.out::println);
+        System.out.println("---------------------------------------------------------------------------------------");
         /*
         // общая проверка работоспособности треккера задач
         int idTask1 = manager.addTask(new Task("breakfast", "to drink coffee", StatusesTask.NEW));
