@@ -3,38 +3,38 @@ package ru.yandex.practicum.kanban.manager.history;
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.Objects;
 
-public class Node<T extends Task> {
-    protected Node<T> prev;
-    protected T item;
-    protected Node<T> next;
+public class Node {
+    protected Node prev;
+    protected Task item;
+    protected Node next;
 
-    public Node(Node<T> prev, T item, Node<T> next) {
+    public Node(Node prev, Task item, Node next) {
         this.item = item;
         this.next = next;
         this.prev = prev;
     }
 
-    public Node<T> getPrev() {
+    public Node getPrev() {
         return prev;
     }
 
-    public void setPrev(Node<T> prev) {
+    public void setPrev(Node prev) {
         this.prev = prev;
     }
 
-    public T getItem() {
+    public Task getItem() {
         return item;
     }
 
-    public void setItem(T item) {
+    public void setItem(Task item) {
         this.item = item;
     }
 
-    public Node<T> getNext() {
+    public Node getNext() {
         return next;
     }
 
-    public void setNext(Node<T> next) {
+    public void setNext(Node next) {
         this.next = next;
     }
 
@@ -42,7 +42,7 @@ public class Node<T extends Task> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Node<?> node = (Node<?>) o;
+        Node node = (Node) o;
         return Objects.equals(prev, node.prev) && Objects.equals(item, node.item) && Objects.equals(next, node.next);
     }
 
