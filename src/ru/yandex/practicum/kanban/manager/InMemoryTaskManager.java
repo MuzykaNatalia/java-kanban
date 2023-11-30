@@ -8,11 +8,112 @@ import ru.yandex.practicum.kanban.tasks.Subtask;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected Map<Integer, Task> mapTasks = new HashMap<>();
-    protected Map<Integer, Subtask> mapSubtask = new HashMap<>();
-    protected Map<Integer, Epic> mapEpic = new HashMap<>();
+    protected Map<Integer, Task> mapTasks = new LinkedHashMap<>();
+    protected Map<Integer, Subtask> mapSubtask = new LinkedHashMap<>();
+    protected Map<Integer, Epic> mapEpic = new LinkedHashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
     protected int number = 1;
+
+    @Override
+    public void addTask(Task task) {
+        if (task != null) {
+            task.setId(number++);
+            mapTasks.put(task.getId(), task);
+        } else {
+            throw new RuntimeException("No such task");
+        }
+    }
+
+    @Override
+    public void addEpic(Epic epic) {
+        if (epic != null) {
+            epic.setId(number++);
+            mapEpic.put(epic.getId(), epic);
+        } else {
+            throw new RuntimeException("No such epic");
+        }
+    }
+
+    @Override
+    public void addSubtask(Subtask subtask) {
+        if (subtask != null) {
+            subtask.setId(number++);
+            mapSubtask.put(subtask.getId(), subtask);
+
+            Epic epic = mapEpic.get(subtask.getIdEpic());
+            epic.addIdSubtask(subtask.getId());
+            updateEpicStatus(subtask.getIdEpic());
+        } else {
+            throw new RuntimeException("No such subtask");
+        }
+    }
+
+    @Override
+    public Task getTheTaskById(int idTask) {
+        Task task = mapTasks.get(idTask);
+
+        if (task != null) {
+            history.add(task);
+            return task;
+        } else {
+            throw new RuntimeException("No such task");
+        }
+    }
+
+    @Override
+    public Epic getTheEpicById(int idEpic) {
+        Task task = mapEpic.get(idEpic);
+
+        if (task != null) {
+            history.add(task);
+            return mapEpic.get(idEpic);
+        } else {
+            throw new RuntimeException("No such epic");
+        }
+    }
+
+    @Override
+    public Subtask getTheSubtaskById(int idSubtask) {
+        Task task = mapSubtask.get(idSubtask);
+
+        if (task != null) {
+            history.add(task);
+            return mapSubtask.get(idSubtask);
+        } else {
+            throw new RuntimeException("No such subtask");
+        }
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        if (task != null) {
+            mapTasks.put(task.getId(), task);
+        } else {
+            throw new RuntimeException("No such task");
+        }
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        if (epic != null) {
+            Epic epicUpdate = mapEpic.get(epic.getId());
+            epicUpdate.setName(epic.getName());
+            epicUpdate.setDescription(epic.getDescription());
+            mapEpic.put(epicUpdate.getId(), epicUpdate);
+        } else {
+            throw new RuntimeException("No such epic");
+        }
+    }
+
+    @Override
+    public void updateSubtask(Subtask subtask) {
+        if (subtask != null) {
+            mapSubtask.put(subtask.getId(), subtask);
+            updateEpicStatus(subtask.getIdEpic());
+        } else {
+            throw new RuntimeException("No such subtask");
+        }
+    }
 
     @Override
     public void deleteTaskById(int idTask) {
@@ -95,61 +196,36 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistory() {
-        return history.getHistory();
-    }
-
-    @Override
-    public Task getTheTaskById(int idTask) {
-        Task task = mapTasks.get(idTask);
-
-        if (task != null) {
-            history.add(task);
-            return task;
-        } else {
-            throw new RuntimeException("No such task");
-        }
-    }
-
-    @Override
-    public Subtask getTheSubtaskById(int idSubtask) {
-        Task task = mapSubtask.get(idSubtask);
-
-        if (task != null) {
-            history.add(task);
-            return mapSubtask.get(idSubtask);
-        } else {
-            throw new RuntimeException("No such subtask");
-        }
-    }
-
-    @Override
-    public Epic getTheEpicById(int idEpic) {
-        Task task = mapEpic.get(idEpic);
-
-        if (task != null) {
-            history.add(task);
-            return mapEpic.get(idEpic);
-        } else {
-            throw new RuntimeException("No such epic");
-        }
-    }
-
-    @Override
-    public int addTask(Task task) {
-        if (task != null) {
-            task.setId(number++);
-            mapTasks.put(task.getId(), task);
-
-            return task.getId();
-        } else {
-            throw new RuntimeException("No such task");
-        }
-    }
-
-    @Override
     public List<Task> getListOfTasks() {
         return new ArrayList<>(mapTasks.values());
+    }
+
+    @Override
+    public List<Epic> getListOfEpic() {
+        return new ArrayList<>(mapEpic.values());
+    }
+
+    @Override
+    public List<Subtask> getListOfSubtask() {
+        return new ArrayList<>(mapSubtask.values());
+    }
+
+    @Override
+    public List<Subtask> getListOfAllEpicSubtask(int idEpic) {
+        List<Subtask> listOfAllEpicSubtask = new ArrayList<>();
+        Epic epic = mapEpic.get(idEpic);
+
+        for (Integer idSubtask : epic.getListIdSubtask()) {
+            Subtask subtask = mapSubtask.get(idSubtask);
+            listOfAllEpicSubtask.add(subtask);
+        }
+
+        return listOfAllEpicSubtask;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return history.getHistory();
     }
 
     @Override
@@ -160,32 +236,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        if (task != null) {
-            mapTasks.put(task.getId(), task);
-        } else {
-            throw new RuntimeException("No such task");
-        }
-    }
-
-    @Override
-    public int addEpic(Epic epic) {
-        if (epic != null) {
-            epic.setId(number++);
-            mapEpic.put(epic.getId(), epic);
-
-            return epic.getId();
-        } else {
-            throw new RuntimeException("No such epic");
-        }
-    }
-
-    @Override
-    public List<Epic> getListOfEpic() {
-        return new ArrayList<>(mapEpic.values());
-    }
-
-    @Override
     public void printAllEpic() {
         for (Epic epic : mapEpic.values()) {
             System.out.println(epic);
@@ -193,14 +243,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        if (epic != null) {
-            Epic epicUpdate = mapEpic.get(epic.getId());
-            epicUpdate.setName(epic.getName());
-            epicUpdate.setDescription(epic.getDescription());
-            mapEpic.put(epicUpdate.getId(), epicUpdate);
-        } else {
-            throw new RuntimeException("No such epic");
+    public void printAllSubtask() {
+        for (Subtask subtask : mapSubtask.values()) {
+            System.out.println(subtask);
+        }
+    }
+
+    @Override
+    public void printListOfAllEpicSubtask(int idEpic) {
+        List<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
+
+        for (Subtask subtask : listOfAllEpicSubtask) {
+            System.out.println(subtask);
         }
     }
 
@@ -226,63 +280,19 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public Integer addSubtask(Subtask subtask) {
-        if (subtask != null) {
-            subtask.setId(number++);
-            mapSubtask.put(subtask.getId(), subtask);
-
-            Epic epic = mapEpic.get(subtask.getIdEpic());
-            epic.addIdSubtask(subtask.getId());
-            updateEpicStatus(subtask.getIdEpic());
-
-            return subtask.getId();
-        } else {
-            throw new RuntimeException("No such subtask");
+    protected Task returnTaskForHistory(int idTask) {
+        if (mapTasks.containsKey(idTask)) {
+            return mapTasks.get(idTask);
+        } else if (mapEpic.containsKey(idTask)) {
+            return mapEpic.get(idTask);
+        } else if (mapSubtask.containsKey(idTask)) {
+            return mapSubtask.get(idTask);
+        }else {
+            throw new RuntimeException("This id does not exist");
         }
     }
 
-    @Override
-    public List<Subtask> getListOfSubtask() {
-        return new ArrayList<>(mapSubtask.values());
-    }
-
-    @Override
-    public void printAllSubtask() {
-        for (Subtask subtask : mapSubtask.values()) {
-            System.out.println(subtask);
-        }
-    }
-
-    @Override
-    public List<Subtask> getListOfAllEpicSubtask(int idEpic) {
-        List<Subtask> listOfAllEpicSubtask = new ArrayList<>();
-        Epic epic = mapEpic.get(idEpic);
-
-        for (Integer idSubtask : epic.getListIdSubtask()) {
-            Subtask subtask = mapSubtask.get(idSubtask);
-            listOfAllEpicSubtask.add(subtask);
-        }
-
-        return listOfAllEpicSubtask;
-    }
-
-    @Override
-    public void printListOfAllEpicSubtask(int idEpic) {
-        List<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
-
-        for (Subtask subtask : listOfAllEpicSubtask) {
-            System.out.println(subtask);
-        }
-    }
-
-    @Override
-    public void updateSubtask(Subtask subtask) {
-        if (subtask != null) {
-            mapSubtask.put(subtask.getId(), subtask);
-            updateEpicStatus(subtask.getIdEpic());
-        } else {
-            throw new RuntimeException("No such subtask");
-        }
+    protected void setNumber(int number) {
+        this.number = number;
     }
 }

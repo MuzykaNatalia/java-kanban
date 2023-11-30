@@ -6,53 +6,53 @@ import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.List;
 
 public interface TaskManager {
-    List<Task> getHistory();
+    void addTask(Task task);
 
-    int addTask(Task task);
+    void addEpic(Epic epic);
+
+    void addSubtask(Subtask subtask);
 
     Task getTheTaskById(int idTask);
 
-    List<Task> getListOfTasks();
-
-    void printAllTasks();
-
-    void updateTask(Task task);
-
-    void deleteTaskById(int idTask);
-
-    void deleteAllTasks();
-
-    int addEpic(Epic epic);
-
     Epic getTheEpicById(int idEpic);
-
-    List<Epic> getListOfEpic();
-
-    void printAllEpic();
-
-    void updateEpic(Epic epic);
-
-    void deleteEpicById(int idEpic);
-
-    void deleteAllEpic();
-
-    Integer addSubtask(Subtask subtask);
 
     Subtask getTheSubtaskById(int idSubtask);
 
+    void updateTask(Task task);
+
+    void updateEpic(Epic epic);
+
+    void updateSubtask(Subtask subtask);
+
+    void deleteTaskById(int idTask);
+
+    void deleteEpicById(int idEpic);
+
+    void deleteSubtaskById(int idSubtask);
+
+    void deleteAllTasks();
+
+    void deleteAllEpic();
+
+    void deleteAllSubtask();
+
+    void deleteAllSubtasksOfAnEpic(int idEpic);
+
+    List<Task> getListOfTasks();
+
+    List<Epic> getListOfEpic();
+
     List<Subtask> getListOfSubtask();
+
+    List<Task> getHistory();
+
+    void printAllTasks();
+
+    void printAllEpic();
 
     void printAllSubtask();
 
     List<Subtask> getListOfAllEpicSubtask(int idEpic);
 
     void printListOfAllEpicSubtask(int idEpic);
-
-    void updateSubtask(Subtask subtask);
-
-    void deleteSubtaskById(int idSubtask);
-
-    void deleteAllSubtask();
-
-    void deleteAllSubtasksOfAnEpic(int idEpic);
 }

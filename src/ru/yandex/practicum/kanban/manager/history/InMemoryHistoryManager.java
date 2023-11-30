@@ -4,6 +4,7 @@ import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
+    protected static final int MAX_HISTORY_SIZE = 10;
     protected CustomLinkedList history = new CustomLinkedList();
     protected Map<Integer, Node> nodeMap = new HashMap<>();
 
@@ -14,9 +15,17 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        remove(task.getId());
-        Node newNode = history.linkLast(task);
-        nodeMap.put(task.getId(), newNode);
+        if (task != null) {
+            remove(task.getId());
+            Node newNode = history.linkLast(task);
+            nodeMap.put(task.getId(), newNode);
+
+            if (nodeMap.size() > MAX_HISTORY_SIZE) {
+                remove(history.getIdFirstItem());
+            }
+        } else {
+            throw new RuntimeException("No such task");
+        }
     }
 
     @Override
@@ -67,6 +76,10 @@ public class InMemoryHistoryManager implements HistoryManager {
                 listHistory.add(node.getItem());
             }
             return listHistory;
+        }
+
+        protected int getIdFirstItem() {
+            return first.item.getId();
         }
     }
 }

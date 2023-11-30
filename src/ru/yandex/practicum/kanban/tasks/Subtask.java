@@ -1,17 +1,26 @@
 package ru.yandex.practicum.kanban.tasks;
 
 import java.util.Objects;
+import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.SUBTASK;
 
 public class Subtask extends Task {
     protected int idEpic;
+    protected TypeOfTasks type;
 
-    public Subtask(String name, String description, StatusesTask status, int idEpic) {
-        super(name, description, status);
+    public Subtask(String name, StatusesTask status, String description, int idEpic) {
+        super(name, status, description);
+        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
-    public Subtask(int id, String name, String description, StatusesTask status, int idEpic) {
-        super(id, name, description, status);
+    public Subtask(int id, String name, StatusesTask status, String description, int idEpic) {
+        super(id, name, status, description);
+        super.setType(SUBTASK);
+        this.idEpic = idEpic;
+    }
+
+    public Subtask(int id, TypeOfTasks type, String name, StatusesTask status, String description, int idEpic) {
+        super(id, type, name, status, description);
         this.idEpic = idEpic;
     }
 
@@ -25,22 +34,23 @@ public class Subtask extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
-        return idEpic == subtask.idEpic;
+        return idEpic == subtask.idEpic && type == subtask.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), idEpic);
+        return Objects.hash(super.hashCode(), idEpic, type);
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "idSubtask=" + id +
-                ", idEpic=" + idEpic +
+                "id=" + id +
+                ", type=" + type +
                 ", name='" + name + '\'' +
+                ", status=" + status +
                 ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                "}";
+                ", idEpic=" + idEpic +
+                '}';
     }
 }
