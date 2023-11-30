@@ -27,7 +27,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return Files.exists(path);
     }
 
-    public static FileBackedTasksManager loadFromFile(String value) {
+    public static FileBackedTasksManager loadFromFile(String value) throws RuntimeException {
         Path path = Path.of(value);
         if (isExists(path)) {
             FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(path);
@@ -81,7 +81,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     private static List<Integer> historyFromString(String value) {
         List<Integer> idTasks = new ArrayList<>();
-        if (!value.isEmpty()) {
+        if (!value.isBlank()) {
             for (String id : value.split(DELIMITER)) {
                 idTasks.add(Integer.parseInt(id));
             }
@@ -90,12 +90,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     private static void addTasksToHistory(List<Integer> list, FileBackedTasksManager fileBackedTasksManager) {
-        if (!list.isEmpty()) {
             for (Integer idTask : list) {
-                Task task = fileBackedTasksManager.returnTaskForHistory(idTask);
+                Task task = fileBackedTasksManager.returnAnyTaskById(idTask);
                 historyManager.add(task);
             }
-        }
     }
 
     private static List<String> readFileContents(String value) throws RuntimeException {
@@ -112,7 +110,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         for (Task task : history) {
             historyId.add(String.valueOf(task.getId()));
         }
-        return String.join(DELIMITER, historyId);
+        if (historyId.isEmpty()) {
+            return " ";
+        } else {
+            return String.join(DELIMITER, historyId);
+        }
     }
 
     private Set<Task> sortAllTasks() {

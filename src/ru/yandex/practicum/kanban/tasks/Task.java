@@ -67,10 +67,6 @@ public class Task {
         return type;
     }
 
-    public void setType(TypeOfTasks type) {
-        this.type = type;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

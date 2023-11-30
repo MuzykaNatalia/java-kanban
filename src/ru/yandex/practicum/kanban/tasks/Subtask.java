@@ -5,27 +5,31 @@ import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.SUBTASK;
 
 public class Subtask extends Task {
     protected int idEpic;
-    protected TypeOfTasks type;
+    protected TypeOfTasks type = SUBTASK;
 
     public Subtask(String name, StatusesTask status, String description, int idEpic) {
         super(name, status, description);
-        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
     public Subtask(int id, String name, StatusesTask status, String description, int idEpic) {
         super(id, name, status, description);
-        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
     public Subtask(int id, TypeOfTasks type, String name, StatusesTask status, String description, int idEpic) {
-        super(id, type, name, status, description);
+        super(id, name, status, description);
         this.idEpic = idEpic;
+        this.type = type;
     }
 
     public int getIdEpic() {
         return idEpic;
+    }
+
+    @Override
+    public TypeOfTasks getType() {
+        return type;
     }
 
     @Override

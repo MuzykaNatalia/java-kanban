@@ -6,23 +6,20 @@ import java.util.Objects;
 import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.EPIC;
 
 public class Epic extends Task {
-    protected List<Integer> listIdSubtask;
-    protected TypeOfTasks type;
+    protected List<Integer> listIdSubtask = new ArrayList<>();
+    protected TypeOfTasks type = EPIC;
 
     public Epic(String name, StatusesTask status, String description) {
         super(name, status, description);
-        super.setType(EPIC);
-        listIdSubtask = new ArrayList<>();
     }
 
     public Epic(int id, String name, StatusesTask status, String description) {
         super(id, name, status, description);
-        super.setType(EPIC);
     }
 
     public Epic(int id, TypeOfTasks type, String name, StatusesTask status, String description) {
-        super(id, type, name, status, description);
-        listIdSubtask = new ArrayList<>();
+        super(id, name, status, description);
+        this.type = type;
     }
 
     public void addIdSubtask(int id) {
@@ -43,6 +40,11 @@ public class Epic extends Task {
 
     public void setListIdSubtask(List<Integer> listIdSubtask) {
         this.listIdSubtask = listIdSubtask;
+    }
+
+    @Override
+    public TypeOfTasks getType() {
+        return type;
     }
 
     @Override
