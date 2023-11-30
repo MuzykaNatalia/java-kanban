@@ -1,6 +1,5 @@
 package ru.yandex.practicum.kanban.manager;
 
-import ru.yandex.practicum.kanban.manager.history.HistoryManager;
 import ru.yandex.practicum.kanban.tasks.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,55 +8,40 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
-    protected static HistoryManager historyManager = Managers.getDefaultHistory();
     protected static final String HEADER_FOR_TASKS_IN_FILE_CSV = "id,type,name,status,description,epic\n";
-    protected static final String DELIMITER = ",";
     protected Path path;
-
-    public FileBackedTasksManager(HistoryManager historyManager, Path path) {
-        FileBackedTasksManager.historyManager = historyManager;
-        this.path = path;
-    }
 
     public FileBackedTasksManager(Path path) {
         this.path = path;
     }
 
-    private static boolean isExists(Path path) {
-        return Files.exists(path);
-    }
+    public static FileBackedTasksManager loadFromFile(String file) {
+        Path path = Path.of(file);
+        if (Files.exists(path)) {
+            List<String> lines = readFileContents(file);
+            FileBackedTasksManager manager = new FileBackedTasksManager(path);
+            Map<Integer, Task> mapAllTasks = new HashMap<>();
 
-    public static FileBackedTasksManager loadFromFile(String value) throws RuntimeException {
-        Path path = Path.of(value);
-        if (isExists(path)) {
-            FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(path);
-            List<String> allLines = readFileContents(String.valueOf(path));
-            for (int i = 1; i < allLines.size() - 2; i++) {
-                fileBackedTasksManager.createTaskFromString(allLines.get(i));
+            for (int i = 1; i < lines.size() - 2; i++) {
+                Task task = manager.createTaskFromString(lines.get(i));
+                mapAllTasks.put(task.getId(), task);
             }
-            List<Integer> list = historyFromString(allLines.get(allLines.size() - 1));
-            addTasksToHistory(list, fileBackedTasksManager);
-            return fileBackedTasksManager;
+
+            List<Integer> list = historyFromString(lines.get(lines.size() - 1));
+            addTasksToHistory(manager, mapAllTasks, list);
+            return manager;
         } else {
             throw new RuntimeException("The file at the specified path is missing");
         }
     }
 
-    private void createFile() throws ManagerSaveException, IOException {
-        Files.createFile(path);
-    }
-
-    private void deleteFile(Path path) throws ManagerSaveException, IOException {
-        Files.deleteIfExists(path);
-    }
-
-    private boolean isLoadFile() throws ManagerSaveException {
+    private boolean isLoadFile() {
         try {
-            if (!isExists(path)) {
-                createFile();
+            if (!Files.exists(path)) {
+                Files.createFile(path);
             } else {
-                deleteFile(path);
-                createFile();
+                Files.deleteIfExists(path);
+                Files.createFile(path);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,21 +66,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     private static List<Integer> historyFromString(String value) {
         List<Integer> idTasks = new ArrayList<>();
         if (!value.isBlank()) {
-            for (String id : value.split(DELIMITER)) {
+            for (String id : value.split(",")) {
                 idTasks.add(Integer.parseInt(id));
             }
         }
         return idTasks;
     }
 
-    private static void addTasksToHistory(List<Integer> list, FileBackedTasksManager fileBackedTasksManager) {
-            for (Integer idTask : list) {
-                Task task = fileBackedTasksManager.returnAnyTaskById(idTask);
-                historyManager.add(task);
-            }
+    private static void addTasksToHistory(FileBackedTasksManager manager, Map<Integer, Task> map, List<Integer> list) {
+        for (Integer idTask : list) {
+            Task task = map.get(idTask);
+            manager.history.add(task);
+        }
     }
 
-    private static List<String> readFileContents(String value) throws RuntimeException {
+    private static List<String> readFileContents(String value) {
         try {
             return new ArrayList<>(Files.readAllLines(Path.of(value), StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -113,7 +97,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         if (historyId.isEmpty()) {
             return " ";
         } else {
-            return String.join(DELIMITER, historyId);
+            return String.join(",", historyId);
         }
     }
 
@@ -146,8 +130,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
-    private void createTaskFromString(String value) {
-        String[] lineContents = value.split(DELIMITER);
+    private Task createTaskFromString(String value) {
+        String[] lineContents = value.split(",");
         int id = Integer.parseInt(lineContents[0]);
         TypeOfTasks type = TypeOfTasks.valueOf(lineContents[1]);
         String name = lineContents[2];
@@ -159,18 +143,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 Task task = new Task(id, type, name, status, description);
                 super.setNumber(id);
                 super.addTask(task);
-                break;
+                return task;
             case EPIC:
                 Epic epic = new Epic(id, type, name, status, description);
                 super.setNumber(id);
                 super.addEpic(epic);
-                break;
+                return epic;
             case SUBTASK:
                 int idEpic = Integer.parseInt(lineContents[5]);
                 Subtask subtask = new Subtask(id, type, name, status, description, idEpic);
                 super.setNumber(id);
                 super.addSubtask(subtask);
-                break;
+                return subtask;
             default:
                 throw new RuntimeException("Failed to create task from string");
         }

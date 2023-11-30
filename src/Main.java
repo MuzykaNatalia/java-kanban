@@ -4,6 +4,8 @@ import ru.yandex.practicum.kanban.manager.FileBackedTasksManager;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import ru.yandex.practicum.kanban.tasks.Task;
+
+import java.io.File;
 import java.nio.file.Path;
 import ru.yandex.practicum.kanban.manager.Managers;
 import ru.yandex.practicum.kanban.manager.history.HistoryManager;
@@ -11,11 +13,10 @@ import ru.yandex.practicum.kanban.manager.history.HistoryManager;
 public class Main {
 
     public static void main(String[] args) {
-        HistoryManager historyManager = Managers.getDefaultHistory();
         String PATH_FILE = "resources/test.csv";
-        FileBackedTasksManager manager = new FileBackedTasksManager(historyManager, Path.of(PATH_FILE));
+        FileBackedTasksManager manager = new FileBackedTasksManager(Path.of(PATH_FILE));
 
-        /** проверка, если истории просмотров нет: добавляем задачи */
+        // проверка, если истории просмотров нет: добавляем задачи
         manager.addTask(new Task("1", DONE,"a"));
         manager.addTask(new Task("2", DONE,"b"));
         manager.addEpic(new Epic("3", NEW,"c"));
@@ -34,19 +35,18 @@ public class Main {
         manager.addSubtask(new Subtask("16", NEW,"t",  12));
         manager.addSubtask(new Subtask("17", NEW,"x",  15));
         manager.updateSubtask(new Subtask(17,"17", DONE,"j",  15));
+
         // восстанавливаем задачи из файла
-        FileBackedTasksManager managerFile1 = loadFromFile(PATH_FILE);
-        managerFile1.getListOfTasks().forEach(System.out::println);
+        FileBackedTasksManager managerFile = loadFromFile(PATH_FILE);
+        managerFile.getListOfTasks().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
-        managerFile1.getListOfEpic().forEach(System.out::println);
+        managerFile.getListOfEpic().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
-        managerFile1.getListOfSubtask().forEach(System.out::println);
+        managerFile.getListOfSubtask().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
-        historyManager.getHistory().forEach(System.out::println);
-        System.out.println("---------------------------------------------------------------------------------------");
+        managerFile.getHistory().forEach(System.out::println);
 
-
-        /** проверка, если история просмотров есть: добавляем задачи */
+        // проверка, если история просмотров есть: добавляем задачи
         manager.addTask(new Task("18", DONE,"18"));
         manager.addEpic(new Epic("19", NEW,"19"));
         manager.addSubtask(new Subtask("20",  IN_PROGRESS,"d", 19));
@@ -54,6 +54,7 @@ public class Main {
         manager.addSubtask(new Subtask( "22", NEW,"f",  19));
         manager.addEpic(new Epic("23", NEW,"g"));
         manager.addTask(new Task("24", NEW,"n"));
+
         // заполняем историю
         manager.getTheTaskById(1);
         manager.getTheTaskById(2);
@@ -72,16 +73,20 @@ public class Main {
         manager.getTheEpicById(15);
         manager.getTheSubtaskById(16);
         manager.getTheSubtaskById(17);
+
         // выводим историю, которая хранит не больше 10 задач
         manager.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
+
         // удаляем 1 task, 1 subtask, 1 epic(у которого 2 subtask)
         manager.deleteTaskById(2);
         manager.deleteSubtaskById(14);
         manager.deleteEpicById(7);
+
         // выводим историю
         manager.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
+
         // восстанавливаем задачи и историю из файла
         FileBackedTasksManager managerFile2 = loadFromFile(PATH_FILE);
         // выводим все задачи и историю просмотров
@@ -91,7 +96,7 @@ public class Main {
         System.out.println("---------------------------------------------------------------------------------------");
         managerFile2.getListOfSubtask().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
-        historyManager.getHistory().forEach(System.out::println);
+        managerFile2.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
     }
 }

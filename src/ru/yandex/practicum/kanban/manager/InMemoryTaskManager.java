@@ -280,18 +280,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected Task returnAnyTaskById(int idTask) throws RuntimeException {
-        if (mapTasks.containsKey(idTask)) {
-            return mapTasks.get(idTask);
-        } else if (mapEpic.containsKey(idTask)) {
-            return mapEpic.get(idTask);
-        } else if (mapSubtask.containsKey(idTask)) {
-            return mapSubtask.get(idTask);
-        } else {
-            throw new RuntimeException("This id does not exist");
-        }
-    }
-
     protected void setNumber(int number) {
         this.number = number;
     }
