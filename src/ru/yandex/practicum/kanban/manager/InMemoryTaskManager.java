@@ -13,7 +13,8 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Epic> mapEpic = new LinkedHashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
     protected int number = 1;
-
+    /** Надо в сигнатуре методов прописывать throws RuntimeException?
+     * читала, что непроверяемые исключения не надо прописывать в сигнатуре метода, а как на практике? */
     @Override
     public void addTask(Task task) {
         if (task != null) {
@@ -119,6 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteTaskById(int idTask) {
         history.remove(idTask);
         mapTasks.remove(idTask);
+        isNoTasks();
     }
 
     @Override
@@ -132,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         history.remove(idEpic);
         mapEpic.remove(idEpic);
+        isNoTasks();
     }
 
     @Override
@@ -144,6 +147,7 @@ public class InMemoryTaskManager implements TaskManager {
         mapSubtask.remove(idSubtask);
 
         updateEpicStatus(epic.getId());
+        isNoTasks();
     }
 
     @Override
@@ -152,6 +156,7 @@ public class InMemoryTaskManager implements TaskManager {
             history.remove(task.getId());
         }
         mapTasks.clear();
+        isNoTasks();
     }
 
     @Override
@@ -166,6 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         mapSubtask.clear();
         mapEpic.clear();
+        isNoTasks();
     }
 
     @Override
@@ -180,6 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         mapSubtask.clear();
+        isNoTasks();
     }
 
     @Override
@@ -193,6 +200,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epic.clearIdSubtask();
         updateEpicStatus(epic.getId());
+        isNoTasks();
     }
 
     @Override
@@ -282,5 +290,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void setNumber(int number) {
         this.number = number;
+    }
+
+    protected Task returnAnyTaskById(int idTask) {
+        if (mapTasks.containsKey(idTask)) {
+            return mapTasks.get(idTask);
+        } else if (mapEpic.containsKey(idTask)) {
+            return mapEpic.get(idTask);
+        } else if (mapSubtask.containsKey(idTask)) {
+            return mapSubtask.get(idTask);
+        }else {
+            throw new RuntimeException("This id does not exist");
+        }
+    }
+    /** предусмотрела обнуление счетчика, если задач нет вообще, подумала, что так будет лучше */
+    private void isNoTasks() {
+        if (mapTasks.isEmpty() && mapSubtask.isEmpty() && mapEpic.isEmpty()) {
+            setNumber(1);
+        }
     }
 }

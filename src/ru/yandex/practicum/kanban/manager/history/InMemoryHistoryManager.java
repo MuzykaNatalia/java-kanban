@@ -12,7 +12,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     public List<Task> getHistory() {  
         return history.getTasks();
     }
-
+    /** вернула ограничение истории до 10 задач, думаю не очень читабельно, если их больше 10,
+     * а если их вообще больше 50, то можно потеряться в истории, зато если понадобится всегда можно увеличить размер истории*/
     @Override
     public void add(Task task) {
         if (task != null) {
