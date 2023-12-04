@@ -4,7 +4,7 @@ import java.util.Objects;
 import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.TASK;
 
 public class Task {
-    protected int id;
+    protected int id = 0;
     protected TypeOfTasks type = TASK;
     protected String name;
     protected StatusesTask status;

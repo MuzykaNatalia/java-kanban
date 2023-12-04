@@ -12,48 +12,56 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Subtask> mapSubtask = new LinkedHashMap<>();
     protected Map<Integer, Epic> mapEpic = new LinkedHashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
-    protected int number = 1;
-    /** Надо в сигнатуре методов прописывать throws RuntimeException?
-     * читала, что непроверяемые исключения не надо прописывать в сигнатуре метода, а как на практике? */
+    protected int number = 0;
+
+    /** Убрала исключения из методов добавления задач, чтобы программа не падала,
+    * подумала, что будет проще, если методы будут завершаться и не отрабатывать, когда приходящий объект null */
     @Override
     public void addTask(Task task) {
-        if (task != null) {
-            task.setId(number++);
-            mapTasks.put(task.getId(), task);
-        } else {
-            throw new RuntimeException("No such task");
+        if (task == null) {
+            return;
         }
+        if (task.getId() == 0) {
+            task.setId(++number);
+        } else {
+            generateMaxIdFromFile(task.getId());
+        }
+        mapTasks.put(task.getId(), task);
     }
 
     @Override
     public void addEpic(Epic epic) {
-        if (epic != null) {
-            epic.setId(number++);
-            mapEpic.put(epic.getId(), epic);
-        } else {
-            throw new RuntimeException("No such epic");
+        if (epic == null) {
+            return;
         }
+        if (epic.getId() == 0) {
+            epic.setId(++number);
+        } else {
+            generateMaxIdFromFile(epic.getId());
+        }
+        mapEpic.put(epic.getId(), epic);
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
-        if (subtask != null) {
-            subtask.setId(number++);
-            mapSubtask.put(subtask.getId(), subtask);
-
-            Epic epic = mapEpic.get(subtask.getIdEpic());
-            epic.addIdSubtask(subtask.getId());
-            updateEpicStatus(subtask.getIdEpic());
-        } else {
-            throw new RuntimeException("No such subtask");
+        if (subtask == null) {
+            return;
         }
+        if (subtask.getId() == 0) {
+            subtask.setId(++number);
+        } else {
+            generateMaxIdFromFile(subtask.getId());
+        }
+        mapSubtask.put(subtask.getId(), subtask);
+        Epic epic = mapEpic.get(subtask.getIdEpic());
+        epic.addIdSubtask(subtask.getId());
+        updateEpicStatus(subtask.getIdEpic());
     }
 
     @Override
     public Task getTheTaskById(int idTask) {
-        Task task = mapTasks.get(idTask);
-
-        if (task != null) {
+        if (mapTasks.containsKey(idTask)) {
+            Task task = mapTasks.get(idTask);
             history.add(task);
             return task;
         } else {
@@ -63,11 +71,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getTheEpicById(int idEpic) {
-        Task task = mapEpic.get(idEpic);
-
-        if (task != null) {
-            history.add(task);
-            return mapEpic.get(idEpic);
+        if (mapEpic.containsKey(idEpic)) {
+            Epic epic = mapEpic.get(idEpic);
+            history.add(epic);
+            return epic;
         } else {
             throw new RuntimeException("No such epic");
         }
@@ -75,79 +82,83 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getTheSubtaskById(int idSubtask) {
-        Task task = mapSubtask.get(idSubtask);
-
-        if (task != null) {
-            history.add(task);
-            return mapSubtask.get(idSubtask);
+        if (mapSubtask.containsKey(idSubtask)) {
+            Subtask subtask = mapSubtask.get(idSubtask);
+            history.add(subtask);
+            return subtask;
         } else {
             throw new RuntimeException("No such subtask");
         }
     }
-
+    /** Протестировала обновление задачи, которую удалила и словила исключение, тоже решила ввести доп.проверки
+    * Это плохо так перестраховываться? */
     @Override
     public void updateTask(Task task) {
-        if (task != null) {
+        if (task == null) {
+            return;
+        } else if (mapTasks.containsKey(task.getId())) {
             mapTasks.put(task.getId(), task);
-        } else {
-            throw new RuntimeException("No such task");
         }
     }
 
     @Override
     public void updateEpic(Epic epic) {
-        if (epic != null) {
+        if (epic == null) {
+            return;
+        } else if (mapEpic.containsKey(epic.getId())) {
             Epic epicUpdate = mapEpic.get(epic.getId());
             epicUpdate.setName(epic.getName());
             epicUpdate.setDescription(epic.getDescription());
             mapEpic.put(epicUpdate.getId(), epicUpdate);
-        } else {
-            throw new RuntimeException("No such epic");
         }
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
-        if (subtask != null) {
+        if (subtask == null) {
+            return;
+        } else if (mapSubtask.containsKey(subtask.getId())) {
             mapSubtask.put(subtask.getId(), subtask);
             updateEpicStatus(subtask.getIdEpic());
-        } else {
-            throw new RuntimeException("No such subtask");
+        }
+    }
+    /** Протестировала удаление два раза одной и той же задачи и поймала исключение,
+    * поэтому решила ввести доп.проверку для удаления задач по id и для метода deleteAllSubtasksOfAnEpic)) */
+    @Override
+    public void deleteTaskById(int idTask) {
+        if (mapTasks.containsKey(idTask)) {
+            history.remove(idTask);
+            mapTasks.remove(idTask);
         }
     }
 
     @Override
-    public void deleteTaskById(int idTask) {
-        history.remove(idTask);
-        mapTasks.remove(idTask);
-        isNoTasks();
-    }
-
-    @Override
     public void deleteEpicById(int idEpic) {
-        Epic epic = mapEpic.get(idEpic);
+        if (mapEpic.containsKey(idEpic)) {
+            Epic epic = mapEpic.get(idEpic);
 
         for (Integer idSubtask : epic.getListIdSubtask()) {
             history.remove(idSubtask);
             mapSubtask.remove(idSubtask);
         }
 
-        history.remove(idEpic);
-        mapEpic.remove(idEpic);
-        isNoTasks();
+            history.remove(idEpic);
+            mapEpic.remove(idEpic);
+        }
     }
 
     @Override
     public void deleteSubtaskById(int idSubtask) {
-        Subtask subtask = mapSubtask.get(idSubtask);
-        Epic epic = mapEpic.get(subtask.getIdEpic());
+        if (mapSubtask.containsKey(idSubtask)) {
+            Subtask subtask = mapSubtask.get(idSubtask);
+            Epic epic = mapEpic.get(subtask.getIdEpic());
 
-        epic.removeIdSubtask(idSubtask);
-        history.remove(idSubtask);
-        mapSubtask.remove(idSubtask);
+            epic.removeIdSubtask(idSubtask);
+            history.remove(idSubtask);
+            mapSubtask.remove(idSubtask);
 
-        updateEpicStatus(epic.getId());
-        isNoTasks();
+            updateEpicStatus(epic.getId());
+        }
     }
 
     @Override
@@ -155,8 +166,8 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task task : mapTasks.values()){
             history.remove(task.getId());
         }
+
         mapTasks.clear();
-        isNoTasks();
     }
 
     @Override
@@ -171,7 +182,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         mapSubtask.clear();
         mapEpic.clear();
-        isNoTasks();
     }
 
     @Override
@@ -186,12 +196,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         mapSubtask.clear();
-        isNoTasks();
     }
 
     @Override
     public void deleteAllSubtasksOfAnEpic(int idEpic) {
-        Epic epic = mapEpic.get(idEpic);
+        if (mapEpic.containsKey(idEpic)) {
+            Epic epic = mapEpic.get(idEpic);
 
         for (Integer idSubtask : epic.getListIdSubtask()) {
             history.remove(idSubtask);
@@ -200,7 +210,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epic.clearIdSubtask();
         updateEpicStatus(epic.getId());
-        isNoTasks();
+        }
     }
 
     @Override
@@ -288,25 +298,24 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected void setNumber(int number) {
-        this.number = number;
-    }
-
-    protected Task returnAnyTaskById(int idTask) {
-        if (mapTasks.containsKey(idTask)) {
-            return mapTasks.get(idTask);
-        } else if (mapEpic.containsKey(idTask)) {
-            return mapEpic.get(idTask);
-        } else if (mapSubtask.containsKey(idTask)) {
-            return mapSubtask.get(idTask);
-        }else {
-            throw new RuntimeException("This id does not exist");
+    protected void generateMaxIdFromFile(int id) {
+        if (number < id) {
+            number = id;
         }
     }
-    /** предусмотрела обнуление счетчика, если задач нет вообще, подумала, что так будет лучше */
-    private void isNoTasks() {
-        if (mapTasks.isEmpty() && mapSubtask.isEmpty() && mapEpic.isEmpty()) {
-            setNumber(1);
+
+    protected void addTasksToHistoryByIdFromFile(int idTask) {
+        if (mapTasks.containsKey(idTask)) {
+            Task task = mapTasks.get(idTask);
+            history.add(task);
+        } else if (mapEpic.containsKey(idTask)) {
+            Epic epic = mapEpic.get(idTask);
+            history.add(epic);
+        } else if (mapSubtask.containsKey(idTask)) {
+            Subtask subtask = mapSubtask.get(idTask);
+            history.add(subtask);
+        }else {
+            throw new RuntimeException("This id does not exist");
         }
     }
 }
