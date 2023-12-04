@@ -2,12 +2,11 @@ package ru.yandex.practicum.kanban.manager.converter;
 
 import ru.yandex.practicum.kanban.tasks.*;
 import java.util.*;
-/** Постаралась вынести максимум методов в данный класс, так как почти всё взаимосвязано, то
- * не очень понятно как это сделать по-другому */
-public class ConverterCSV {
-    protected final String HEADER_FOR_TASKS_IN_FILE_CSV = "id,type,name,status,description,epic\n";
 
-    public String connectAllTasksIntoString(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
+public class ConverterCSV {
+    protected static final String HEADER_FOR_TASKS_IN_FILE_CSV = "id,type,name,status,description,epic\n";
+
+    public static String connectAllTasksIntoString(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
         Set<Task> allTasksSort = sortAllTasks(allTasks, allEpic, allSubtask);
         StringBuilder stringBuilder = new StringBuilder(HEADER_FOR_TASKS_IN_FILE_CSV);
         for (Task task : allTasksSort) {
@@ -17,7 +16,7 @@ public class ConverterCSV {
         return stringBuilder.toString();
     }
 
-    private Set<Task> sortAllTasks(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
+    private static Set<Task> sortAllTasks(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
         Set<Task> allTasksSort = new TreeSet<>(Comparator.comparing(Task::getId));
         allTasksSort.addAll(allTasks);
         allTasksSort.addAll(allEpic);
@@ -25,7 +24,7 @@ public class ConverterCSV {
         return allTasksSort;
     }
 
-    private String convertTaskToString(Task task) {
+    private static String convertTaskToString(Task task) {
         if (task instanceof Subtask) {
             return String.format("%d,%s,%s,%s,%s,%d\n",
                     task.getId(), task.getType(), task.getName(),
@@ -37,13 +36,13 @@ public class ConverterCSV {
         }
     }
 
-    public String convertIdHistoryToString(List<Task> history) {
+    public static String convertIdHistoryToString(List<Task> history) {
         List<String> historyId = new ArrayList<>();
         for (Task task : history) {
             historyId.add(String.valueOf(task.getId()));
         }
         if (historyId.isEmpty()) {
-            return "";
+            return " ";
         } else {
             return String.join(",", historyId);
         }

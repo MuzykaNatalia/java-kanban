@@ -14,8 +14,6 @@ public class InMemoryTaskManager implements TaskManager {
     protected HistoryManager history = Managers.getDefaultHistory();
     protected int number = 0;
 
-    /** Убрала исключения из методов добавления задач, чтобы программа не падала,
-    * подумала, что будет проще, если методы будут завершаться и не отрабатывать, когда приходящий объект null */
     @Override
     public void addTask(Task task) {
         if (task == null) {
@@ -24,7 +22,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getId() == 0) {
             task.setId(++number);
         } else {
-            generateMaxIdFromFile(task.getId());
+            generateMaxId(task.getId());
         }
         mapTasks.put(task.getId(), task);
     }
@@ -37,7 +35,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic.getId() == 0) {
             epic.setId(++number);
         } else {
-            generateMaxIdFromFile(epic.getId());
+            generateMaxId(epic.getId());
         }
         mapEpic.put(epic.getId(), epic);
     }
@@ -50,7 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getId() == 0) {
             subtask.setId(++number);
         } else {
-            generateMaxIdFromFile(subtask.getId());
+            generateMaxId(subtask.getId());
         }
         mapSubtask.put(subtask.getId(), subtask);
         Epic epic = mapEpic.get(subtask.getIdEpic());
@@ -90,8 +88,7 @@ public class InMemoryTaskManager implements TaskManager {
             throw new RuntimeException("No such subtask");
         }
     }
-    /** Протестировала обновление задачи, которую удалила и словила исключение, тоже решила ввести доп.проверки
-    * Это плохо так перестраховываться? */
+
     @Override
     public void updateTask(Task task) {
         if (task == null) {
@@ -122,8 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicStatus(subtask.getIdEpic());
         }
     }
-    /** Протестировала удаление два раза одной и той же задачи и поймала исключение,
-    * поэтому решила ввести доп.проверку для удаления задач по id и для метода deleteAllSubtasksOfAnEpic)) */
+
     @Override
     public void deleteTaskById(int idTask) {
         if (mapTasks.containsKey(idTask)) {
@@ -298,13 +294,13 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected void generateMaxIdFromFile(int id) {
+    protected void generateMaxId(int id) {
         if (number < id) {
             number = id;
         }
     }
 
-    protected void addTasksToHistoryByIdFromFile(int idTask) {
+    protected void addTasksToHistoryById(int idTask) {
         if (mapTasks.containsKey(idTask)) {
             Task task = mapTasks.get(idTask);
             history.add(task);

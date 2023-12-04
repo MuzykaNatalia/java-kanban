@@ -1,8 +1,8 @@
 package ru.yandex.practicum.kanban.manager;
 
+import static ru.yandex.practicum.kanban.manager.converter.ConverterCSV.*;
 import ru.yandex.practicum.kanban.exception.ManagerReadException;
 import ru.yandex.practicum.kanban.exception.ManagerSaveException;
-import ru.yandex.practicum.kanban.manager.converter.ConverterCSV;
 import ru.yandex.practicum.kanban.tasks.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,45 +11,27 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    protected ConverterCSV converter = new ConverterCSV();
     protected Path path;
 
     public FileBackedTasksManager(Path path) {
         this.path = path;
     }
-/** А какие методы лучше ставить первыми: переопределенные или нет? Или в каждом случае индивидуально? */
-    private void saveManagerToFile() throws ManagerSaveException {
-        List<Task> allTasks = super.getListOfTasks();
-        List<Epic> allEpic = super.getListOfEpic();
-        List<Subtask> allSubtask = super.getListOfSubtask();
-        String allTasksIntoString = converter.connectAllTasksIntoString(allTasks, allEpic, allSubtask);
-
-        List<Task> allHistory = history.getHistory();
-        String idHistoryToString = converter.convertIdHistoryToString(allHistory);
-        StringBuilder value = new StringBuilder(allTasksIntoString);
-        value.append(idHistoryToString);
-        try {
-            Files.writeString(path, value, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ManagerSaveException("Saving to the specified file failed");
-        }
-    }
 
     public static FileBackedTasksManager loadFromFile(String file) throws ManagerReadException {
         Path path = Path.of(file);
         if (Files.exists(path)) {
-            List<String> lines = readFileContents(file);
             FileBackedTasksManager manager = new FileBackedTasksManager(path);
+
+            List<String> lines = readFileContents(file);
             int lastLineWithTask = lines.size() - 2;
             for (int i = 1; i < lastLineWithTask; i++) {
                 manager.createTaskFromString(lines.get(i));
             }
 
             int lineWithHistoryNumbers = lines.size() - 1;
-            List<Integer> list = ConverterCSV.historyFromString(lines.get(lineWithHistoryNumbers));
+            List<Integer> list = historyFromString(lines.get(lineWithHistoryNumbers));
             for (Integer idTask : list) {
-                manager.addTasksToHistoryByIdFromFile(idTask);
+                manager.addTasksToHistoryById(idTask);
             }
 
             return manager;
@@ -87,6 +69,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 break;
             default:
                 throw new RuntimeException("Failed to create task from string");
+        }
+    }
+
+    private void saveManagerToFile() throws ManagerSaveException {
+        List<Task> allTasks = super.getListOfTasks();
+        List<Epic> allEpic = super.getListOfEpic();
+        List<Subtask> allSubtask = super.getListOfSubtask();
+        String allTasksIntoString = connectAllTasksIntoString(allTasks, allEpic, allSubtask);
+
+        List<Task> allHistory = history.getHistory();
+        String idHistoryToString = convertIdHistoryToString(allHistory);
+        String tasksAndIdHistoryToString = allTasksIntoString + idHistoryToString;
+
+        try {
+            Files.writeString(path, tasksAndIdHistoryToString, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new ManagerSaveException("Saving to the specified file failed");
         }
     }
 
