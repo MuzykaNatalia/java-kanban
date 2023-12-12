@@ -59,6 +59,7 @@ public class Test {
         System.out.println("---------------------------------------------------------------------------------------");
         managerFile_1.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
+        
         /*
         TaskManager taskManager = Managers.getDefault();
         // проверка истории просмотров задач
