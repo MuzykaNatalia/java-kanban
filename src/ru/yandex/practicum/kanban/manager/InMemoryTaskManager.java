@@ -57,6 +57,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = mapEpic.get(subtask.getIdEpic());
         epic.addIdSubtask(subtask.getId());
         updateEpicStatus(subtask.getIdEpic());
+        updateEpicTime(subtask.getIdEpic());
     }
 
     @Override
@@ -120,6 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else if (mapSubtask.containsKey(subtask.getId())) {
             mapSubtask.put(subtask.getId(), subtask);
             updateEpicStatus(subtask.getIdEpic());
+            updateEpicTime(subtask.getIdEpic());
         }
     }
 
@@ -157,6 +159,7 @@ public class InMemoryTaskManager implements TaskManager {
             mapSubtask.remove(idSubtask);
 
             updateEpicStatus(epic.getId());
+            updateEpicTime(epic.getId());
         }
     }
 
@@ -188,6 +191,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : mapEpic.values()) {
             epic.clearIdSubtask();
             updateEpicStatus(epic.getId());
+            updateEpicTime(epic.getId());
         }
 
         for (Subtask subtask : mapSubtask.values()) {
@@ -209,6 +213,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epic.clearIdSubtask();
         updateEpicStatus(epic.getId());
+        updateEpicTime(epic.getId());
         }
     }
 
@@ -245,6 +250,71 @@ public class InMemoryTaskManager implements TaskManager {
         return history.getHistory();
     }
 
+    protected void updateEpicStatus(int idEpic) {
+        Epic epic = mapEpic.get(idEpic);
+        Set<StatusesTask> setStatusEpic = new HashSet<>();
+
+        if (epic.getListIdSubtask().isEmpty()) {
+            epic.setStatus(StatusesTask.NEW);
+        } else {
+            for (Integer idSubtask : epic.getListIdSubtask()) {
+                Subtask subtask = mapSubtask.get(idSubtask);
+                setStatusEpic.add(subtask.getStatus());
+            }
+
+            if (setStatusEpic.size() == 1) {
+                for (StatusesTask status : setStatusEpic) {
+                    epic.setStatus(status);
+                }
+            } else {
+                epic.setStatus(StatusesTask.IN_PROGRESS);
+            }
+        }
+    }
+
+    protected void updateEpicTime(int idEpic) {
+        Epic epic = mapEpic.get(idEpic);
+
+        if (epic.getListIdSubtask().isEmpty()) {
+            epic.setStartTime(null);
+            epic.setEndTime(null);
+        } else {
+            Optional<Subtask> startTime = epic.getListIdSubtask().stream()
+                    .map(idSubtask -> mapSubtask.get(idSubtask))
+                    .filter(subtask -> subtask.getStartTime() != null)
+                    .min(Comparator.comparing(Subtask::getStartTime));
+
+            Optional<Subtask> endTime = epic.getListIdSubtask().stream()
+                    .map(idSubtask -> mapSubtask.get(idSubtask))
+                    .filter(subtask -> subtask.getEndTime() != null)
+                    .max(Comparator.comparing(Subtask::getEndTime));
+
+            startTime.ifPresent(subtask -> epic.setStartTime(subtask.getStartTime()));
+            endTime.ifPresent(subtask -> epic.setEndTime(subtask.getEndTime()));
+            }
+    }
+
+    protected void generateMaxId(int id) {
+        if (number < id) {
+            number = id;
+        }
+    }
+
+    protected void addTasksToHistoryById(int idTask) {
+        if (mapTasks.containsKey(idTask)) {
+            Task task = mapTasks.get(idTask);
+            history.add(task);
+        } else if (mapEpic.containsKey(idTask)) {
+            Epic epic = mapEpic.get(idTask);
+            history.add(epic);
+        } else if (mapSubtask.containsKey(idTask)) {
+            Subtask subtask = mapSubtask.get(idTask);
+            history.add(subtask);
+        }else {
+            throw new RuntimeException("This id does not exist");
+        }
+    }
+
     public void printAllTasks() {
         for (Task task : mapTasks.values()) {
             System.out.println(task);
@@ -268,49 +338,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Subtask subtask : listOfAllEpicSubtask) {
             System.out.println(subtask);
-        }
-    }
-
-    protected void updateEpicStatus(int idEpic) {
-        Epic epic = mapEpic.get(idEpic);
-        HashSet<StatusesTask> setStatusEpic = new HashSet<>();
-
-        if (epic.getListIdSubtask().isEmpty()) {
-            epic.setStatus(StatusesTask.NEW);
-        } else {
-            for (Integer idSubtask : epic.getListIdSubtask()) {
-                Subtask subtask = mapSubtask.get(idSubtask);
-                setStatusEpic.add(subtask.getStatus());
-            }
-
-            if (setStatusEpic.size() == 1) {
-                for (StatusesTask status : setStatusEpic) {
-                    epic.setStatus(status);
-                }
-            } else {
-                epic.setStatus(StatusesTask.IN_PROGRESS);
-            }
-        }
-    }
-
-    protected void generateMaxId(int id) {
-        if (number < id) {
-            number = id;
-        }
-    }
-
-    protected void addTasksToHistoryById(int idTask) {
-        if (mapTasks.containsKey(idTask)) {
-            Task task = mapTasks.get(idTask);
-            history.add(task);
-        } else if (mapEpic.containsKey(idTask)) {
-            Epic epic = mapEpic.get(idTask);
-            history.add(epic);
-        } else if (mapSubtask.containsKey(idTask)) {
-            Subtask subtask = mapSubtask.get(idTask);
-            history.add(subtask);
-        }else {
-            throw new RuntimeException("This id does not exist");
         }
     }
 }

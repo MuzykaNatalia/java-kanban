@@ -5,7 +5,7 @@ import java.util.Objects;
 import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.TASK;
 
 public class Task {
-    protected int id = 0;
+    protected int id;
     protected TypeOfTasks type = TASK;
     protected String name;
     protected StatusesTask status;
@@ -96,19 +96,23 @@ public class Task {
         return startTime;
     }
 
-    public int getDurationMinutes() {
-        return durationMinutes;
-    }
-
-    public ZonedDateTime getEndTime() {
-        return startTime.plusMinutes(durationMinutes);
-    }
     public void setStartTime(ZonedDateTime startTime) {
         this.startTime = startTime;
     }
 
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
     public void setDurationMinutes(int durationMinutes) {
         this.durationMinutes = durationMinutes;
+    }
+
+    public ZonedDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plusMinutes(durationMinutes);
+        }
+        return null;
     }
 
     @Override

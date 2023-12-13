@@ -57,8 +57,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = lineContents[2];
         StatusesTask status = StatusesTask.valueOf(lineContents[3]);
         String description = lineContents[4];
-        ZonedDateTime startTime = ZonedDateTime.from(Instant.parse(lineContents[5]));
         int durationMinutes = Integer.parseInt(lineContents[7]);
+        ZonedDateTime startTime = null;
+
+        if (!lineContents[5].equals("null")) {
+            startTime = ZonedDateTime.from(Instant.parse(lineContents[5]));
+        }
 
         switch (type) {
             case TASK:

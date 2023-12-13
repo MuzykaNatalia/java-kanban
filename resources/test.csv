@@ -1,13 +1,13 @@
-id,type,name,status,description,epic
-1,TASK,1,DONE,a
-2,EPIC,2,NEW,c
-3,SUBTASK,3,NEW,e,2
-4,EPIC,4,IN_PROGRESS,c
-5,SUBTASK,5,IN_PROGRESS,e,4
-7,EPIC,7,DONE,g
-9,SUBTASK,9,DONE,r,7
-10,TASK,10,DONE,ak
-11,EPIC,11,NEW,gl
-13,TASK,13,IN_PROGRESS,b
+id,type,name,status,description,startTime,endTime,duration,epicId
+1,TASK,1,DONE,a,null,null,0,
+2,EPIC,2,NEW,c,null,null,0,
+3,SUBTASK,3,NEW,e,null,null,0,2
+4,EPIC,4,IN_PROGRESS,c,null,null,0,
+5,SUBTASK,5,IN_PROGRESS,e,null,null,0,4
+7,EPIC,7,DONE,g,null,null,0,
+9,SUBTASK,9,DONE,r,null,null,0,7
+10,TASK,10,DONE,ak,null,null,0,
+11,EPIC,11,NEW,gl,null,null,0,
+13,TASK,13,IN_PROGRESS,b,null,null,0,
 
 9,1,4,13

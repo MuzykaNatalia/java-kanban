@@ -29,13 +29,13 @@ public class ConverterCSV {
 
     private static String convertTaskToString(Task task) {
         if (task instanceof Subtask) {
-            return String.format("%d,%s,%s,%s,%s,%s,%s,%d,%d\n",
+            return String.format("%d,%s,%s,%s,%s,%s,%s,%s,%d\n",
                     task.getId(), task.getType(), task.getName(),
                     task.getStatus(), task.getDescription(),
                     task.getStartTime(), task.getEndTime(),
                     task.getDurationMinutes(), ((Subtask) task).getIdEpic());
         } else {
-            return String.format("%d,%s,%s,%s,%s,%s,%s,%d,\n",
+            return String.format("%d,%s,%s,%s,%s,%s,%s,%s,\n",
                     task.getId(), task.getType(), task.getName(),
                     task.getStatus(), task.getDescription(),
                     task.getStartTime(), task.getEndTime(), task.getDurationMinutes());

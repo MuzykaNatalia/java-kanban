@@ -9,7 +9,7 @@ import java.nio.file.Path;
 
 public class Test {
     public static void main(String[] args) {
-       /* String PATH_FILE = "resources/test.csv";
+        String PATH_FILE = "resources/test.csv";
         FileBackedTasksManager manager = new FileBackedTasksManager(Path.of(PATH_FILE));
         // проверка: истории просмотров нет, добавляем задачи
         manager.addTask(new Task("1", DONE,"a"));
@@ -57,8 +57,6 @@ public class Test {
         System.out.println("---------------------------------------------------------------------------------------");
         managerFile_1.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
-        */
-
         /*
         TaskManager taskManager = Managers.getDefault();
         // проверка истории просмотров задач
