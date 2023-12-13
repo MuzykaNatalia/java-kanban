@@ -1,14 +1,17 @@
 package ru.yandex.practicum.kanban.manager.converter;
 
 import ru.yandex.practicum.kanban.tasks.*;
+
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ConverterCSV {
-    protected static final String HEADER_FOR_TASKS_IN_FILE_CSV = "id,type,name,status,description,epic\n";
+    protected static final String HEADER_FOR_FILE_CSV =
+            "id,type,name,status,description,startTime,endTime,duration,epicId\n";
 
     public static String connectAllTasksIntoString(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
         Set<Task> allTasksSort = sortAllTasks(allTasks, allEpic, allSubtask);
-        StringBuilder stringBuilder = new StringBuilder(HEADER_FOR_TASKS_IN_FILE_CSV);
+        StringBuilder stringBuilder = new StringBuilder(HEADER_FOR_FILE_CSV);
         for (Task task : allTasksSort) {
             stringBuilder.append(convertTaskToString(task));
         }
@@ -26,13 +29,16 @@ public class ConverterCSV {
 
     private static String convertTaskToString(Task task) {
         if (task instanceof Subtask) {
-            return String.format("%d,%s,%s,%s,%s,%d\n",
+            return String.format("%d,%s,%s,%s,%s,%s,%s,%d,%d\n",
                     task.getId(), task.getType(), task.getName(),
-                    task.getStatus(), task.getDescription(), ((Subtask) task).getIdEpic());
+                    task.getStatus(), task.getDescription(),
+                    task.getStartTime(), task.getEndTime(),
+                    task.getDurationMinutes(), ((Subtask) task).getIdEpic());
         } else {
-            return String.format("%d,%s,%s,%s,%s\n",
+            return String.format("%d,%s,%s,%s,%s,%s,%s,%d,\n",
                     task.getId(), task.getType(), task.getName(),
-                    task.getStatus(), task.getDescription());
+                    task.getStatus(), task.getDescription(),
+                    task.getStartTime(), task.getEndTime(), task.getDurationMinutes());
         }
     }
 

@@ -5,9 +5,12 @@ import ru.yandex.practicum.kanban.tasks.StatusesTask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
+
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
+    protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     protected Map<Integer, Task> mapTasks = new LinkedHashMap<>();
     protected Map<Integer, Subtask> mapSubtask = new LinkedHashMap<>();
     protected Map<Integer, Epic> mapEpic = new LinkedHashMap<>();
@@ -242,28 +245,24 @@ public class InMemoryTaskManager implements TaskManager {
         return history.getHistory();
     }
 
-    @Override
     public void printAllTasks() {
         for (Task task : mapTasks.values()) {
             System.out.println(task);
         }
     }
 
-    @Override
     public void printAllEpic() {
         for (Epic epic : mapEpic.values()) {
             System.out.println(epic);
         }
     }
 
-    @Override
     public void printAllSubtask() {
         for (Subtask subtask : mapSubtask.values()) {
             System.out.println(subtask);
         }
     }
 
-    @Override
     public void printListOfAllEpicSubtask(int idEpic) {
         List<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
 

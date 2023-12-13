@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -55,17 +57,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = lineContents[2];
         StatusesTask status = StatusesTask.valueOf(lineContents[3]);
         String description = lineContents[4];
+        ZonedDateTime startTime = ZonedDateTime.from(Instant.parse(lineContents[5]));
+        int durationMinutes = Integer.parseInt(lineContents[7]);
 
         switch (type) {
             case TASK:
-                super.addTask(new Task(id, type, name, status, description));
+                super.addTask(new Task(id, type, name, status, description, startTime, durationMinutes));
                 break;
             case EPIC:
-                super.addEpic(new Epic(id, type, name, status, description));
+                super.addEpic(new Epic(id, type, name, status, description, startTime, durationMinutes));
                 break;
             case SUBTASK:
-                int idEpic = Integer.parseInt(lineContents[5]);
-                super.addSubtask(new Subtask(id, type, name, status, description, idEpic));
+                int idEpic = Integer.parseInt(lineContents[8]);
+                super.addSubtask(new Subtask(id, type, name, status, description, startTime, durationMinutes, idEpic));
                 break;
             default:
                 throw new RuntimeException("Failed to create task from string");

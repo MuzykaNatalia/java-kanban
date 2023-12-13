@@ -1,5 +1,6 @@
 package ru.yandex.practicum.kanban.tasks;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.TASK;
 
@@ -9,11 +10,22 @@ public class Task {
     protected String name;
     protected StatusesTask status;
     protected String description;
+    protected ZonedDateTime startTime;
+    protected int durationMinutes;
 
     public Task(String name, StatusesTask status, String description) {
         this.name = name;
         this.status = status;
         this.description = description;
+    }
+
+    public Task(String name, StatusesTask status, String description,
+                ZonedDateTime startTime, int durationMinutes) {
+        this.name = name;
+        this.status = status;
+        this.description = description;
+        this.startTime = startTime;
+        this.durationMinutes = durationMinutes;
     }
 
     public Task(int id, String name, StatusesTask status, String description) {
@@ -23,12 +35,25 @@ public class Task {
         this.description = description;
     }
 
-    public Task(int id, TypeOfTasks type, String name, StatusesTask status, String description) {
+    public Task(int id, String name, StatusesTask status, String description,
+                ZonedDateTime startTime, int durationMinutes) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+        this.description = description;
+        this.startTime = startTime;
+        this.durationMinutes = durationMinutes;
+    }
+
+    public Task(int id, TypeOfTasks type, String name, StatusesTask status, String description,
+                ZonedDateTime startTime, int durationMinutes) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.status = status;
         this.description = description;
+        this.startTime = startTime;
+        this.durationMinutes = durationMinutes;
     }
 
     public int getId() {
@@ -67,18 +92,38 @@ public class Task {
         return type;
     }
 
+    public ZonedDateTime getStartTime() {
+        return startTime;
+    }
+
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public ZonedDateTime getEndTime() {
+        return startTime.plusMinutes(durationMinutes);
+    }
+    public void setStartTime(ZonedDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDurationMinutes(int durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && type == task.type && Objects.equals(name, task.name)
-                && status == task.status && Objects.equals(description, task.description);
+        return id == task.id && durationMinutes == task.durationMinutes && type == task.type
+                && Objects.equals(name, task.name) && status == task.status
+                && Objects.equals(description, task.description) && Objects.equals(startTime, task.startTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, name, status, description);
+        return Objects.hash(id, type, name, status, description, startTime, durationMinutes);
     }
 
     @Override
@@ -89,6 +134,8 @@ public class Task {
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
+                ", startTime=" + startTime +
+                ", durationMinutes=" + durationMinutes +
                 '}';
     }
 }

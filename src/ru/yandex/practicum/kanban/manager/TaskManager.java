@@ -44,15 +44,7 @@ public interface TaskManager {
 
     List<Subtask> getListOfSubtask();
 
-    List<Task> getHistory();
-
-    void printAllTasks();
-
-    void printAllEpic();
-
-    void printAllSubtask();
-
     List<Subtask> getListOfAllEpicSubtask(int idEpic);
 
-    void printListOfAllEpicSubtask(int idEpic);
+    List<Task> getHistory();
 }

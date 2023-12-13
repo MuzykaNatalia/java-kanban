@@ -1,5 +1,7 @@
 package ru.yandex.practicum.kanban.tasks;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,17 +10,29 @@ import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.EPIC;
 public class Epic extends Task {
     protected List<Integer> listIdSubtask = new ArrayList<>();
     protected TypeOfTasks type = EPIC;
+    protected ZonedDateTime endTime;
 
     public Epic(String name, StatusesTask status, String description) {
         super(name, status, description);
+    }
+
+    public Epic(String name, StatusesTask status, String description,
+                ZonedDateTime startTime, int durationMinutes) {
+        super(name, status, description, startTime, durationMinutes);
     }
 
     public Epic(int id, String name, StatusesTask status, String description) {
         super(id, name, status, description);
     }
 
-    public Epic(int id, TypeOfTasks type, String name, StatusesTask status, String description) {
+    public Epic(int id, String name, StatusesTask status, String description,
+                ZonedDateTime startTime, int durationMinutes) {
         super(id, name, status, description);
+    }
+
+    public Epic(int id, TypeOfTasks type, String name, StatusesTask status, String description,
+                ZonedDateTime startTime, int durationMinutes) {
+        super(id, name, status, description, startTime, durationMinutes);
         this.type = type;
     }
 
@@ -42,6 +56,15 @@ public class Epic extends Task {
         this.listIdSubtask = listIdSubtask;
     }
 
+    public void setEndTime(ZonedDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public ZonedDateTime getEndTime() {
+        return endTime;
+    }
+
     @Override
     public TypeOfTasks getType() {
         return type;
@@ -53,12 +76,12 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(listIdSubtask, epic.listIdSubtask) && type == epic.type;
+        return Objects.equals(listIdSubtask, epic.listIdSubtask) && type == epic.type && Objects.equals(endTime, epic.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), listIdSubtask, type);
+        return Objects.hash(super.hashCode(), listIdSubtask, type, endTime);
     }
 
     @Override
@@ -69,6 +92,8 @@ public class Epic extends Task {
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
+                ", startTime=" + startTime +
+                ", durationMinutes=" + durationMinutes +
                 '}';
     }
 }

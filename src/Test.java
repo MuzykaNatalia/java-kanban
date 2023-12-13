@@ -2,8 +2,6 @@ import static ru.yandex.practicum.kanban.manager.FileBackedTasksManager.loadFrom
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.*;
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.NEW;
 import ru.yandex.practicum.kanban.manager.FileBackedTasksManager;
-import ru.yandex.practicum.kanban.manager.Managers;
-import ru.yandex.practicum.kanban.manager.TaskManager;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import ru.yandex.practicum.kanban.tasks.Task;
@@ -11,7 +9,7 @@ import java.nio.file.Path;
 
 public class Test {
     public static void main(String[] args) {
-        String PATH_FILE = "resources/test.csv";
+       /* String PATH_FILE = "resources/test.csv";
         FileBackedTasksManager manager = new FileBackedTasksManager(Path.of(PATH_FILE));
         // проверка: истории просмотров нет, добавляем задачи
         manager.addTask(new Task("1", DONE,"a"));
@@ -59,7 +57,8 @@ public class Test {
         System.out.println("---------------------------------------------------------------------------------------");
         managerFile_1.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
-        
+        */
+
         /*
         TaskManager taskManager = Managers.getDefault();
         // проверка истории просмотров задач
@@ -229,5 +228,9 @@ public class Test {
         System.out.println(taskManager.getListOfAllEpicSubtask(26));
         taskManager.printListOfAllEpicSubtask(26);
         */
+    }
+
+    static class InMemoryTaskManagerTest {
+
     }
 }

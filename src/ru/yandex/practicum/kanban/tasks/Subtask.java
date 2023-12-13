@@ -1,5 +1,6 @@
 package ru.yandex.practicum.kanban.tasks;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.SUBTASK;
 
@@ -12,13 +13,26 @@ public class Subtask extends Task {
         this.idEpic = idEpic;
     }
 
+    public Subtask(String name, StatusesTask status, String description,
+                   ZonedDateTime startTime, int durationMinutes, int idEpic) {
+        super(name, status, description, startTime, durationMinutes);
+        this.idEpic = idEpic;
+    }
+
     public Subtask(int id, String name, StatusesTask status, String description, int idEpic) {
         super(id, name, status, description);
         this.idEpic = idEpic;
     }
 
-    public Subtask(int id, TypeOfTasks type, String name, StatusesTask status, String description, int idEpic) {
-        super(id, name, status, description);
+    public Subtask(int id, String name, StatusesTask status, String description,
+                   ZonedDateTime startTime, int durationMinutes, int idEpic) {
+        super(id, name, status, description, startTime, durationMinutes);
+        this.idEpic = idEpic;
+    }
+
+    public Subtask(int id, TypeOfTasks type, String name, StatusesTask status, String description,
+                   ZonedDateTime startTime, int durationMinutes, int idEpic) {
+        super(id, name, status, description, startTime, durationMinutes);
         this.idEpic = idEpic;
         this.type = type;
     }
@@ -54,6 +68,8 @@ public class Subtask extends Task {
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
+                ", startTime=" + startTime +
+                ", durationMinutes=" + durationMinutes +
                 ", idEpic=" + idEpic +
                 '}';
     }
