@@ -18,7 +18,8 @@ public class Test {
         manager.addTask(new Task("1", DONE,"a", ZonedDateTime.of(LocalDateTime.of(
                 2023, 12, 14, 16, 0), ZoneId.of("UTC+3")), 15));
         manager.addEpic(new Epic("2", NEW,"c"));
-        manager.addSubtask(new Subtask( "3",  NEW,"e", 2));
+        manager.addSubtask(new Subtask( "3",  NEW,"e",ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 20), ZoneId.of("UTC+3")), 10, 2));
         // восстанавливаем задачи из файла
         FileBackedTasksManager managerFile = loadFromFile(PATH_FILE);
         // выводим все задачи
@@ -36,7 +37,8 @@ public class Test {
         manager.addSubtask(new Subtask( "6", NEW,"f",  4));
         manager.addEpic(new Epic("7", NEW,"g"));
         manager.addSubtask(new Subtask("8", DONE,"p",  7));
-        manager.addSubtask(new Subtask("9", DONE,"r",  7));
+        manager.addSubtask(new Subtask("9", DONE,"r", ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 30), ZoneId.of("UTC+3")), 30, 2));
         manager.addTask(new Task("10", DONE,"ak"));
         manager.addEpic(new Epic("11", NEW,"gl"));
         manager.addTask(new Task("12", NEW,"a"));
@@ -61,6 +63,7 @@ public class Test {
         System.out.println("---------------------------------------------------------------------------------------");
         managerFile_1.getHistory().forEach(System.out::println);
         System.out.println("---------------------------------------------------------------------------------------");
+        managerFile_1.getPrioritizedTasks().forEach(System.out::println);
         /*
         TaskManager taskManager = Managers.getDefault();
         // проверка истории просмотров задач

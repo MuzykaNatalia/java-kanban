@@ -14,8 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    protected static final DateTimeFormatter DATE_TIME_FORMATTER =
-            DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm:ss Z");
     protected Path path;
 
     public FileBackedTasksManager(Path path) {

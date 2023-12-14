@@ -10,7 +10,7 @@ public class ConverterCSV {
             "id,type,name,status,description,startTime,endTime,duration,epicId\n";
 
     public static String connectAllTasksIntoString(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
-        Set<Task> allTasksSort = sortAllTasks(allTasks, allEpic, allSubtask);
+        Set<Task> allTasksSort = sortAllTasksById(allTasks, allEpic, allSubtask);
         StringBuilder stringBuilder = new StringBuilder(HEADER_FOR_FILE_CSV);
         for (Task task : allTasksSort) {
             stringBuilder.append(convertTaskToString(task));
@@ -19,7 +19,7 @@ public class ConverterCSV {
         return stringBuilder.toString();
     }
 
-    private static Set<Task> sortAllTasks(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
+    private static Set<Task> sortAllTasksById(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
         Set<Task> allTasksSort = new TreeSet<>(Comparator.comparing(Task::getId));
         allTasksSort.addAll(allTasks);
         allTasksSort.addAll(allEpic);
