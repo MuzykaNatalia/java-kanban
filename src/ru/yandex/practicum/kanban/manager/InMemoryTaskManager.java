@@ -6,8 +6,11 @@ import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -290,7 +293,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic.getListIdSubtask().isEmpty()) {
             epic.setStartTime(null);
             epic.setEndTime(null);
+            epic.setDurationMinutes(0);
         } else {
+            /*
             Optional<Subtask> startTime = epic.getListIdSubtask().stream()
                     .map(idSubtask -> mapSubtask.get(idSubtask))
                     .filter(subtask -> subtask.getStartTime() != null)
@@ -303,7 +308,25 @@ public class InMemoryTaskManager implements TaskManager {
 
             startTime.ifPresent(subtask -> epic.setStartTime(subtask.getStartTime()));
             endTime.ifPresent(subtask -> epic.setEndTime(subtask.getEndTime()));
+            */
+            List<Subtask> listSubtaskTime = epic.getListIdSubtask().stream()
+                    .map(idSubtask -> mapSubtask.get(idSubtask))
+                    .sorted(Comparator.comparing(Task::getStartTime))
+                    .collect(Collectors.toList());
+
+            ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
+            ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
+
+            epic.setStartTime(startTimeEpic);
+            epic.setEndTime(endTimeEpic);
+
+            boolean isExistsTime = startTimeEpic != null && endTimeEpic != null;
+            if (isExistsTime) {
+                Duration durationEpic = Duration.between(startTimeEpic, endTimeEpic);
+                int durationMinutes = durationEpic.toMinutesPart();
+                epic.setDurationMinutes(durationMinutes);
             }
+        }
     }
 
     protected void generateMaxId(int id) {

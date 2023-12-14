@@ -1,6 +1,7 @@
 package ru.yandex.practicum.kanban.manager;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.time.ZonedDateTime;
 import java.time.*;
@@ -9,6 +10,7 @@ import static ru.yandex.practicum.kanban.tasks.StatusesTask.NEW;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
     TTaskManager manager;
@@ -26,7 +28,7 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         assertEquals(1, task.getId());
         assertEquals("learn java", task.getName());
         assertEquals(NEW, task.getStatus());
-        assertEquals("read two topics in the book", task.getDescription());
+        assertEquals("read the book", task.getDescription());
         assertEquals(ZonedDateTime.of(LocalDateTime.of(
                 2023, 12, 14, 16, 0),
                 ZoneId.of("UTC+3")), task.getStartTime());
@@ -35,12 +37,27 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
                 ZoneId.of("UTC+3")), task.getEndTime());
         assertEquals(15, task.getDurationMinutes());
     }
-/*
+
     @Test
     public void addEpic() {
-        Epic epic;
-    }
+        ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
+                        2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3"));
+        Epic epic = new Epic(
+                "pass TZ-7", NEW, "introduce new functionality into the project",
+                dateTime, 1440);
+        manager.addEpic(epic);
 
+        assertTrue(manager.getListOfEpic().contains(epic));
+        assertEquals(1, epic.getId());
+        assertEquals("pass TZ-7", epic.getName());
+        assertEquals(NEW, epic.getStatus());
+        assertEquals("introduce new functionality into the project", epic.getDescription());
+        assertNull(epic.getStartTime());
+        assertNull(epic.getEndTime());
+        assertEquals(0, epic.getDurationMinutes());
+    }
+/*
     @Test
     public void addSubtask() {
         Subtask subtask;

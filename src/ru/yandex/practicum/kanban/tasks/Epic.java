@@ -9,7 +9,9 @@ import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.EPIC;
 public class Epic extends Task {
     protected List<Integer> listIdSubtask = new ArrayList<>();
     protected TypeOfTasks type = EPIC;
+    protected ZonedDateTime startTime;
     protected ZonedDateTime endTime;
+    protected int durationMinutes;
 
     public Epic(String name, StatusesTask status, String description) {
         super(name, status, description);
@@ -62,6 +64,26 @@ public class Epic extends Task {
     @Override
     public ZonedDateTime getEndTime() {
         return endTime;
+    }
+
+    @Override
+    public ZonedDateTime getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public void setStartTime(ZonedDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    @Override
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    @Override
+    public void setDurationMinutes(int durationMinutes) {
+        this.durationMinutes = durationMinutes;
     }
 
     @Override
