@@ -6,13 +6,17 @@ import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class Test {
     public static void main(String[] args) {
         String PATH_FILE = "resources/test.csv";
         FileBackedTasksManager manager = new FileBackedTasksManager(Path.of(PATH_FILE));
         // проверка: истории просмотров нет, добавляем задачи
-        manager.addTask(new Task("1", DONE,"a"));
+        manager.addTask(new Task("1", DONE,"a", ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 0), ZoneId.of("UTC+3")), 15));
         manager.addEpic(new Epic("2", NEW,"c"));
         manager.addSubtask(new Subtask( "3",  NEW,"e", 2));
         // восстанавливаем задачи из файла

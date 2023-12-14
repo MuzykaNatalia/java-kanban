@@ -17,23 +17,12 @@ public class Epic extends Task {
         super(name, status, description);
     }
 
-    public Epic(String name, StatusesTask status, String description,
-                ZonedDateTime startTime, int durationMinutes) {
-        super(name, status, description, startTime, durationMinutes);
-    }
-
     public Epic(int id, String name, StatusesTask status, String description) {
         super(id, name, status, description);
     }
 
-    public Epic(int id, String name, StatusesTask status, String description,
-                ZonedDateTime startTime, int durationMinutes) {
+    public Epic(int id, TypeOfTasks type, String name, StatusesTask status, String description) {
         super(id, name, status, description);
-    }
-
-    public Epic(int id, TypeOfTasks type, String name, StatusesTask status, String description,
-                ZonedDateTime startTime, int durationMinutes) {
-        super(id, name, status, description, startTime, durationMinutes);
         this.type = type;
     }
 

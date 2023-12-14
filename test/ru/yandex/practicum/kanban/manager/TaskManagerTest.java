@@ -2,6 +2,7 @@ package ru.yandex.practicum.kanban.manager;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.kanban.tasks.Epic;
+import ru.yandex.practicum.kanban.tasks.Subtask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.time.ZonedDateTime;
 import java.time.*;
@@ -40,12 +41,7 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
 
     @Test
     public void addEpic() {
-        ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
-                        2023, 12, 14, 16, 0),
-                ZoneId.of("UTC+3"));
-        Epic epic = new Epic(
-                "pass TZ-7", NEW, "introduce new functionality into the project",
-                dateTime, 1440);
+        Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
         manager.addEpic(epic);
 
         assertTrue(manager.getListOfEpic().contains(epic));
@@ -57,12 +53,30 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         assertNull(epic.getEndTime());
         assertEquals(0, epic.getDurationMinutes());
     }
-/*
+
     @Test
     public void addSubtask() {
-        Subtask subtask;
-    }
+        ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
+                        2023, 12, 14, 16, 0), ZoneId.of("UTC+3"));
+        Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
+        Subtask subtask = new Subtask(
+                "learn java", NEW, "read the book", dateTime, 20,1);
+        manager.addEpic(epic);
+        manager.addSubtask(subtask);
 
+        assertTrue(manager.getListOfSubtask().contains(subtask));
+        assertEquals(2, subtask.getId());
+        assertEquals("learn java", subtask.getName());
+        assertEquals(NEW, subtask.getStatus());
+        assertEquals("read the book", subtask.getDescription());
+        assertEquals(ZonedDateTime.of(LocalDateTime.of(2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3")), subtask.getStartTime());
+        assertEquals(ZonedDateTime.of(LocalDateTime.of(2023, 12, 14, 16, 20),
+                ZoneId.of("UTC+3")), subtask.getEndTime());
+        assertEquals(20, subtask.getDurationMinutes());
+        assertEquals(1, subtask.getIdEpic());
+    }
+/*
     @Test
     public void getTheTaskById() {
         int idTask;

@@ -10,9 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
+    protected static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("MM/dd/yyyy - HH:mm:ss Z");
     protected Path path;
 
     public FileBackedTasksManager(Path path) {
@@ -61,7 +64,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         ZonedDateTime startTime = null;
 
         if (!lineContents[5].equals("null")) {
-            startTime = ZonedDateTime.from(Instant.parse(lineContents[5]));
+            startTime = ZonedDateTime.parse(lineContents[5]);
         }
 
         switch (type) {
@@ -69,7 +72,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 super.addTask(new Task(id, type, name, status, description, startTime, durationMinutes));
                 break;
             case EPIC:
-                super.addEpic(new Epic(id, type, name, status, description, startTime, durationMinutes));
+                super.addEpic(new Epic(id, type, name, status, description));
                 break;
             case SUBTASK:
                 int idEpic = Integer.parseInt(lineContents[8]);

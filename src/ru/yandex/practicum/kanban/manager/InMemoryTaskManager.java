@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     protected Map<Integer, Task> mapTasks = new LinkedHashMap<>();
     protected Map<Integer, Subtask> mapSubtask = new LinkedHashMap<>();
     protected Map<Integer, Epic> mapEpic = new LinkedHashMap<>();
@@ -291,28 +290,38 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = mapEpic.get(idEpic);
 
         if (epic.getListIdSubtask().isEmpty()) {
-            epic.setStartTime(null);
-            epic.setEndTime(null);
-            epic.setDurationMinutes(0);
+            resetEpicTime(epic);
         } else {
-            List<Subtask> listSubtaskTime = epic.getListIdSubtask().stream()
-                    .map(idSubtask -> mapSubtask.get(idSubtask))
-                    .sorted(Comparator.comparing(Task::getStartTime))
-                    .collect(Collectors.toList());
+            List<Subtask> listSubtaskTime = sortEpicTaskSubtasksTime(epic);
 
-            ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
-            ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
+            if (!listSubtaskTime.isEmpty()) {
+                ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
+                ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
 
-            epic.setStartTime(startTimeEpic);
-            epic.setEndTime(endTimeEpic);
+                epic.setStartTime(startTimeEpic);
+                epic.setEndTime(endTimeEpic);
 
-            boolean isExistsTime = startTimeEpic != null && endTimeEpic != null;
-            if (isExistsTime) {
                 Duration durationEpic = Duration.between(startTimeEpic, endTimeEpic);
                 int durationMinutes = durationEpic.toMinutesPart();
                 epic.setDurationMinutes(durationMinutes);
+            } else {
+                resetEpicTime(epic);
             }
         }
+    }
+
+    private List<Subtask> sortEpicTaskSubtasksTime(Epic epic) {
+        return epic.getListIdSubtask().stream()
+                .map(idSubtask -> mapSubtask.get(idSubtask))
+                .filter(subtask -> subtask.getStartTime() != null)
+                .sorted(Comparator.comparing(Task::getStartTime))
+                .collect(Collectors.toList());
+    }
+
+    private void resetEpicTime(Epic epic) {
+        epic.setStartTime(null);
+        epic.setEndTime(null);
+        epic.setDurationMinutes(0);
     }
 
     protected void generateMaxId(int id) {
