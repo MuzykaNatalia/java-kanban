@@ -1,21 +1,41 @@
 package ru.yandex.practicum.kanban.manager;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.kanban.tasks.Epic;
-import ru.yandex.practicum.kanban.tasks.Subtask;
 import ru.yandex.practicum.kanban.tasks.Task;
+import java.time.ZonedDateTime;
+import java.time.*;
 
-import java.util.List;
+import static ru.yandex.practicum.kanban.tasks.StatusesTask.NEW;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
     TTaskManager manager;
 
     @Test
     public void addTask() {
-        Task task;
-    }
+        ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3"));
+        Task task = new Task(
+                "learn java", NEW, "read the book", dateTime, 15);
+        manager.addTask(task);
 
+        assertTrue(manager.getListOfTasks().contains(task));
+        assertEquals(1, task.getId());
+        assertEquals("learn java", task.getName());
+        assertEquals(NEW, task.getStatus());
+        assertEquals("read two topics in the book", task.getDescription());
+        assertEquals(ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3")), task.getStartTime());
+        assertEquals(ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 15),
+                ZoneId.of("UTC+3")), task.getEndTime());
+        assertEquals(15, task.getDurationMinutes());
+    }
+/*
     @Test
     public void addEpic() {
         Epic epic;
@@ -116,4 +136,5 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
      public void getHistory() {
         List<Task> list;
     }
+    */
 }

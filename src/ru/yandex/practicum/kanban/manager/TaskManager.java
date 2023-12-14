@@ -4,6 +4,7 @@ import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     void addTask(Task task);
@@ -45,6 +46,8 @@ public interface TaskManager {
     List<Subtask> getListOfSubtask();
 
     List<Subtask> getListOfAllEpicSubtask(int idEpic);
+
+    Set<Task> getPrioritizedTasks();
 
     List<Task> getHistory();
 }

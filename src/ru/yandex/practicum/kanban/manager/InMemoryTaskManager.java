@@ -246,6 +246,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public Set<Task> getPrioritizedTasks() {
+        Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+                Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId));
+
+        prioritizedTasks.addAll(getListOfTasks());
+        prioritizedTasks.addAll(getListOfEpic());
+        prioritizedTasks.addAll(getListOfSubtask());
+
+        return prioritizedTasks;
+    }
+
+    @Override
     public List<Task> getHistory() {
         return history.getHistory();
     }
