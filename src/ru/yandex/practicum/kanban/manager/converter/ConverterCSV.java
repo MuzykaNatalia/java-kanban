@@ -1,16 +1,13 @@
 package ru.yandex.practicum.kanban.manager.converter;
 
 import ru.yandex.practicum.kanban.tasks.*;
-
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ConverterCSV {
     protected static final String HEADER_FOR_FILE_CSV =
-            "id,type,name,status,description,startTime,endTime,duration,epicId\n";
+            "id,type,name,status,description,duration,startTime,endTime,epicId\n";
 
-    public static String connectAllTasksIntoString(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
-        Set<Task> allTasksSort = sortAllTasksById(allTasks, allEpic, allSubtask);
+    public static String connectAllTasksIntoString(Set<Task> allTasksSort) {
         StringBuilder stringBuilder = new StringBuilder(HEADER_FOR_FILE_CSV);
         for (Task task : allTasksSort) {
             stringBuilder.append(convertTaskToString(task));
@@ -19,26 +16,18 @@ public class ConverterCSV {
         return stringBuilder.toString();
     }
 
-    private static Set<Task> sortAllTasksById(List<Task> allTasks, List<Epic> allEpic, List<Subtask> allSubtask) {
-        Set<Task> allTasksSort = new TreeSet<>(Comparator.comparing(Task::getId));
-        allTasksSort.addAll(allTasks);
-        allTasksSort.addAll(allEpic);
-        allTasksSort.addAll(allSubtask);
-        return allTasksSort;
-    }
-
     private static String convertTaskToString(Task task) {
         if (task instanceof Subtask) {
-            return String.format("%d,%s,%s,%s,%s,%s,%s,%d,%d\n",
+            return String.format("%d,%s,%s,%s,%s,%d,%s,%s,%d\n",
                     task.getId(), task.getType(), task.getName(),
                     task.getStatus(), task.getDescription(),
-                    task.getStartTime(), task.getEndTime(),
-                    task.getDurationMinutes(), ((Subtask) task).getIdEpic());
+                    task.getDurationMinutes(), task.getStartTime(),
+                    task.getEndTime(), ((Subtask) task).getIdEpic());
         } else {
-            return String.format("%d,%s,%s,%s,%s,%s,%s,%d,\n",
+            return String.format("%d,%s,%s,%s,%s,%d,%s,%s\n",
                     task.getId(), task.getType(), task.getName(),
-                    task.getStatus(), task.getDescription(),
-                    task.getStartTime(), task.getEndTime(), task.getDurationMinutes());
+                    task.getStatus(), task.getDescription(),task.getDurationMinutes(),
+                    task.getStartTime(), task.getEndTime());
         }
     }
 
@@ -47,11 +36,7 @@ public class ConverterCSV {
         for (Task task : history) {
             historyId.add(String.valueOf(task.getId()));
         }
-        if (historyId.isEmpty()) {
-            return " ";
-        } else {
-            return String.join(",", historyId);
-        }
+        return String.join(",", historyId);
     }
 
     public static List<Integer> historyFromString(String value) {

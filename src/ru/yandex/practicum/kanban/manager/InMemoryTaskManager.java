@@ -5,18 +5,17 @@ import ru.yandex.practicum.kanban.tasks.StatusesTask;
 import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
-
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy|HH:mm");
     protected Map<Integer, Task> mapTasks = new LinkedHashMap<>();
     protected Map<Integer, Subtask> mapSubtask = new LinkedHashMap<>();
     protected Map<Integer, Epic> mapEpic = new LinkedHashMap<>();
+    protected Map<ZonedDateTime, ZonedDateTime> busyPeriodsOfTime = new HashMap<>(); // startTime, endTime
     protected HistoryManager history = Managers.getDefaultHistory();
     protected int number = 0;
 
@@ -30,7 +29,15 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             generateMaxId(task.getId());
         }
-        mapTasks.put(task.getId(), task);
+        if (task.getStartTime() != null) {
+            boolean isFreeTime = isFreeTime(task.getStartTime(), task.getEndTime());
+            if (isFreeTime) {
+                busyPeriodsOfTime.put(task.getStartTime(), task.getEndTime());
+                mapTasks.put(task.getId(), task);
+            }
+        } else {
+            mapTasks.put(task.getId(), task);
+        }
     }
 
     @Override
@@ -265,6 +272,16 @@ public class InMemoryTaskManager implements TaskManager {
         return history.getHistory();
     }
 
+    protected boolean isFreeTime(ZonedDateTime start, ZonedDateTime end) {
+        boolean result = true;
+        for (var timeIsBusy : busyPeriodsOfTime.entrySet()) {
+            if (!end.isBefore(timeIsBusy.getKey()) && !timeIsBusy.getValue().isBefore(start)) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
     protected void updateEpicStatus(int idEpic) {
         Epic epic = mapEpic.get(idEpic);
         Set<StatusesTask> setStatusEpic = new HashSet<>();
@@ -343,32 +360,6 @@ public class InMemoryTaskManager implements TaskManager {
             history.add(subtask);
         }else {
             throw new RuntimeException("This id does not exist");
-        }
-    }
-
-    public void printAllTasks() {
-        for (Task task : mapTasks.values()) {
-            System.out.println(task);
-        }
-    }
-
-    public void printAllEpic() {
-        for (Epic epic : mapEpic.values()) {
-            System.out.println(epic);
-        }
-    }
-
-    public void printAllSubtask() {
-        for (Subtask subtask : mapSubtask.values()) {
-            System.out.println(subtask);
-        }
-    }
-
-    public void printListOfAllEpicSubtask(int idEpic) {
-        List<Subtask> listOfAllEpicSubtask = getListOfAllEpicSubtask(idEpic);
-
-        for (Subtask subtask : listOfAllEpicSubtask) {
-            System.out.println(subtask);
         }
     }
 }

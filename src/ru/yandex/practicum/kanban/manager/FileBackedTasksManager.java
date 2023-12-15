@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -27,6 +25,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
             List<String> lines = readFileContents(file);
             int lastLineWithTask = lines.size() - 2;
+            boolean isEmptyHistory = lines.get(lines.size() - 1).isEmpty();
+            if (isEmptyHistory) {
+                lastLineWithTask = lines.size() - 1;
+            }
             for (int i = 1; i < lastLineWithTask; i++) {
                 manager.createTaskFromString(lines.get(i));
             }
@@ -58,11 +60,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = lineContents[2];
         StatusesTask status = StatusesTask.valueOf(lineContents[3]);
         String description = lineContents[4];
-        int durationMinutes = Integer.parseInt(lineContents[7]);
-        ZonedDateTime startTime = null;
+        int durationMinutes = Integer.parseInt(lineContents[5]);
 
-        if (!lineContents[5].equals("null")) {
-            startTime = ZonedDateTime.parse(lineContents[5]);
+        ZonedDateTime startTime = null;
+        boolean isDateTimeNotNull = !lineContents[6].equals("null");
+        if (isDateTimeNotNull) {
+            startTime = ZonedDateTime.parse(lineContents[6]);
         }
 
         switch (type) {
@@ -82,10 +85,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void saveManagerToFile() throws ManagerSaveException {
-        List<Task> allTasks = super.getListOfTasks();
-        List<Epic> allEpic = super.getListOfEpic();
-        List<Subtask> allSubtask = super.getListOfSubtask();
-        String allTasksIntoString = connectAllTasksIntoString(allTasks, allEpic, allSubtask);
+        Set<Task> allTasks = super.getPrioritizedTasks();
+        String allTasksIntoString = connectAllTasksIntoString(allTasks);
 
         List<Task> allHistory = history.getHistory();
         String idHistoryToString = convertIdHistoryToString(allHistory);

@@ -21,8 +21,7 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
                 2023, 12, 14, 16, 0),
                 ZoneId.of("UTC+3"));
-        Task task = new Task(
-                "learn java", NEW, "read the book", dateTime, 15);
+        Task task = new Task("learn java", NEW, "read the book", dateTime, 15);
         manager.addTask(task);
 
         assertTrue(manager.getListOfTasks().contains(task));
@@ -57,10 +56,11 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
     @Test
     public void addSubtask() {
         ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
-                        2023, 12, 14, 16, 0), ZoneId.of("UTC+3"));
+                2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3"));
         Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
-        Subtask subtask = new Subtask(
-                "learn java", NEW, "read the book", dateTime, 20,1);
+        Subtask subtask = new Subtask("learn java", NEW, "read the book",
+                dateTime, 20,1);
         manager.addEpic(epic);
         manager.addSubtask(subtask);
 
@@ -76,22 +76,40 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         assertEquals(20, subtask.getDurationMinutes());
         assertEquals(1, subtask.getIdEpic());
     }
-/*
+
     @Test
     public void getTheTaskById() {
-        int idTask;
+        ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3"));
+        Task task = new Task("learn java", NEW, "read the book", dateTime, 15);
+        manager.addTask(task);
+        Task taskTest = manager.getTheTaskById(1);
+        assertEquals(task, taskTest);
     }
 
     @Test
     public void getTheEpicById() {
-        int idEpic;
+        Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
+        manager.addEpic(epic);
+        Epic epicTest = manager.getTheEpicById(1);
+        assertEquals(epic, epicTest);
     }
 
     @Test
     public void getTheSubtaskById() {
-        int idSubtask;
+        ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.of(
+                2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3"));
+        Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
+        Subtask subtask = new Subtask("learn java", NEW, "read the book",
+                dateTime, 20,1);
+        manager.addEpic(epic);
+        manager.addSubtask(subtask);
+        Subtask subtaskTest = manager.getTheSubtaskById(2);
+        assertEquals(subtask, subtaskTest);
     }
-
+/*
     @Test
     public void updateTask() {
         Task task;
