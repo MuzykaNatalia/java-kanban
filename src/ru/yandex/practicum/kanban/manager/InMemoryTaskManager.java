@@ -6,7 +6,6 @@ import ru.yandex.practicum.kanban.tasks.Task;
 import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +17,10 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<ZonedDateTime, ZonedDateTime> busyPeriodsOfTime = new HashMap<>(); // startTime, endTime
     protected HistoryManager history = Managers.getDefaultHistory();
     protected int number = 0;
+
+    public Map<ZonedDateTime, ZonedDateTime> getBusyPeriodsOfTime() {
+        return busyPeriodsOfTime;
+    }
 
     @Override
     public void addTask(Task task) {
@@ -31,11 +34,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (task.getStartTime() != null) {
             boolean isFreeTime = isFreeTime(task.getStartTime(), task.getEndTime());
-            if (isFreeTime) {
-                busyPeriodsOfTime.put(task.getStartTime(), task.getEndTime());
-                mapTasks.put(task.getId(), task);
-            }
+            runAddingTaskIfTimeIsFree(isFreeTime, task);
         } else {
+            mapTasks.put(task.getId(), task);
+        }
+    }
+
+    private void runAddingTaskIfTimeIsFree(Boolean isFree, Task task) {
+        if (isFree) {
+            busyPeriodsOfTime.put(task.getStartTime(), task.getEndTime());
             mapTasks.put(task.getId(), task);
         }
     }
@@ -63,6 +70,18 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             generateMaxId(subtask.getId());
         }
+        if (subtask.getStartTime() != null) {
+            boolean isFreeTime = isFreeTime(subtask.getStartTime(), subtask.getEndTime());
+            if (isFreeTime) {
+                busyPeriodsOfTime.put(subtask.getStartTime(), subtask.getEndTime());
+                runAddSubtaskAndUpdateEpicStatusAndTime(subtask);
+            }
+        } else {
+            runAddSubtaskAndUpdateEpicStatusAndTime(subtask);
+        }
+    }
+
+    private void runAddSubtaskAndUpdateEpicStatusAndTime(Subtask subtask) {
         mapSubtask.put(subtask.getId(), subtask);
         Epic epic = mapEpic.get(subtask.getIdEpic());
         epic.addIdSubtask(subtask.getId());
@@ -104,12 +123,44 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        if (task == null) {
+    public void updateTask(Task newTask) {
+        if (newTask == null) {
             return;
-        } else if (mapTasks.containsKey(task.getId())) {
-            mapTasks.put(task.getId(), task);
+        } else if (mapTasks.containsKey(newTask.getId())) {
+            Task pastTask = mapTasks.get(newTask.getId());
+            boolean timeCoincides = checkTimeTaskCoincides(pastTask, newTask);
+            if (timeCoincides) {
+                mapTasks.put(newTask.getId(), newTask);
+            } else if (newTask.getStartTime() != null) {
+                if (pastTask.getStartTime() == null) {
+                    boolean isFreeTime = isFreeTime(newTask.getStartTime(), newTask.getEndTime());
+                    runAddingTaskIfTimeIsFree(isFreeTime, newTask);
+                } else {
+                    busyPeriodsOfTime.remove(pastTask.getStartTime());
+                    boolean isFreeTime = isFreeTime(newTask.getStartTime(), newTask.getEndTime());
+                    if (isFreeTime) {
+                        runAddingTaskIfTimeIsFree(true, newTask);
+                    } else {
+                        busyPeriodsOfTime.put(pastTask.getStartTime(), pastTask.getEndTime());
+                    }
+                }
+            } else {
+                busyPeriodsOfTime.remove(pastTask.getStartTime());
+                mapTasks.put(newTask.getId(), newTask);
+            }
         }
+    }
+
+    private boolean checkTimeTaskCoincides(Task pastTask, Task newTask) {
+        if (pastTask.getStartTime() == null && newTask.getStartTime() == null) {
+            return true;
+        } else if (pastTask.getStartTime() == null && newTask.getStartTime() != null) {
+            return false;
+        } else if (pastTask.getStartTime() != null && newTask.getStartTime() == null) {
+            return false;
+        }
+        return pastTask.getStartTime().equals(newTask.getStartTime())
+                && pastTask.getDurationMinutes() == newTask.getDurationMinutes();
     }
 
     @Override
@@ -125,21 +176,56 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        if (subtask == null) {
+    public void updateSubtask(Subtask newSubtask) {
+        if (newSubtask == null) {
             return;
-        } else if (mapSubtask.containsKey(subtask.getId())) {
-            mapSubtask.put(subtask.getId(), subtask);
-            updateEpicStatus(subtask.getIdEpic());
-            updateEpicTime(subtask.getIdEpic());
+        } else if (mapSubtask.containsKey(newSubtask.getId())) {
+            Subtask pastSubtask = mapSubtask.get(newSubtask.getId());
+            boolean timeCoincides = checkTimeTaskCoincides(pastSubtask, newSubtask);
+            if (timeCoincides) {
+                runAddingSubtask(newSubtask);
+            } else if (newSubtask.getStartTime() != null) {
+                if (pastSubtask.getStartTime() == null) {
+                    boolean isFreeTime = isFreeTime(newSubtask.getStartTime(), newSubtask.getEndTime());
+                    if (isFreeTime) {
+                        busyPeriodsOfTime.put(newSubtask.getStartTime(), newSubtask.getEndTime());
+                        runAddingSubtask(newSubtask);
+                    }
+                } else {
+                    busyPeriodsOfTime.remove(pastSubtask.getStartTime());
+                    boolean isFreeTime = isFreeTime(newSubtask.getStartTime(), newSubtask.getEndTime());
+                    if (isFreeTime) {
+                        busyPeriodsOfTime.put(newSubtask.getStartTime(), newSubtask.getEndTime());
+                        runAddingSubtask(newSubtask);
+                    } else {
+                        busyPeriodsOfTime.put(pastSubtask.getStartTime(), pastSubtask.getEndTime());
+                    }
+                }
+            } else {
+                busyPeriodsOfTime.remove(pastSubtask.getStartTime());
+                runAddingSubtask(newSubtask);
+            }
         }
+    }
+
+    private void runAddingSubtask(Subtask subtask) {
+        mapSubtask.put(subtask.getId(), subtask);
+        updateEpicStatus(subtask.getIdEpic());
+        updateEpicTime(subtask.getIdEpic());
     }
 
     @Override
     public void deleteTaskById(int idTask) {
         if (mapTasks.containsKey(idTask)) {
             history.remove(idTask);
+            removeTaskTimeFromBusyPeriodsOfTime(mapTasks.get(idTask));
             mapTasks.remove(idTask);
+        }
+    }
+
+    private void removeTaskTimeFromBusyPeriodsOfTime(Task task) {
+        if (task.getStartTime() != null) {
+            busyPeriodsOfTime.remove(task.getStartTime());
         }
     }
 
@@ -150,11 +236,17 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Integer idSubtask : epic.getListIdSubtask()) {
             history.remove(idSubtask);
+            removeSubtaskTimeFromBusyPeriodsOfTime(mapSubtask.get(idSubtask));
             mapSubtask.remove(idSubtask);
         }
-
             history.remove(idEpic);
             mapEpic.remove(idEpic);
+        }
+    }
+
+    private void removeSubtaskTimeFromBusyPeriodsOfTime(Subtask subtask) {
+        if (subtask.getStartTime() != null) {
+            busyPeriodsOfTime.remove(subtask.getStartTime());
         }
     }
 
@@ -166,6 +258,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             epic.removeIdSubtask(idSubtask);
             history.remove(idSubtask);
+            removeSubtaskTimeFromBusyPeriodsOfTime(subtask);
             mapSubtask.remove(idSubtask);
 
             updateEpicStatus(epic.getId());
@@ -177,8 +270,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         for (Task task : mapTasks.values()){
             history.remove(task.getId());
+            removeTaskTimeFromBusyPeriodsOfTime(task);
         }
-
         mapTasks.clear();
     }
 
@@ -186,12 +279,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllEpic() {
         for (Subtask subtask : mapSubtask.values()) {
             history.remove(subtask.getId());
+            removeSubtaskTimeFromBusyPeriodsOfTime(subtask);
         }
 
         for (Epic epic : mapEpic.values()) {
             history.remove(epic.getId());
         }
-
         mapSubtask.clear();
         mapEpic.clear();
     }
@@ -206,8 +299,8 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Subtask subtask : mapSubtask.values()) {
             history.remove(subtask.getId());
+            removeSubtaskTimeFromBusyPeriodsOfTime(subtask);
         }
-
         mapSubtask.clear();
     }
 
@@ -218,9 +311,9 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Integer idSubtask : epic.getListIdSubtask()) {
             history.remove(idSubtask);
+            removeSubtaskTimeFromBusyPeriodsOfTime(mapSubtask.get(idSubtask));
             mapSubtask.remove(idSubtask);
         }
-
         epic.clearIdSubtask();
         updateEpicStatus(epic.getId());
         updateEpicTime(epic.getId());
@@ -272,14 +365,15 @@ public class InMemoryTaskManager implements TaskManager {
         return history.getHistory();
     }
 
-    protected boolean isFreeTime(ZonedDateTime start, ZonedDateTime end) {
-        boolean result = true;
+    protected boolean isFreeTime(ZonedDateTime startTimeBeingChecked, ZonedDateTime endTimeBeingChecked) {
         for (var timeIsBusy : busyPeriodsOfTime.entrySet()) {
-            if (!end.isBefore(timeIsBusy.getKey()) && !timeIsBusy.getValue().isBefore(start)) {
-                result = false;
+            boolean intersectionThePeriodTime = !endTimeBeingChecked.isBefore(timeIsBusy.getKey())
+                    && !timeIsBusy.getValue().isBefore(startTimeBeingChecked);
+            if (intersectionThePeriodTime) {
+                return false;
             }
         }
-        return result;
+        return true;
     }
 
     protected void updateEpicStatus(int idEpic) {
@@ -328,18 +422,18 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    private void resetEpicTime(Epic epic) {
+        epic.setStartTime(null);
+        epic.setEndTime(null);
+        epic.setDurationMinutes(0);
+    }
+
     private List<Subtask> sortEpicTaskSubtasksTime(Epic epic) {
         return epic.getListIdSubtask().stream()
                 .map(idSubtask -> mapSubtask.get(idSubtask))
                 .filter(subtask -> subtask.getStartTime() != null)
                 .sorted(Comparator.comparing(Task::getStartTime))
                 .collect(Collectors.toList());
-    }
-
-    private void resetEpicTime(Epic epic) {
-        epic.setStartTime(null);
-        epic.setEndTime(null);
-        epic.setDurationMinutes(0);
     }
 
     protected void generateMaxId(int id) {
