@@ -222,7 +222,7 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         manager.addSubtask(subtask2);
         assertEquals(startTimeEpic, epic.getStartTime());
         assertEquals(endTimeEpic, epic.getEndTime());
-        assertEquals(31, epic.getDurationMinutes());
+        assertEquals(30, epic.getDurationMinutes());
     }
 
     @Test

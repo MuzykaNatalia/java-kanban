@@ -404,8 +404,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic.getListIdSubtask().isEmpty()) {
             resetEpicTime(epic);
         } else {
-            List<Subtask> listSubtaskTime = sortEpicTaskSubtasksTime(epic);
-
+            List<Subtask> listSubtaskTime = sortEpicSubtasksTime(epic);
             if (!listSubtaskTime.isEmpty()) {
                 ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
                 ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
@@ -413,9 +412,8 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStartTime(startTimeEpic);
                 epic.setEndTime(endTimeEpic);
 
-                Duration durationEpic = Duration.between(startTimeEpic, endTimeEpic);
-                int durationMinutes = durationEpic.toMinutesPart();
-                epic.setDurationMinutes(durationMinutes);
+                int durationMinutesEpic = calculateEpicDuration(epic.getListIdSubtask());
+                epic.setDurationMinutes(durationMinutesEpic);
             } else {
                 resetEpicTime(epic);
             }
@@ -428,12 +426,19 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setDurationMinutes(0);
     }
 
-    private List<Subtask> sortEpicTaskSubtasksTime(Epic epic) {
+    private List<Subtask> sortEpicSubtasksTime(Epic epic) {
         return epic.getListIdSubtask().stream()
                 .map(idSubtask -> mapSubtask.get(idSubtask))
                 .filter(subtask -> subtask.getStartTime() != null)
                 .sorted(Comparator.comparing(Task::getStartTime))
                 .collect(Collectors.toList());
+    }
+
+    private int calculateEpicDuration(List<Integer> idSubtask) {
+        return idSubtask.stream()
+                .map(integer -> mapSubtask.get(integer))
+                .map(Subtask::getDurationMinutes)
+                .reduce(0, Integer::sum);
     }
 
     protected void generateMaxId(int id) {
