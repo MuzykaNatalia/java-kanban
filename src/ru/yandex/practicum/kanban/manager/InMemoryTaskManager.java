@@ -17,26 +17,25 @@ public class InMemoryTaskManager implements TaskManager {
     protected HistoryManager history = Managers.getDefaultHistory();
     protected int number = 0;
 
-    public Map<ZonedDateTime, ZonedDateTime> getBusyPeriodsOfTime() {
-        return busyPeriodsOfTime;
-    }
-
     @Override
     public void addTask(Task task) {
-        if (task == null) {
-            return;
+        if (isTaskNotNull(task)) {
+            if (task.getId() == 0) {
+                task.setId(++number);
+            } else {
+                generateMaxId(task.getId());
+            }
+            if (task.getStartTime() != null) {
+                boolean isFreeTime = isFreeTime(task.getStartTime(), task.getEndTime());
+                runAddingTaskIfTimeIsFree(isFreeTime, task);
+            } else {
+                mapTasks.put(task.getId(), task);
+            }
         }
-        if (task.getId() == 0) {
-            task.setId(++number);
-        } else {
-            generateMaxId(task.getId());
-        }
-        if (task.getStartTime() != null) {
-            boolean isFreeTime = isFreeTime(task.getStartTime(), task.getEndTime());
-            runAddingTaskIfTimeIsFree(isFreeTime, task);
-        } else {
-            mapTasks.put(task.getId(), task);
-        }
+    }
+
+    private boolean isTaskNotNull(Task task) {
+        return task.getName() != null && task.getStatus() != null && task.getDescription() != null;
     }
 
     private void runAddingTaskIfTimeIsFree(Boolean isFree, Task task) {
@@ -48,36 +47,46 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-        if (epic == null) {
-            return;
+        if (isEpicNotNull(epic)) {
+            if (epic.getId() == 0) {
+                epic.setId(++number);
+            } else {
+                generateMaxId(epic.getId());
+            }
+            mapEpic.put(epic.getId(), epic);
+            updateEpicStatus(epic.getId());
         }
-        if (epic.getId() == 0) {
-            epic.setId(++number);
-        } else {
-            generateMaxId(epic.getId());
-        }
-        mapEpic.put(epic.getId(), epic);
+    }
+
+    private boolean isEpicNotNull(Epic epic) {
+        return epic.getName() != null && epic.getStatus() != null && epic.getDescription() != null;
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
-        if (subtask == null) {
-            return;
-        }
-        if (subtask.getId() == 0) {
-            subtask.setId(++number);
-        } else {
-            generateMaxId(subtask.getId());
-        }
+        if (isSubtaskNotNull(subtask)) {
+            if (subtask.getId() == 0) {
+                subtask.setId(++number);
+            } else {
+                generateMaxId(subtask.getId());
+            }
         if (subtask.getStartTime() != null) {
             boolean isFreeTime = isFreeTime(subtask.getStartTime(), subtask.getEndTime());
-            if (isFreeTime) {
-                busyPeriodsOfTime.put(subtask.getStartTime(), subtask.getEndTime());
+                if (isFreeTime) {
+                    busyPeriodsOfTime.put(subtask.getStartTime(), subtask.getEndTime());
+                    runAddSubtaskAndUpdateEpicStatusAndTime(subtask);
+                }
+            } else {
                 runAddSubtaskAndUpdateEpicStatusAndTime(subtask);
             }
-        } else {
-            runAddSubtaskAndUpdateEpicStatusAndTime(subtask);
         }
+    }
+
+    private boolean isSubtaskNotNull(Subtask subtask) {
+        return subtask.getName() != null
+                && subtask.getStatus() != null
+                && subtask.getDescription() != null
+                && subtask.getIdEpic() != 0;
     }
 
     private void runAddSubtaskAndUpdateEpicStatusAndTime(Subtask subtask) {
@@ -123,29 +132,29 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task newTask) {
-        if (newTask == null) {
-            return;
-        } else if (mapTasks.containsKey(newTask.getId())) {
-            Task pastTask = mapTasks.get(newTask.getId());
-            boolean timeCoincides = checkTimeTaskCoincides(pastTask, newTask);
-            if (timeCoincides) {
-                mapTasks.put(newTask.getId(), newTask);
-            } else if (newTask.getStartTime() != null) {
-                if (pastTask.getStartTime() == null) {
-                    boolean isFreeTime = isFreeTime(newTask.getStartTime(), newTask.getEndTime());
-                    runAddingTaskIfTimeIsFree(isFreeTime, newTask);
+        if (isTaskNotNull(newTask)) {
+            if (mapTasks.containsKey(newTask.getId())) {
+                Task pastTask = mapTasks.get(newTask.getId());
+                boolean isTimeCoincides = checkTimeTaskCoincides(pastTask, newTask);
+                if (isTimeCoincides) {
+                    mapTasks.put(newTask.getId(), newTask);
+                } else if (newTask.getStartTime() != null) {
+                    if (pastTask.getStartTime() == null) {
+                        boolean isThisTimeFreeOrBusy = isFreeTime(newTask.getStartTime(), newTask.getEndTime());
+                        runAddingTaskIfTimeIsFree(isThisTimeFreeOrBusy, newTask);
+                    } else {
+                        busyPeriodsOfTime.remove(pastTask.getStartTime());
+                        boolean isFreeTime = isFreeTime(newTask.getStartTime(), newTask.getEndTime());
+                        if (isFreeTime) {
+                            runAddingTaskIfTimeIsFree(true, newTask);
+                        } else {
+                            busyPeriodsOfTime.put(pastTask.getStartTime(), pastTask.getEndTime());
+                        }
+                    }
                 } else {
                     busyPeriodsOfTime.remove(pastTask.getStartTime());
-                    boolean isFreeTime = isFreeTime(newTask.getStartTime(), newTask.getEndTime());
-                    if (isFreeTime) {
-                        runAddingTaskIfTimeIsFree(true, newTask);
-                    } else {
-                        busyPeriodsOfTime.put(pastTask.getStartTime(), pastTask.getEndTime());
-                    }
+                    mapTasks.put(newTask.getId(), newTask);
                 }
-            } else {
-                busyPeriodsOfTime.remove(pastTask.getStartTime());
-                mapTasks.put(newTask.getId(), newTask);
             }
         }
     }
@@ -164,45 +173,45 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        if (epic == null) {
-            return;
-        } else if (mapEpic.containsKey(epic.getId())) {
-            Epic epicUpdate = mapEpic.get(epic.getId());
-            epicUpdate.setName(epic.getName());
-            epicUpdate.setDescription(epic.getDescription());
-            mapEpic.put(epicUpdate.getId(), epicUpdate);
+        if (isEpicNotNull(epic)) {
+            if (mapEpic.containsKey(epic.getId())) {
+                Epic epicUpdate = mapEpic.get(epic.getId());
+                epicUpdate.setName(epic.getName());
+                epicUpdate.setDescription(epic.getDescription());
+                mapEpic.put(epicUpdate.getId(), epicUpdate);
+            }
         }
     }
 
     @Override
     public void updateSubtask(Subtask newSubtask) {
-        if (newSubtask == null) {
-            return;
-        } else if (mapSubtask.containsKey(newSubtask.getId())) {
-            Subtask pastSubtask = mapSubtask.get(newSubtask.getId());
-            boolean timeCoincides = checkTimeTaskCoincides(pastSubtask, newSubtask);
-            if (timeCoincides) {
-                runAddingSubtask(newSubtask);
-            } else if (newSubtask.getStartTime() != null) {
-                if (pastSubtask.getStartTime() == null) {
-                    boolean isFreeTime = isFreeTime(newSubtask.getStartTime(), newSubtask.getEndTime());
-                    if (isFreeTime) {
-                        busyPeriodsOfTime.put(newSubtask.getStartTime(), newSubtask.getEndTime());
-                        runAddingSubtask(newSubtask);
+        if (isSubtaskNotNull(newSubtask)) {
+            if (mapSubtask.containsKey(newSubtask.getId())) {
+                Subtask pastSubtask = mapSubtask.get(newSubtask.getId());
+                boolean timeCoincides = checkTimeTaskCoincides(pastSubtask, newSubtask);
+                if (timeCoincides) {
+                    runAddingSubtask(newSubtask);
+                } else if (newSubtask.getStartTime() != null) {
+                    if (pastSubtask.getStartTime() == null) {
+                        boolean isFreeTime = isFreeTime(newSubtask.getStartTime(), newSubtask.getEndTime());
+                        if (isFreeTime) {
+                            busyPeriodsOfTime.put(newSubtask.getStartTime(), newSubtask.getEndTime());
+                            runAddingSubtask(newSubtask);
+                        }
+                    } else {
+                        busyPeriodsOfTime.remove(pastSubtask.getStartTime());
+                        boolean isFreeTime = isFreeTime(newSubtask.getStartTime(), newSubtask.getEndTime());
+                        if (isFreeTime) {
+                            busyPeriodsOfTime.put(newSubtask.getStartTime(), newSubtask.getEndTime());
+                            runAddingSubtask(newSubtask);
+                        } else {
+                            busyPeriodsOfTime.put(pastSubtask.getStartTime(), pastSubtask.getEndTime());
+                        }
                     }
                 } else {
                     busyPeriodsOfTime.remove(pastSubtask.getStartTime());
-                    boolean isFreeTime = isFreeTime(newSubtask.getStartTime(), newSubtask.getEndTime());
-                    if (isFreeTime) {
-                        busyPeriodsOfTime.put(newSubtask.getStartTime(), newSubtask.getEndTime());
-                        runAddingSubtask(newSubtask);
-                    } else {
-                        busyPeriodsOfTime.put(pastSubtask.getStartTime(), pastSubtask.getEndTime());
-                    }
+                    runAddingSubtask(newSubtask);
                 }
-            } else {
-                busyPeriodsOfTime.remove(pastSubtask.getStartTime());
-                runAddingSubtask(newSubtask);
             }
         }
     }
@@ -307,15 +316,14 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubtasksOfAnEpic(int idEpic) {
         if (mapEpic.containsKey(idEpic)) {
             Epic epic = mapEpic.get(idEpic);
-
-        for (Integer idSubtask : epic.getListIdSubtask()) {
-            history.remove(idSubtask);
-            removeSubtaskTimeFromBusyPeriodsOfTime(mapSubtask.get(idSubtask));
-            mapSubtask.remove(idSubtask);
-        }
-        epic.clearIdSubtask();
-        updateEpicStatus(epic.getId());
-        updateEpicTime(epic.getId());
+            for (Integer idSubtask : epic.getListIdSubtask()) {
+                history.remove(idSubtask);
+                removeSubtaskTimeFromBusyPeriodsOfTime(mapSubtask.get(idSubtask));
+                mapSubtask.remove(idSubtask);
+            }
+            epic.clearIdSubtask();
+            updateEpicStatus(epic.getId());
+            updateEpicTime(epic.getId());
         }
     }
 
@@ -337,13 +345,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getListOfAllEpicSubtask(int idEpic) {
         List<Subtask> listOfAllEpicSubtask = new ArrayList<>();
-        Epic epic = mapEpic.get(idEpic);
+        if (mapEpic.containsKey(idEpic)) {
+            Epic epic = mapEpic.get(idEpic);
 
-        for (Integer idSubtask : epic.getListIdSubtask()) {
-            Subtask subtask = mapSubtask.get(idSubtask);
-            listOfAllEpicSubtask.add(subtask);
+            for (Integer idSubtask : epic.getListIdSubtask()) {
+                Subtask subtask = mapSubtask.get(idSubtask);
+                listOfAllEpicSubtask.add(subtask);
+            }
         }
-
         return listOfAllEpicSubtask;
     }
 
@@ -376,45 +385,49 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void updateEpicStatus(int idEpic) {
-        Epic epic = mapEpic.get(idEpic);
-        Set<StatusesTask> setStatusEpic = new HashSet<>();
+        if (mapEpic.containsKey(idEpic)) {
+            Epic epic = mapEpic.get(idEpic);
+            Set<StatusesTask> setStatusEpic = new HashSet<>();
 
-        if (epic.getListIdSubtask().isEmpty()) {
-            epic.setStatus(StatusesTask.NEW);
-        } else {
-            for (Integer idSubtask : epic.getListIdSubtask()) {
-                Subtask subtask = mapSubtask.get(idSubtask);
-                setStatusEpic.add(subtask.getStatus());
-            }
-
-            if (setStatusEpic.size() == 1) {
-                for (StatusesTask status : setStatusEpic) {
-                    epic.setStatus(status);
-                }
+            if (epic.getListIdSubtask().isEmpty()) {
+                epic.setStatus(StatusesTask.NEW);
             } else {
-                epic.setStatus(StatusesTask.IN_PROGRESS);
+                for (Integer idSubtask : epic.getListIdSubtask()) {
+                    Subtask subtask = mapSubtask.get(idSubtask);
+                    setStatusEpic.add(subtask.getStatus());
+                }
+
+                if (setStatusEpic.size() == 1) {
+                    for (StatusesTask status : setStatusEpic) {
+                        epic.setStatus(status);
+                    }
+                } else {
+                    epic.setStatus(StatusesTask.IN_PROGRESS);
+                }
             }
         }
     }
 
     protected void updateEpicTime(int idEpic) {
-        Epic epic = mapEpic.get(idEpic);
+        if (mapEpic.containsKey(idEpic)) {
+            Epic epic = mapEpic.get(idEpic);
 
-        if (epic.getListIdSubtask().isEmpty()) {
-            resetEpicTime(epic);
-        } else {
-            List<Subtask> listSubtaskTime = sortEpicSubtasksTime(epic);
-            if (!listSubtaskTime.isEmpty()) {
-                ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
-                ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
-
-                epic.setStartTime(startTimeEpic);
-                epic.setEndTime(endTimeEpic);
-
-                int durationMinutesEpic = calculateEpicDuration(epic.getListIdSubtask());
-                epic.setDurationMinutes(durationMinutesEpic);
-            } else {
+            if (epic.getListIdSubtask().isEmpty()) {
                 resetEpicTime(epic);
+            } else {
+                List<Subtask> listSubtaskTime = sortEpicSubtasksTime(epic);
+                if (!listSubtaskTime.isEmpty()) {
+                    ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
+                    ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
+
+                    epic.setStartTime(startTimeEpic);
+                    epic.setEndTime(endTimeEpic);
+
+                    int durationMinutesEpic = calculateEpicDuration(epic.getListIdSubtask());
+                    epic.setDurationMinutes(durationMinutesEpic);
+                } else {
+                    resetEpicTime(epic);
+                }
             }
         }
     }
