@@ -8,7 +8,6 @@ import ru.yandex.practicum.kanban.tasks.Task;
 import java.time.ZonedDateTime;
 import java.time.*;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.*;
 
@@ -25,6 +24,8 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         Task task = new Task("learn java", NEW, "read the book", startTime, 15);
         manager.addTask(task);
 
+        assertNotNull(manager.getListOfTasks());
+        assertEquals(1, manager.getListOfTasks().size());
         assertTrue(manager.getListOfTasks().contains(task));
         assertEquals(1, task.getId());
         assertEquals("learn java", task.getName());
@@ -40,6 +41,9 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
     public void shouldAddingTaskNoTime() {
         Task task = new Task("learn java", NEW, "read the book");
         manager.addTask(task);
+
+        assertNotNull(manager.getListOfTasks());
+        assertEquals(1, manager.getListOfTasks().size());
         assertTrue(manager.getListOfTasks().contains(task));
         assertEquals(1, task.getId());
         assertEquals("learn java", task.getName());
@@ -56,6 +60,8 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
         manager.addEpic(epic);
 
+        assertNotNull(manager.getListOfEpic());
+        assertEquals(1, manager.getListOfEpic().size());
         assertTrue(manager.getListOfEpic().contains(epic));
         assertEquals(1, epic.getId());
         assertEquals("pass TZ-7", epic.getName());
@@ -70,17 +76,17 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
     @Test
     public void shouldAddingSubtaskWithTime() {
         ZonedDateTime startTime = ZonedDateTime.of(LocalDateTime.of(
-                2023, 12, 14, 16, 0),
-                ZoneId.of("UTC+3"));
+                2023, 12, 14, 16, 0), ZoneId.of("UTC+3"));
         ZonedDateTime endTime = ZonedDateTime.of(LocalDateTime.of(
-                2023, 12, 14, 16, 20),
-                ZoneId.of("UTC+3"));
+                2023, 12, 14, 16, 20), ZoneId.of("UTC+3"));
         Epic epic = new Epic("pass TZ-7", NEW, "introduce new functionality into the project");
         Subtask subtask = new Subtask("learn java", NEW, "read the book",
                 startTime, 20,1);
         manager.addEpic(epic);
         manager.addSubtask(subtask);
 
+        assertNotNull(manager.getListOfSubtask());
+        assertEquals(1, manager.getListOfSubtask().size());
         assertTrue(manager.getListOfSubtask().contains(subtask));
         assertEquals(2, subtask.getId());
         assertEquals("learn java", subtask.getName());
@@ -100,6 +106,8 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         manager.addEpic(epic);
         manager.addSubtask(subtask);
 
+        assertNotNull(manager.getListOfSubtask());
+        assertEquals(1, manager.getListOfSubtask().size());
         assertTrue(manager.getListOfSubtask().contains(subtask));
         assertEquals(2, subtask.getId());
         assertEquals("learn java", subtask.getName());
@@ -703,45 +711,117 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         assertTrue(manager.getListOfSubtask().contains(subtask3));
     }
 
-
-
-
-
     @DisplayName("Тест проверки возврата списка задач")
     @Test
      public void shouldReturnListOfTasks() {
-        List<Task> list;
+        Task task = new Task("learn java", NEW, "read the book");
+        Task task1 = new Task("learn java1", NEW, "read the book1");
+        Task task2 = new Task("learn java2", NEW, "read the book2");
+        manager.addTask(task);
+        manager.addTask(task1);
+        manager.addTask(task2);
+        List<Task> listTask = manager.getListOfTasks();
+        assertTrue(listTask.contains(task));
+        assertTrue(listTask.contains(task1));
+        assertTrue(listTask.contains(task2));
+        assertEquals(3, listTask.size());
     }
 
     @DisplayName("Тест проверки возврата списка эпических задач")
     @Test
      public void shouldReturnListOfEpic() {
-        List<Epic> list;
+        Epic epic = new Epic("TZ-8", NEW, "project");
+        Epic epic1 = new Epic("TZ-7", NEW, "project1");
+        Epic epic2 = new Epic("TZ-6", NEW, "project2");
+        manager.addEpic(epic);
+        manager.addEpic(epic1);
+        manager.addEpic(epic2);
+        List<Epic> listEpic = manager.getListOfEpic();
+        assertTrue(listEpic.contains(epic));
+        assertTrue(listEpic.contains(epic1));
+        assertTrue(listEpic.contains(epic2));
+        assertEquals(3, listEpic.size());
     }
 
     @DisplayName("Тест проверки возврата списка подзадач")
     @Test
      public void shouldReturnListOfSubtask() {
-        List<Subtask> list;
+        Epic epic = new Epic("TZ-8", NEW, "project");
+        Subtask subtask1 = new Subtask("think1", NEW, "decide1",1);
+        Subtask subtask2 = new Subtask("think2", NEW, "decide2",1);
+        Epic epic2 = new Epic("TZ-7", NEW, "project");
+        Subtask subtask3 = new Subtask("think3", NEW, "decide3",4);
+        manager.addEpic(epic);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
+        manager.addEpic(epic2);
+        manager.addSubtask(subtask3);
+        List<Subtask> listSubtask = manager.getListOfSubtask();
+        assertTrue(listSubtask.contains(subtask1));
+        assertTrue(listSubtask.contains(subtask2));
+        assertTrue(listSubtask.contains(subtask3));
+        assertEquals(3, listSubtask.size());
     }
 
     @DisplayName("Тест проверки возврата списка подзадач конкретного эпика с верным id")
     @Test
      public void shouldReturnListOfAllEpicSubtaskWithTheFaithfulId() {
-        int idEpic;
-        List<Subtask> list;
+        Epic epic1 = new Epic("TZ-8", NEW, "project");
+        Subtask subtask1 = new Subtask("think1", NEW, "decide1",1);
+        Subtask subtask2 = new Subtask("think2", NEW, "decide2",1);
+        Epic epic2 = new Epic("TZ-7", NEW, "project");
+        Subtask subtask3 = new Subtask("think3", NEW, "decide3",4);
+        manager.addEpic(epic1);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
+        manager.addEpic(epic2);
+        manager.addSubtask(subtask3);
+        List<Subtask> listEpic1 = manager.getListOfAllEpicSubtask(1);
+        assertTrue(listEpic1.contains(subtask1));
+        assertTrue(listEpic1.contains(subtask2));
+        assertFalse(listEpic1.contains(subtask3));
+        assertEquals(2, listEpic1.size());
     }
 
     @DisplayName("Тест проверки возврата списка подзадач конкретного эпика с неверным id")
     @Test
     public void shouldReturnListOfAllEpicSubtaskWithTheWrongOneId() {
-        int idEpic;
-        List<Subtask> list;
+        Epic epic1 = new Epic("TZ-8", NEW, "project");
+        Subtask subtask1 = new Subtask("think1", NEW, "decide1",1);
+        manager.addEpic(epic1);
+        manager.addSubtask(subtask1);
+        List<Subtask> listEpic1 = manager.getListOfAllEpicSubtask(76);
+        assertFalse(listEpic1.contains(subtask1));
+        assertEquals(0, listEpic1.size());
     }
 
-    @DisplayName("Тест проверки возврата списка истории")
+    @DisplayName("Тест проверки возврата пустого списка при отсутствии истории просмотров")
     @Test
-     public void shouldReturnHistory() {
-        List<Task> list;
+     public void shouldNotReturnHistory() {
+        Task task = new Task("learn java2", NEW, "read the book2");
+        manager.addTask(task);
+        List<Task> listHistory = manager.getHistory();
+        assertFalse(listHistory.contains(task));
+        assertEquals(0, listHistory.size());
+    }
+
+    @DisplayName("Тест проверки возврата не пустого списка истории просмотров")
+    @Test
+    public void shouldReturnHistory() {
+        Epic epic = new Epic("TZ-8", NEW, "project");
+        Subtask subtask1 = new Subtask("think1", NEW, "decide1",1);
+        Subtask subtask2 = new Subtask("think2", NEW, "decide2",1);
+        manager.addEpic(epic);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
+        manager.getTheSubtaskById(2);
+        manager.getTheEpicById(1);
+        manager.getTheSubtaskById(3);
+        List<Task> listHistory = manager.getHistory();
+        assertEquals(3, listHistory.size());
+        assertNotNull(listHistory);
+        assertTrue(listHistory.contains(epic));
+        assertTrue(listHistory.contains(subtask1));
+        assertTrue(listHistory.contains(subtask2));
     }
 }

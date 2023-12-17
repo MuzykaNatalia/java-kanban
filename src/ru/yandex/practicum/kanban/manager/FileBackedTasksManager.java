@@ -53,7 +53,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void createTaskFromString(String value) {
+    protected void createTaskFromString(String value) {
         String[] lineContents = value.split(",");
         int id = Integer.parseInt(lineContents[0]);
         TypeOfTasks type = TypeOfTasks.valueOf(lineContents[1]);
