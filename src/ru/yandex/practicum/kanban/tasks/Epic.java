@@ -42,10 +42,6 @@ public class Epic extends Task {
         return listIdSubtask;
     }
 
-    public void setListIdSubtask(List<Integer> listIdSubtask) {
-        this.listIdSubtask = listIdSubtask;
-    }
-
     public void setEndTime(ZonedDateTime endTime) {
         this.endTime = endTime;
     }

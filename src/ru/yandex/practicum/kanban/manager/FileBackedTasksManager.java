@@ -54,33 +54,35 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     protected void createTaskFromString(String value) {
-        String[] lineContents = value.split(",");
-        int id = Integer.parseInt(lineContents[0]);
-        TypeOfTasks type = TypeOfTasks.valueOf(lineContents[1]);
-        String name = lineContents[2];
-        StatusesTask status = StatusesTask.valueOf(lineContents[3]);
-        String description = lineContents[4];
-        int durationMinutes = Integer.parseInt(lineContents[5]);
+        try {
+            String[] lineContents = value.split(",");
+            int id = Integer.parseInt(lineContents[0]);
+            TypeOfTasks type = TypeOfTasks.valueOf(lineContents[1]);
+            String name = lineContents[2];
+            StatusesTask status = StatusesTask.valueOf(lineContents[3]);
+            String description = lineContents[4];
+            int durationMinutes = Integer.parseInt(lineContents[5]);
 
-        ZonedDateTime startTime = null;
-        boolean isDateTimeNotNull = !lineContents[6].equals("null");
-        if (isDateTimeNotNull) {
-            startTime = ZonedDateTime.parse(lineContents[6]);
-        }
+            ZonedDateTime startTime = null;
+            boolean isDateTimeNotNull = !lineContents[6].equals("null");
+            if (isDateTimeNotNull) {
+                startTime = ZonedDateTime.parse(lineContents[6]);
+            }
 
-        switch (type) {
-            case TASK:
-                super.addTask(new Task(id, type, name, status, description, startTime, durationMinutes));
-                break;
-            case EPIC:
-                super.addEpic(new Epic(id, type, name, status, description));
-                break;
-            case SUBTASK:
-                int idEpic = Integer.parseInt(lineContents[8]);
-                super.addSubtask(new Subtask(id, type, name, status, description, startTime, durationMinutes, idEpic));
-                break;
-            default:
-                throw new RuntimeException("Failed to create task from string");
+            switch (type) {
+                case TASK:
+                    super.addTask(new Task(id, type, name, status, description, startTime, durationMinutes));
+                    break;
+                case EPIC:
+                    super.addEpic(new Epic(id, type, name, status, description));
+                    break;
+                case SUBTASK:
+                    int idEpic = Integer.parseInt(lineContents[8]);
+                    super.addSubtask(new Subtask(id, type, name, status, description, startTime, durationMinutes, idEpic));
+                    break;
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to create task from string");
         }
     }
 
