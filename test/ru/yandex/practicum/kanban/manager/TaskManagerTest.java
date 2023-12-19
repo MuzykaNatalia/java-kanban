@@ -108,22 +108,25 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         assertTrue(manager.getListOfSubtask().contains(subtask1));
     }
 
-    @DisplayName("Тест проверки добавления 1 задачи из 4 задач с непересекающимся временем выполнения")
+    @DisplayName("Тест проверки добавления 1 задачи с непересекающимся временем выполнения из 5 задач")
     @Test
     public void shouldAdding1TaskOutOf4TaskWithNonOverlappingTime() {
         Task task1 = new Task("1", DONE, "a", startTime_16_00, 15);
         Task task2 = new Task("2", DONE, "b", startTime_16_15, 15);
         Task task3 = new Task("3", DONE, "c", startTime_15_45, 15);
         Task task4 = new Task("4", DONE, "c", startTime_16_03, 10);
+        Task task5 = new Task("5", DONE, "ы", startTime_15_45, 60);
         manager.addTask(task1);
         manager.addTask(task2);
         manager.addTask(task3);
         manager.addTask(task4);
+        manager.addTask(task5);
 
         assertTrue(manager.getListOfTasks().contains(task1));
         assertFalse(manager.getListOfTasks().contains(task2));
         assertFalse(manager.getListOfTasks().contains(task3));
         assertFalse(manager.getListOfTasks().contains(task4));
+        assertFalse(manager.getListOfTasks().contains(task5));
     }
 
     @DisplayName("Тест проверки добавления 3 задач с непересекающимся временем")
@@ -141,23 +144,26 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         assertTrue(manager.getListOfTasks().contains(task3));
     }
 
-    @DisplayName("Тест проверки добавления 1 подзадачи из 4 подзадач с непересекающимся временем")
+    @DisplayName("Тест проверки добавления 1 подзадачи с непересекающимся временем из 5 подзадач")
     @Test
     public void shouldAdding1SubtaskOutOf4SubtaskWithNonOverlappingTime() {
         Subtask subtask1 = new Subtask("2", DONE, "l", startTime_16_00, 15, 1);
         Subtask subtask2 = new Subtask("3", DONE, "c", startTime_16_15, 15, 1);
         Subtask subtask3 = new Subtask("4", DONE, "d", startTime_15_45, 15, 1);
         Subtask subtask4 = new Subtask("5", DONE, "k", startTime_16_05, 5, 1);
+        Subtask subtask5 = new Subtask("6", DONE, "s", startTime_15_45, 60, 1);
         manager.addEpic(epic1);
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
         manager.addSubtask(subtask4);
+        manager.addSubtask(subtask5);
 
         assertTrue(manager.getListOfSubtask().contains(subtask1));
         assertFalse(manager.getListOfSubtask().contains(subtask2));
         assertFalse(manager.getListOfSubtask().contains(subtask3));
         assertFalse(manager.getListOfSubtask().contains(subtask4));
+        assertFalse(manager.getListOfSubtask().contains(subtask5));
     }
 
     @DisplayName("Тест проверки добавления 3 подзадач с непересекающимся временем")
@@ -313,7 +319,7 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         manager.addEpic(epic1);
         manager.updateEpic(epicTest);
 
-        assertEquals(result, epic1);
+        assertEquals(result, manager.getTheEpicById(1));
         assertTrue(manager.getListOfEpic().contains(result));
     }
 

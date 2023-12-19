@@ -87,7 +87,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void saveManagerToFile() throws ManagerSaveException {
-        Set<Task> allTasks = super.getPrioritizedTasks();
+        Set<Task> allTasks = super.getAllTheTasksSorted();
         String allTasksIntoString = connectAllTasksIntoString(allTasks);
 
         List<Task> allHistory = history.getHistory();

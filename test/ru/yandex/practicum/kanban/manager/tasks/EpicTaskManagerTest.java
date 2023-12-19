@@ -1,14 +1,16 @@
-package ru.yandex.practicum.kanban.tasks;
+package ru.yandex.practicum.kanban.manager.tasks;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.kanban.manager.Managers;
 import ru.yandex.practicum.kanban.manager.TaskManager;
+import ru.yandex.practicum.kanban.tasks.Epic;
+import ru.yandex.practicum.kanban.tasks.Subtask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.*;
-
-class EpicTest {
+/**Такое должно быть название? */
+public class EpicTaskManagerTest {
     private TaskManager manager;
     private Epic epic1;
     private Epic epic2;

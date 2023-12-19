@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.*;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
-    private static final Path TEST_FILE = Path.of("resources/test.csv");
+    private static final Path TEST_FILE = Path.of("resources/file.csv");
     private static final String HEADER_FOR_FILE_CSV =
             "id,type,name,status,description,duration,startTime,endTime,epicId";
     private Task task1;
@@ -40,6 +41,100 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     @AfterEach
     public void shouldDeleteTestFile() throws IOException {
         Files.deleteIfExists(TEST_FILE);
+    }
+
+    @DisplayName("Должен записывать задачи и историю в тестовый файл")
+    @Test
+    public void shouldWriteTasksToAFile() {
+        FileBackedTasksManager managerFileTest = new FileBackedTasksManager(Path.of("resources/test-write.csv"));
+        managerFileTest.addTask(task1);
+        managerFileTest.addEpic(epic1);
+        managerFileTest.addSubtask(subtask1);
+        managerFileTest.getTheTaskById(1);
+        managerFileTest.getTheSubtaskById(3);
+
+        String testLine1 = "id,type,name,status,description,duration,startTime,endTime,epicId";
+        String testLine2 = "2,EPIC,2,IN_PROGRESS,b,20,2023-12-14T16:00+03:00[UTC+03:00]," +
+                "2023-12-14T16:20+03:00[UTC+03:00]";
+        String testLine3 = "3,SUBTASK,learn java,IN_PROGRESS,read the book,20,2023-12-14T16:00+03:00[UTC+03:00]," +
+                "2023-12-14T16:20+03:00[UTC+03:00],2";
+        String testLine4 = "1,TASK,1,NEW,a,0,null,null";
+        String testLine6 = "1,3";
+
+        List<String> allLines = readFile("resources/test-write.csv");
+        assertEquals(testLine1, allLines.get(0));
+        assertEquals(testLine2, allLines.get(1));
+        assertEquals(testLine3, allLines.get(2));
+        assertEquals(testLine4, allLines.get(3));
+        assertTrue(allLines.get(4).isEmpty());
+        assertEquals(testLine6, allLines.get(5));
+    }
+
+    @DisplayName("Должен добавлять и удалять задачи из тестового файла")
+    @Test
+    public void shouldAddAndRemoveTasksFromTheTestFile() {
+        FileBackedTasksManager managerFileTest = new FileBackedTasksManager(Path.of("resources/test-delete.csv"));
+        Task task2 = new Task(4,"4", DONE, "d");
+        Task task3 = new Task(5,"5", IN_PROGRESS, "f");
+        Task task4 = new Task(6,"6", DONE, "g");
+        managerFileTest.addTask(task1);
+        managerFileTest.addEpic(epic1);
+        managerFileTest.addSubtask(subtask1);
+        managerFileTest.addTask(task2);
+        managerFileTest.addTask(task3);
+        managerFileTest.addTask(task4);
+
+        String testLine1 = "id,type,name,status,description,duration,startTime,endTime,epicId";
+        String testLine2 = "2,EPIC,2,IN_PROGRESS,b,20,2023-12-14T16:00+03:00[UTC+03:00]," +
+                "2023-12-14T16:20+03:00[UTC+03:00]";
+        String testLine3 = "3,SUBTASK,learn java,IN_PROGRESS,read the book,20,2023-12-14T16:00+03:00[UTC+03:00]," +
+                "2023-12-14T16:20+03:00[UTC+03:00],2";
+        String testLine4 = "1,TASK,1,NEW,a,0,null,null";
+        String testLine5 = "4,TASK,4,DONE,d,0,null,null";
+        String testLine6 = "5,TASK,5,IN_PROGRESS,f,0,null,null";
+        String testLine7 = "6,TASK,6,DONE,g,0,null,null";
+
+        List<String> allLines = readFile("resources/test-delete.csv");
+        assertEquals(testLine1, allLines.get(0));
+        assertEquals(testLine2, allLines.get(1));
+        assertEquals(testLine3, allLines.get(2));
+        assertEquals(testLine4, allLines.get(3));
+        assertEquals(testLine5, allLines.get(4));
+        assertEquals(testLine6, allLines.get(5));
+        assertEquals(testLine7, allLines.get(6));
+        assertTrue(allLines.get(7).isEmpty());
+
+        managerFileTest.deleteTaskById(5);
+        managerFileTest.deleteEpicById(2);
+        managerFileTest.deleteTaskById(1);
+
+        List<String> allLines2 = readFile("resources/test-delete.csv");
+        assertEquals("id,type,name,status,description,duration,startTime,endTime,epicId", allLines2.get(0));
+        assertEquals("4,TASK,4,DONE,d,0,null,null", allLines2.get(1));
+        assertEquals("6,TASK,6,DONE,g,0,null,null", allLines2.get(2));
+        assertTrue(allLines2.get(3).isEmpty());
+    }
+
+    @DisplayName("Тест проверки чтения строк из подготовленного файла: test-read.csv")
+    @Test
+    public void shouldUploadTasksFromAFile() {
+        FileBackedTasksManager managerFile = FileBackedTasksManager.loadFromFile("resources/test-read.csv");
+        Task task1 = new Task(1,"1", DONE, "k",
+                ZonedDateTime.of(LocalDateTime.of(2023, 12, 14, 16, 0),
+                ZoneId.of("UTC+3")), 15);
+        Epic epic1 = new Epic(2,"2", NEW, "k");
+        Task task2 = new Task(4,"4", IN_PROGRESS, "f");
+        List<Task> history = new ArrayList<>(Arrays.asList(epic1, task1, task2));
+
+        assertEquals(2, managerFile.getListOfTasks().size());
+        assertEquals(1, managerFile.getListOfEpic().size());
+        assertEquals(0, managerFile.getListOfSubtask().size());
+
+        assertTrue(managerFile.getListOfTasks().contains(task1));
+        assertTrue(managerFile.getListOfTasks().contains(task2));
+        assertTrue(managerFile.getListOfEpic().contains(epic1));
+
+        assertEquals(history, managerFile.getHistory());
     }
 
     @DisplayName("Тест проверки сохранения задачи в файл при eё добавлении")

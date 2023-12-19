@@ -9,9 +9,7 @@ import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.EPIC;
 public class Epic extends Task {
     protected List<Integer> listIdSubtask = new ArrayList<>();
     protected TypeOfTasks type = EPIC;
-    protected ZonedDateTime startTime;
     protected ZonedDateTime endTime;
-    protected int durationMinutes;
 
     public Epic(String name, StatusesTask status, String description) {
         super(name, status, description);
@@ -82,7 +80,9 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(listIdSubtask, epic.listIdSubtask) && type == epic.type && Objects.equals(endTime, epic.endTime);
+        return Objects.equals(listIdSubtask, epic.listIdSubtask)
+                && type == epic.type
+                && Objects.equals(endTime, epic.endTime);
     }
 
     @Override
