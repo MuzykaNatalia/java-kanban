@@ -9,8 +9,8 @@ import ru.yandex.practicum.kanban.tasks.Epic;
 import ru.yandex.practicum.kanban.tasks.Subtask;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.*;
-/**Такое должно быть название? */
-public class EpicTaskManagerTest {
+
+public class EpicStatusTest {
     private TaskManager manager;
     private Epic epic1;
     private Epic epic2;
