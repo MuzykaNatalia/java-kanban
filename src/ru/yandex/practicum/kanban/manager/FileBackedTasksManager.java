@@ -5,6 +5,8 @@ import ru.yandex.practicum.kanban.exception.ManagerReadException;
 import ru.yandex.practicum.kanban.exception.ManagerSaveException;
 import ru.yandex.practicum.kanban.tasks.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,10 +15,16 @@ import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     protected Path path;
+    protected String uri;
+
+    public FileBackedTasksManager(String uri) {
+        this.uri = uri;
+    }
 
     public FileBackedTasksManager(Path path) {
         this.path = path;
     }
+
 
     public static FileBackedTasksManager loadFromFile(String file) throws ManagerReadException {
         Path path = Path.of(file);

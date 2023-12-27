@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\resources\test-httptaskserver.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\resources\test-read.csv">
           <value>
             <Attribute>

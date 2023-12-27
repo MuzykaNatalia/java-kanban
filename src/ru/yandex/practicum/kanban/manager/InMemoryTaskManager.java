@@ -390,8 +390,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
-        return prioritizedTasks;
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     @Override
@@ -409,7 +409,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return true;
     }
-
+    /**Может вынести следующие методы в класс Epic? Тогда данный класс уменьшится в размере
+    * updateEpicStatus, updateEpicTime, resetEpicTime, sortEpicSubtasksTime, calculateEpicDuration*/
     protected void updateEpicStatus(int idEpic) {
         if (mapEpic.containsKey(idEpic)) {
             Epic epic = mapEpic.get(idEpic);
