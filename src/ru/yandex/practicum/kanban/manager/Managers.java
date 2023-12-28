@@ -13,8 +13,8 @@ public class Managers {
         return new FileBackedTasksManager(path);
     }
 
-    public static TaskManager getDefaultHttpManager(String uri) {
-        return new HttpTaskManager(uri);
+    public static TaskManager getDefaultHttpManager(String url) {
+        return new HttpTaskManager(url);
     }
 
     public static HistoryManager getDefaultHistory() {

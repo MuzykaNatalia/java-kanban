@@ -5,8 +5,6 @@ import ru.yandex.practicum.kanban.exception.ManagerReadException;
 import ru.yandex.practicum.kanban.exception.ManagerSaveException;
 import ru.yandex.practicum.kanban.tasks.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,10 +13,10 @@ import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     protected Path path;
-    protected String uri;
+    protected String url;
 
-    public FileBackedTasksManager(String uri) {
-        this.uri = uri;
+    public FileBackedTasksManager(String url) {
+        this.url = url;
     }
 
     public FileBackedTasksManager(Path path) {
@@ -94,7 +92,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void saveManagerToFile() throws ManagerSaveException {
+    protected void saveManager() throws ManagerSaveException {
         Set<Task> allTasks = super.getAllTheTasksSorted();
         String allTasksIntoString = connectAllTasksIntoString(allTasks);
 
@@ -112,99 +110,99 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void addTask(Task task) {
         super.addTask(task);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void addEpic(Epic epic) {
         super.addEpic(epic);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
         super.addSubtask(subtask);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public Task getTheTaskById(int idTask) {
         Task task = super.getTheTaskById(idTask);
-        saveManagerToFile();
+        saveManager();
         return task;
     }
 
     @Override
     public Epic getTheEpicById(int idEpic) {
         Epic epic = super.getTheEpicById(idEpic);
-        saveManagerToFile();
+        saveManager();
         return epic;
     }
 
     @Override
     public Subtask getTheSubtaskById(int idSubtask) {
         Subtask subtask = super.getTheSubtaskById(idSubtask);
-        saveManagerToFile();
+        saveManager();
         return subtask;
     }
 
     @Override
     public void updateTask(Task task) {
         super.updateTask(task);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void updateEpic(Epic epic) {
         super.updateEpic(epic);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteTaskById(int idTask) {
         super.deleteTaskById(idTask);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteEpicById(int idEpic) {
         super.deleteEpicById(idEpic);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteSubtaskById(int idSubtask) {
         super.deleteSubtaskById(idSubtask);
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteAllTasks() {
         super.deleteAllTasks();
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteAllEpic() {
         super.deleteAllEpic();
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteAllSubtask() {
         super.deleteAllSubtask();
-        saveManagerToFile();
+        saveManager();
     }
 
     @Override
     public void deleteAllSubtasksOfAnEpic(int idEpic) {
         super.deleteAllSubtasksOfAnEpic(idEpic);
-        saveManagerToFile();
+        saveManager();
     }
 }
