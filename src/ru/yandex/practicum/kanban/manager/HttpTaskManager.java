@@ -1,19 +1,12 @@
 package ru.yandex.practicum.kanban.manager;
 
 import com.google.gson.*;
-import ru.yandex.practicum.kanban.api.KVServer;
 import ru.yandex.practicum.kanban.api.KVTaskClient;
 import ru.yandex.practicum.kanban.manager.time.ZonedDateTimeAdapter;
 import ru.yandex.practicum.kanban.tasks.*;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import static ru.yandex.practicum.kanban.tasks.StatusesTask.IN_PROGRESS;
-import static ru.yandex.practicum.kanban.tasks.StatusesTask.NEW;
 
 public class HttpTaskManager extends FileBackedTasksManager {
     protected final Gson gson = new GsonBuilder()
@@ -100,19 +93,6 @@ public class HttpTaskManager extends FileBackedTasksManager {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        new KVServer().start();
-        TaskManager manager = Managers.getDefaultHttpManager("http://localhost:8078");
-        manager.addEpic(new Epic(1,"2", NEW, "b"));
-        manager.addSubtask(new Subtask(2, "learn java", IN_PROGRESS, "read the book",
-                ZonedDateTime.of(LocalDateTime.of(2023, 12, 14, 16, 0),
-                        ZoneId.of("UTC+3")), 20,1));
-        manager.addTask(new Task(3,"1", NEW, "a"));
-        /*HttpTaskManager manager1 = HttpTaskManager.loadFromServer("http://localhost:8078");
-        System.out.println("----------------------------------------------------------------------------");
-        manager1.getListOfTasks().forEach(System.out::println);*/
-
-    }
     @Override
     protected void saveManager() {
         client.put(KEY_TASK, createJsonStringTasks());

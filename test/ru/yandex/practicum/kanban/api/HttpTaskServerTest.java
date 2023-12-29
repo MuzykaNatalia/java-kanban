@@ -1,23 +1,14 @@
 package ru.yandex.practicum.kanban.api;
 
 import com.google.gson.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.yandex.practicum.kanban.manager.HttpTaskManager;
 import ru.yandex.practicum.kanban.manager.time.ZonedDateTimeAdapter;
-import ru.yandex.practicum.kanban.tasks.Epic;
-import ru.yandex.practicum.kanban.tasks.Subtask;
-import ru.yandex.practicum.kanban.tasks.Task;
+import ru.yandex.practicum.kanban.tasks.*;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.net.http.*;
+import java.time.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.yandex.practicum.kanban.tasks.StatusesTask.*;
 
