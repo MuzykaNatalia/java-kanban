@@ -3,14 +3,14 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\resources\test-delete.csv">
+        <entry key="\resources\file1.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\resources\test-httptaskserver.csv">
+        <entry key="\resources\test-delete.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
@@ -25,6 +25,13 @@
           </value>
         </entry>
         <entry key="\resources\test-write.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\resources\test.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

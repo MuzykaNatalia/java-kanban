@@ -15,14 +15,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     protected Path path;
     protected String url;
 
-    public FileBackedTasksManager(String url) {
-        this.url = url;
-    }
-
     public FileBackedTasksManager(Path path) {
         this.path = path;
     }
 
+    public FileBackedTasksManager(String url) {
+        this.url = url;
+    }
 
     public static FileBackedTasksManager loadFromFile(String file) throws ManagerReadException {
         Path path = Path.of(file);

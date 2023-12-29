@@ -25,16 +25,14 @@ public class HttpTaskManager extends FileBackedTasksManager {
         client = new KVTaskClient(url);
     }
 
-    public static HttpTaskManager loadFromServer(String url) {
-        HttpTaskManager manager = new HttpTaskManager(url);
-        createTasksFromJsonString(manager, client.load(KEY_TASK));
-        createTasksFromJsonString(manager, client.load(KEY_EPIC));
-        createTasksFromJsonString(manager, client.load(KEY_SUBTASK));
-        createHistoryFromJsonString(manager, client.load(KEY_HISTORY));
-        return manager;
+    protected void loadFromServer() {
+        createTasksFromJsonString(client.load(KEY_TASK));
+        createTasksFromJsonString(client.load(KEY_EPIC));
+        createTasksFromJsonString(client.load(KEY_SUBTASK));
+        createHistoryFromJsonString(client.load(KEY_HISTORY));
     }
 
-    private static void createTasksFromJsonString(HttpTaskManager manager, String jsonString) {
+    private void createTasksFromJsonString(String jsonString) {
         if (jsonString.isEmpty()) {
             return;
         }
@@ -47,11 +45,11 @@ public class HttpTaskManager extends FileBackedTasksManager {
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         for (JsonElement element : jsonArray) {
             JsonObject jsonObject = element.getAsJsonObject();
-            addTasksInManager(manager, jsonObject);
+            addTasksInManager(jsonObject);
         }
     }
 
-    private static void addTasksInManager(HttpTaskManager manager, JsonObject jsonObject) {
+    private void addTasksInManager(JsonObject jsonObject) {
         TypeOfTasks type = TypeOfTasks.valueOf(jsonObject.get("type").getAsString());
         int id = jsonObject.get("id").getAsInt();
         String name = jsonObject.get("name").getAsString();
@@ -66,17 +64,20 @@ public class HttpTaskManager extends FileBackedTasksManager {
         }
 
         switch (type) {
-            case TASK: manager.addTask(new Task(id, name, status, description, startTime, durationMinutes));
+            case TASK:
+                addTask(new Task(id, name, status, description, startTime, durationMinutes));
                 break;
-            case EPIC: manager.addEpic(new Epic(id, name, status, description));
+            case EPIC:
+                addEpic(new Epic(id, name, status, description));
                 break;
-            case SUBTASK: int idEpic = jsonObject.get("id").getAsInt();
-                manager.addSubtask(new Subtask(id, name, status, description, startTime, durationMinutes, idEpic));
+            case SUBTASK:
+                int idEpic = jsonObject.get("id").getAsInt();
+                addSubtask(new Subtask(id, name, status, description, startTime, durationMinutes, idEpic));
                 break;
         }
     }
 
-    private static void  createHistoryFromJsonString(HttpTaskManager manager, String jsonString) {
+    private void createHistoryFromJsonString(String jsonString) {
         if (jsonString.isEmpty()) {
             return;
         }
@@ -89,7 +90,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         for (JsonElement element : jsonArray) {
             JsonPrimitive primitive = element.getAsJsonPrimitive();
-            manager.addTasksToHistoryById(primitive.getAsInt());
+            addTasksToHistoryById(primitive.getAsInt());
         }
     }
 

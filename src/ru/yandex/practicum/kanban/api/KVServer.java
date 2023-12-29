@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.*;
 
 public class KVServer {
@@ -22,9 +23,11 @@ public class KVServer {
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
-        gson = new Gson();
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
     }
-    /**Здесь можно добавить метод очищения data по запросу клиента? */
+
     private void load(HttpExchange h) throws IOException {
         try {
             System.out.println("\n/load");
