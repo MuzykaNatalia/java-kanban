@@ -12,21 +12,34 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.yandex.practicum.kanban.manager.time.ZonedDateTimeAdapter.DATE_TIME_FORMATTER;
     /**По прошлой рекомендации старалась делать небольшие и понятные методы, не перегружая их кучами проверок на все случаи жизни ))) */
 public class HttpTaskServer {
+    public static final String URL_KV_SERVER = "http://localhost:8078";
     public static final int PORT_HTTP_TASK_SERVER = 8080;
     protected TaskManager manager;
     protected HttpServer httpServer;
     private static Gson gson;
 
-    public HttpTaskServer(String uri) throws IOException {
-        manager = Managers.getDefaultHttpManager(uri);
-        gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter()).create();
+    public HttpTaskServer() throws IOException {
+        manager = Managers.getDefaultHttpManager(URL_KV_SERVER);
+        gson = new GsonBuilder()
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter())
+                .create();
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT_HTTP_TASK_SERVER), 0);
         httpServer.createContext("/tasks", new TasksHandler(manager));
     }
 
+    public HttpTaskServer(HttpTaskManager manager) throws IOException {
+        this.manager = manager;
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter())
+                .create();
+        httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT_HTTP_TASK_SERVER), 0);
+        httpServer.createContext("/tasks", new TasksHandler(manager));
+        }
+
     public void start() {
         System.out.println("Запущен сервер на порту " + PORT_HTTP_TASK_SERVER);
-        System.out.println("Откройте в браузере http://localhost" + PORT_HTTP_TASK_SERVER + "/tasks");
+        System.out.println("Откройте в браузере http://localhost:" + PORT_HTTP_TASK_SERVER + "/tasks");
         httpServer.start();
     }
 
@@ -41,6 +54,7 @@ public class HttpTaskServer {
         public TasksHandler(TaskManager manager) {
             this.manager = manager;
         }
+
         @Override
         public void handle(HttpExchange exchange) {
             try {
@@ -103,7 +117,7 @@ public class HttpTaskServer {
 
         private void handleRequestForGetSubtask(HttpExchange exchange, String[] splitPath, String rawQuery) {
             String responseString;
-            if (splitPath[3].equals("epic")) {
+            if (splitPath.length == 5) {
                 int idEpic = getIdFromRawQuery(rawQuery);
                 responseString = gson.toJson(manager.getListOfAllEpicSubtask(idEpic));
                 writeResponse(exchange, responseString, 200);
@@ -288,7 +302,7 @@ public class HttpTaskServer {
                 return;
             }
 
-            if (splitPath[3].equals("epic")) {
+            if (splitPath.length == 5) {
                 int idEpic = getIdFromRawQuery(rawQuery);
                 manager.deleteAllSubtasksOfAnEpic(idEpic);
                 writeResponse(exchange, "Subtasks с idEpic " + idEpic + " успешно удалены", 200);

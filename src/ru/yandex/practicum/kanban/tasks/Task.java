@@ -92,6 +92,10 @@ public class Task {
         return type;
     }
 
+    public void setType(TypeOfTasks type) {
+        this.type = type;
+    }
+
     public ZonedDateTime getStartTime() {
         return startTime;
     }

@@ -12,11 +12,18 @@ public class ZonedDateTimeAdapter extends TypeAdapter<ZonedDateTime> {
 
     @Override
     public void write(JsonWriter jsonWriter, ZonedDateTime zonedDateTime) throws IOException {
-        jsonWriter.value(zonedDateTime.format(DATE_TIME_FORMATTER));
+        if (zonedDateTime != null) {
+            jsonWriter.value(zonedDateTime.format(DATE_TIME_FORMATTER));
+        } else {
+            jsonWriter.value("null");
+        }
     }
 
     @Override
     public ZonedDateTime read(JsonReader jsonReader) throws IOException {
+        if (jsonReader.nextString().equals("null")) {
+            return null;
+        }
         return ZonedDateTime.parse(jsonReader.nextString(), DATE_TIME_FORMATTER);
     }
 }

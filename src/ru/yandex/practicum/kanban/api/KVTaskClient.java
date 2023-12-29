@@ -27,9 +27,8 @@ public class KVTaskClient {
         try {
             HttpResponse<String> httpResponse = client.send(httpRequest, responseBodyHandler);
             if (httpResponse.statusCode() == 200) {
-                JsonElement jsonElement = JsonParser.parseString(httpResponse.body());
                 System.out.println("Регистрация прошла успешно.");
-                return jsonElement.getAsString();
+                return httpResponse.body();
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + httpResponse.statusCode());
             }
@@ -54,7 +53,7 @@ public class KVTaskClient {
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + httpResponse.statusCode());
             }
-        } catch(IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка.");
             System.out.println("Проверьте, пожалуйста, адрес и повторите попытку.");
         }
@@ -75,7 +74,7 @@ public class KVTaskClient {
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + httpResponse.statusCode());
             }
-        } catch(IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println("Во время выполнения запроса возникла ошибка.");
             System.out.println("Проверьте, пожалуйста, адрес и повторите попытку.");
         }

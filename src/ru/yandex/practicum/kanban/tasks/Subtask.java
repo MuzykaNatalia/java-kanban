@@ -6,44 +6,42 @@ import static ru.yandex.practicum.kanban.tasks.TypeOfTasks.SUBTASK;
 
 public class Subtask extends Task {
     protected int idEpic;
-    protected TypeOfTasks type = SUBTASK;
 
     public Subtask(String name, StatusesTask status, String description, int idEpic) {
         super(name, status, description);
+        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
     public Subtask(String name, StatusesTask status, String description,
                    ZonedDateTime startTime, int durationMinutes, int idEpic) {
         super(name, status, description, startTime, durationMinutes);
+        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
     public Subtask(int id, String name, StatusesTask status, String description, int idEpic) {
         super(id, name, status, description);
+        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
     public Subtask(int id, String name, StatusesTask status, String description,
                    ZonedDateTime startTime, int durationMinutes, int idEpic) {
         super(id, name, status, description, startTime, durationMinutes);
+        super.setType(SUBTASK);
         this.idEpic = idEpic;
     }
 
     public Subtask(int id, TypeOfTasks type, String name, StatusesTask status, String description,
                    ZonedDateTime startTime, int durationMinutes, int idEpic) {
         super(id, name, status, description, startTime, durationMinutes);
+        super.setType(type);
         this.idEpic = idEpic;
-        this.type = type;
     }
 
     public int getIdEpic() {
         return idEpic;
-    }
-
-    @Override
-    public TypeOfTasks getType() {
-        return type;
     }
 
     @Override
@@ -52,25 +50,25 @@ public class Subtask extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
-        return idEpic == subtask.idEpic && type == subtask.type;
+        return idEpic == subtask.idEpic;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), idEpic, type);
+        return Objects.hash(super.hashCode(), idEpic);
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "id=" + id +
+                "idEpic=" + idEpic +
+                ", id=" + id +
                 ", type=" + type +
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
                 ", startTime=" + startTime +
                 ", durationMinutes=" + durationMinutes +
-                ", idEpic=" + idEpic +
                 '}';
     }
 }
