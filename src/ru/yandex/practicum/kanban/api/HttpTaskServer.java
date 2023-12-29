@@ -10,7 +10,8 @@ import java.net.*;
 import java.time.ZonedDateTime;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static ru.yandex.practicum.kanban.manager.time.ZonedDateTimeAdapter.DATE_TIME_FORMATTER;
-    /**По прошлой рекомендации старалась делать небольшие и понятные методы, не перегружая их кучами проверок на все случаи жизни ))) */
+    /**По прошлой рекомендации старалась делать небольшие и понятные методы, не перегружая
+     * их кучами проверок на все случаи жизни ))) */
 public class HttpTaskServer {
     public static final String URL_KV_SERVER = "http://localhost:8078";
     public static final int PORT_HTTP_TASK_SERVER = 8080;
@@ -117,7 +118,7 @@ public class HttpTaskServer {
 
         private void handleRequestForGetSubtask(HttpExchange exchange, String[] splitPath, String rawQuery) {
             String responseString;
-            if (splitPath.length == 5) {
+            if (splitPath.length == 4) {
                 int idEpic = getIdFromRawQuery(rawQuery);
                 responseString = gson.toJson(manager.getListOfAllEpicSubtask(idEpic));
                 writeResponse(exchange, responseString, 200);
@@ -164,109 +165,113 @@ public class HttpTaskServer {
                 }
                 JsonObject json = jsonElement.getAsJsonObject();
                 String category = splitPath[2];
-                handlePostRequestCategory(json, category, body, exchange);
+                handlePostRequestCategory(json, category, exchange);
             } catch (IOException e) {
                 System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                         "Проверьте, пожалуйста, адрес и повторите попытку.");
             }
         }
 
-        private void handlePostRequestCategory(JsonObject json, String category, String body, HttpExchange exchange) {
+        private void handlePostRequestCategory(JsonObject json, String category, HttpExchange exchange) {
             switch (category) {
-                case "task": JsonObject task = json.get("task").getAsJsonObject();
-                    handleRequestForPostTasks(task, body, exchange);
+                case "task": handleRequestForPostTasks(json, exchange);
                     break;
-                case "subtask": JsonObject subtask = json.get("subtask").getAsJsonObject();
-                    handleRequestForPostSubtask(subtask, body, exchange);
+                case "subtask": handleRequestForPostSubtask(json, exchange);
                     break;
-                case "epic": JsonObject epic = json.get("epic").getAsJsonObject();
-                    handleRequestForPostEpic(epic, body, exchange);
+                case "epic": handleRequestForPostEpic(json, exchange);
                     break;
                 default: writeResponse(exchange, "Такой категории не существует", 404);
             }
         }
 
-        private void handleRequestForPostTasks(JsonObject task, String body, HttpExchange exchange) {
-            if (body.contains("id")) {
-                updateTask(task, body);
-                writeResponse(exchange, "Task успешно обновлена", 200);
-            } else {
-                addTask(task, body);
+        private void handleRequestForPostTasks(JsonObject task, HttpExchange exchange) {
+            boolean isNoId = task.get("id").getAsInt() == 0;
+            if (isNoId) {
+                addTask(task);
                 writeResponse(exchange, "Task успешно добавлена", 200);
+            } else {
+                updateTask(task);
+                writeResponse(exchange, "Task успешно обновлена", 200);
             }
         }
 
-        private void updateTask(JsonObject task, String body) {
-            if (body.contains("ZonedDateTime")) {
-                manager.updateTask(new Task(task.get("id").getAsInt(), task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString(),
-                        ZonedDateTime.parse(task.get("ZonedDateTime").getAsString(), DATE_TIME_FORMATTER),
-                        task.get("durationMinutes").getAsInt()));
-            } else {
-                manager.updateTask(new Task(task.get("id").getAsInt(), task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString()));
-            }
-        }
-
-        private void addTask(JsonObject task, String body) {
-            if (body.contains("ZonedDateTime")) {
-                manager.addTask(new Task(task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString(),
-                        ZonedDateTime.parse(task.get("ZonedDateTime").getAsString(), DATE_TIME_FORMATTER),
-                        task.get("durationMinutes").getAsInt()));
-            } else {
+        private void addTask(JsonObject task) {
+            boolean isNoTime = task.get("startTime").getAsString().equals("null");
+            if (isNoTime) {
                 manager.addTask(new Task(task.get("name").getAsString(),
                         StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString()));
+            } else {
+                manager.addTask(new Task(task.get("name").getAsString(),
+                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString(),
+                        ZonedDateTime.parse(task.get("startTime").getAsString(), DATE_TIME_FORMATTER),
+                        task.get("durationMinutes").getAsInt()));
             }
         }
 
-        private void handleRequestForPostSubtask(JsonObject subtask, String body, HttpExchange exchange) {
-            if (body.contains("id")) {
-                updateSubtask(subtask, body);
-                writeResponse(exchange, "Subtask успешно обновлена", 200);
+        private void updateTask(JsonObject task) {
+            boolean isNoTime = task.get("startTime").getAsString().equals("null");
+            if (isNoTime) {
+                manager.updateTask(new Task(task.get("id").getAsInt(), task.get("name").getAsString(),
+                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString()));
             } else {
-                addSubtask(subtask, body);
+                manager.updateTask(new Task(task.get("id").getAsInt(), task.get("name").getAsString(),
+                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString(),
+                        ZonedDateTime.parse(task.get("startTime").getAsString(), DATE_TIME_FORMATTER),
+                        task.get("durationMinutes").getAsInt()));
+            }
+        }
+
+        private void handleRequestForPostSubtask(JsonObject subtask, HttpExchange exchange) {
+            boolean isNoId = subtask.get("id").getAsInt() == 0;
+            if (isNoId) {
+                addSubtask(subtask);
                 writeResponse(exchange, "Subtask успешно добавлена", 200);
+            } else {
+                updateSubtask(subtask);
+                writeResponse(exchange, "Subtask успешно обновлена", 200);
             }
         }
 
-        private void updateSubtask(JsonObject subtask, String body) {
-            if (body.contains("ZonedDateTime")) {
-                manager.updateSubtask(new Subtask(subtask.get("id").getAsInt(), subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(),
-                        ZonedDateTime.parse(subtask.get("ZonedDateTime").getAsString(), DATE_TIME_FORMATTER),
-                        subtask.get("durationMinutes").getAsInt(), subtask.get("idEpic").getAsInt()));
-            } else {
-                manager.updateSubtask(new Subtask(subtask.get("id").getAsInt(), subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(), subtask.get("idEpic").getAsInt()));
-            }
-        }
-
-        private void addSubtask(JsonObject subtask, String body) {
-            if (body.contains("ZonedDateTime")) {
-                manager.addSubtask(new Subtask(subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(),
-                        ZonedDateTime.parse(subtask.get("ZonedDateTime").getAsString(), DATE_TIME_FORMATTER),
-                        subtask.get("durationMinutes").getAsInt(), subtask.get("idEpic").getAsInt()));
-            } else {
+        private void addSubtask(JsonObject subtask) {
+            boolean isNoTime = subtask.get("startTime").getAsString().equals("null");
+            if (isNoTime) {
                 manager.addSubtask(new Subtask(subtask.get("name").getAsString(),
                         StatusesTask.valueOf(subtask.get("status").getAsString()),
                         subtask.get("description").getAsString(), subtask.get("idEpic").getAsInt()));
+            } else {
+                manager.addSubtask(new Subtask(subtask.get("name").getAsString(),
+                        StatusesTask.valueOf(subtask.get("status").getAsString()),
+                        subtask.get("description").getAsString(),
+                        ZonedDateTime.parse(subtask.get("startTime").getAsString(), DATE_TIME_FORMATTER),
+                        subtask.get("durationMinutes").getAsInt(), subtask.get("idEpic").getAsInt()));
             }
         }
 
-        private void handleRequestForPostEpic(JsonObject epic, String body, HttpExchange exchange) {
-            if (body.contains("id")) {
-                manager.updateEpic(new Epic(epic.get("id").getAsInt(), epic.get("name").getAsString(),
-                        StatusesTask.valueOf(epic.get("status").getAsString()), epic.get("description").getAsString()));
-                writeResponse(exchange, "Epic успешно обновлена", 200);
+        private void updateSubtask(JsonObject subtask) {
+            boolean isNoTime = subtask.get("startTime").getAsString().equals("null");
+            if (isNoTime) {
+                manager.updateSubtask(new Subtask(subtask.get("id").getAsInt(), subtask.get("name").getAsString(),
+                        StatusesTask.valueOf(subtask.get("status").getAsString()),
+                        subtask.get("description").getAsString(), subtask.get("idEpic").getAsInt()));
             } else {
+                manager.updateSubtask(new Subtask(subtask.get("id").getAsInt(), subtask.get("name").getAsString(),
+                        StatusesTask.valueOf(subtask.get("status").getAsString()),
+                        subtask.get("description").getAsString(),
+                        ZonedDateTime.parse(subtask.get("startTime").getAsString(), DATE_TIME_FORMATTER),
+                        subtask.get("durationMinutes").getAsInt(), subtask.get("idEpic").getAsInt()));
+            }
+        }
+
+        private void handleRequestForPostEpic(JsonObject epic, HttpExchange exchange) {
+            boolean isNoId = epic.get("id").getAsInt() == 0;
+            if (isNoId) {
                 manager.addEpic(new Epic(epic.get("name").getAsString(),
                         StatusesTask.valueOf(epic.get("status").getAsString()), epic.get("description").getAsString()));
-                writeResponse(exchange, "Epic успешно добавлена", 200);
+                writeResponse(exchange, "Epic успешно добавлен", 200);
+            } else {
+                manager.updateEpic(new Epic(epic.get("id").getAsInt(), epic.get("name").getAsString(),
+                        StatusesTask.valueOf(epic.get("status").getAsString()), epic.get("description").getAsString()));
+                writeResponse(exchange, "Epic успешно обновлен", 200);
             }
         }
 
@@ -302,7 +307,7 @@ public class HttpTaskServer {
                 return;
             }
 
-            if (splitPath.length == 5) {
+            if (splitPath.length == 4) {
                 int idEpic = getIdFromRawQuery(rawQuery);
                 manager.deleteAllSubtasksOfAnEpic(idEpic);
                 writeResponse(exchange, "Subtasks с idEpic " + idEpic + " успешно удалены", 200);
