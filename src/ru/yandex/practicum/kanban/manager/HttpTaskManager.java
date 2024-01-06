@@ -30,19 +30,35 @@ public class HttpTaskManager extends FileBackedTasksManager {
     }
 
     private void loadFromServer() {
-        List<Task> tasks = gson.fromJson(client.load("task"), new TypeToken<ArrayList<Task>>() {
-        }.getType());
-        List<Epic> epics = gson.fromJson(client.load("epic"), new TypeToken<ArrayList<Epic>>() {
-        }.getType());
-        List<Subtask> subtasks = gson.fromJson(client.load("subtask"), new TypeToken<ArrayList<Subtask>>() {
-        }.getType());
-        addAllTasksInManager(tasks, epics, subtasks);
-        List<Integer> history = gson.fromJson(client.load("history"), new TypeToken<ArrayList<Integer>>() {
-        }.getType());
+        List<Task> tasks = tasksFromJson();
+        List<Epic> epics = epicsFromJson();
+        List<Subtask> subtasks = subtasksFromJson();
+
+        addAllTasksInManager(tasks);
+        addAllEpicsInManager(epics);
+        addAllSubtasksInManager(subtasks);
+
+        List<Integer> history = historyFromJson();
         addHistoryInManager(history);
     }
 
-    private void addAllTasksInManager(List<Task> tasks, List<Epic> epics, List<Subtask> subtasks) {
+    private List<Task> tasksFromJson() {
+        return gson.fromJson(client.load("task"), new TypeToken<ArrayList<Task>>() {}.getType());
+    }
+
+    private List<Epic> epicsFromJson() {
+        return gson.fromJson(client.load("epic"), new TypeToken<ArrayList<Epic>>() {}.getType());
+    }
+
+    private List<Subtask> subtasksFromJson() {
+        return gson.fromJson(client.load("subtask"), new TypeToken<ArrayList<Subtask>>() {}.getType());
+    }
+
+    private List<Integer> historyFromJson() {
+        return gson.fromJson(client.load("history"), new TypeToken<ArrayList<Integer>>() {}.getType());
+    }
+
+    private void addAllTasksInManager(List<Task> tasks) {
         for (Task task : tasks) {
             if (task.getId() == 0) {
                 addTask(task);
@@ -51,16 +67,20 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 generateMaxId(task.getId());
             }
         }
+    }
 
+    private void addAllEpicsInManager(List<Epic> epics) {
         for (Epic epic : epics) {
-             if (epic.getId() == 0) {
-                 addEpic(epic);
-             } else {
-                 mapEpic.put(epic.getId(), epic);
-                 generateMaxId(epic.getId());
-             }
+            if (epic.getId() == 0) {
+                addEpic(epic);
+            } else {
+                mapEpic.put(epic.getId(), epic);
+                generateMaxId(epic.getId());
+            }
         }
+    }
 
+    private void addAllSubtasksInManager(List<Subtask> subtasks) {
         for (Subtask subtask : subtasks) {
             if (subtask.getId() == 0) {
                 addSubtask(subtask);

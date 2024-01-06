@@ -79,7 +79,7 @@ public class HttpTaskManagerTest {
     @Test
     public void shouldAddWithTimeTasksToTheServer() throws IOException, InterruptedException {
         List<Task> tasks = new ArrayList<>();
-        Task taskTest = new Task("4", DONE, "k", startTime_16_00, 10);
+        Task taskTest = new Task("4", DONE, "k", startTime_20_00, 10);
         tasks.add(taskTest);
         String jsonTaskTest = gson.toJson(tasks);
 
