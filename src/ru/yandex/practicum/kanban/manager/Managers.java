@@ -2,8 +2,6 @@ package ru.yandex.practicum.kanban.manager;
 
 import ru.yandex.practicum.kanban.manager.history.HistoryManager;
 import ru.yandex.practicum.kanban.manager.history.InMemoryHistoryManager;
-
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 
 public class Managers {
@@ -15,8 +13,8 @@ public class Managers {
         return new FileBackedTasksManager(path);
     }
 
-    public static TaskManager getDefaultHttpManager(String url) {
-        return new HttpTaskManager(url);
+    public static TaskManager getDefaultHttpManager(String url, boolean load) {
+        return new HttpTaskManager(url, load);
     }
 
     public static HistoryManager getDefaultHistory() {

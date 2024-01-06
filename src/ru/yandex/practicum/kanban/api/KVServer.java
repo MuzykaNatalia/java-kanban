@@ -23,9 +23,7 @@ public class KVServer {
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
+        gson = new GsonBuilder().create();
     }
 
     private void load(HttpExchange h) throws IOException {

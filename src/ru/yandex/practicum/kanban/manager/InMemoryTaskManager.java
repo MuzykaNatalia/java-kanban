@@ -3,9 +3,7 @@ package ru.yandex.practicum.kanban.manager;
 import ru.yandex.practicum.kanban.manager.history.HistoryManager;
 import ru.yandex.practicum.kanban.manager.time.StartAndEnd;
 import ru.yandex.practicum.kanban.tasks.StatusesTask;
-import ru.yandex.practicum.kanban.tasks.Task;
-import ru.yandex.practicum.kanban.tasks.Epic;
-import ru.yandex.practicum.kanban.tasks.Subtask;
+import ru.yandex.practicum.kanban.tasks.*;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -409,8 +407,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return true;
     }
-    /**Может вынести следующие методы в класс Epic? Тогда данный класс уменьшится в размере
-    * updateEpicStatus, updateEpicTime, resetEpicTime, sortEpicSubtasksTime, calculateEpicDuration*/
+
     protected void updateEpicStatus(int idEpic) {
         if (mapEpic.containsKey(idEpic)) {
             Epic epic = mapEpic.get(idEpic);
@@ -443,8 +440,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ZonedDateTime startTimeEpic = listSubtaskTime.get(0).getStartTime();
                 ZonedDateTime endTimeEpic = listSubtaskTime.get(listSubtaskTime.size() - 1).getEndTime();
 
-                epic.setStartTime(startTimeEpic);
-                epic.setEndTime(endTimeEpic);
+                epic.setStartTime(startTimeEpic);epic.setEndTime(endTimeEpic);
 
                 int durationMinutesEpic = calculateEpicDuration(epic.getListIdSubtask());
                 epic.setDurationMinutes(durationMinutesEpic);

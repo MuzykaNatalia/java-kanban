@@ -51,16 +51,6 @@ public class Epic extends Task {
     }
 
     @Override
-    public ZonedDateTime getStartTime() {
-        return startTime;
-    }
-
-    @Override
-    public void setStartTime(ZonedDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    @Override
     public int getDurationMinutes() {
         return durationMinutes;
     }

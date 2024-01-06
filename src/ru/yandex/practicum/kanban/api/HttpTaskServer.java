@@ -9,34 +9,20 @@ import java.io.*;
 import java.net.*;
 import java.time.ZonedDateTime;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static ru.yandex.practicum.kanban.manager.time.ZonedDateTimeAdapter.DATE_TIME_FORMATTER;
-    /**По прошлой рекомендации старалась делать небольшие и понятные методы, не перегружая
-     * их кучами проверок на все случаи жизни ))) */
+
 public class HttpTaskServer {
-    public static final String URL_KV_SERVER = "http://localhost:8078";
     public static final int PORT_HTTP_TASK_SERVER = 8080;
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter())
+            .create();
     protected TaskManager manager;
     protected HttpServer httpServer;
-    private static Gson gson;
 
-    public HttpTaskServer() throws IOException {
-        manager = Managers.getDefaultHttpManager(URL_KV_SERVER);
-        gson = new GsonBuilder()
-                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter())
-                .create();
+    public HttpTaskServer(TaskManager manager) throws IOException {
+        this.manager = manager;
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT_HTTP_TASK_SERVER), 0);
         httpServer.createContext("/tasks", new TasksHandler(manager));
     }
-
-    public HttpTaskServer(HttpTaskManager manager) throws IOException {
-        this.manager = manager;
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter())
-                .create();
-        httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT_HTTP_TASK_SERVER), 0);
-        httpServer.createContext("/tasks", new TasksHandler(manager));
-        }
 
     public void start() {
         System.out.println("Запущен сервер на порту " + PORT_HTTP_TASK_SERVER);
@@ -75,8 +61,8 @@ public class HttpTaskServer {
                     default: writeResponse(exchange, "Такого эндпоинта не существует", 404);
                 }
             } catch (IOException e) {
-                System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                        "Проверьте, пожалуйста, адрес и повторите попытку.");
+                writeResponse(exchange, "Во время выполнения запроса возникла ошибка. " +
+                        "Проверьте, пожалуйста, адрес и повторите попытку.", 400);
             } finally {
                 exchange.close();
             }
@@ -160,15 +146,17 @@ public class HttpTaskServer {
                 JsonElement jsonElement = JsonParser.parseString(body);
 
                 if(!jsonElement.isJsonObject()) {
-                    System.out.println("Ответ от сервера не соответствует ожидаемому.");
+                    writeResponse(exchange, "Ответ от сервера не соответствует ожидаемому.",
+                            exchange.getResponseCode());
                     return;
                 }
+
                 JsonObject json = jsonElement.getAsJsonObject();
                 String category = splitPath[2];
                 handlePostRequestCategory(json, category, exchange);
             } catch (IOException e) {
-                System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                        "Проверьте, пожалуйста, адрес и повторите попытку.");
+                writeResponse(exchange, "Во время выполнения запроса возникла ошибка. " +
+                        "Проверьте, пожалуйста, адрес и повторите попытку.", 400);
             }
         }
 
@@ -183,94 +171,42 @@ public class HttpTaskServer {
                 default: writeResponse(exchange, "Такой категории не существует", 404);
             }
         }
-
+    /** значение для int по-умолчанию 0, поэтому для новых задач, у которых нет id , null исключен,
+     * при тестировании это проверяется в POST запросах )).
+     * Если даже просто попытаться сделать такую проверку,
+     * то программа ругается: "Оператор '!=' не может быть применен к 'int', 'null'" */
         private void handleRequestForPostTasks(JsonObject task, HttpExchange exchange) {
-            boolean isNoId = task.get("id").getAsInt() == 0;
+            Task newTask = gson.fromJson(task, Task.class);
+            boolean isNoId = newTask.getId() == 0;
             if (isNoId) {
-                addTask(task);
+                manager.addTask(newTask);
                 writeResponse(exchange, "Task успешно добавлена", 200);
             } else {
-                updateTask(task);
+                manager.updateTask(newTask);
                 writeResponse(exchange, "Task успешно обновлена", 200);
             }
         }
 
-        private void addTask(JsonObject task) {
-            boolean isNoTime = task.get("startTime").getAsString().equals("null");
-            if (isNoTime) {
-                manager.addTask(new Task(task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString()));
-            } else {
-                manager.addTask(new Task(task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString(),
-                        ZonedDateTime.parse(task.get("startTime").getAsString(), DATE_TIME_FORMATTER),
-                        task.get("durationMinutes").getAsInt()));
-            }
-        }
-
-        private void updateTask(JsonObject task) {
-            boolean isNoTime = task.get("startTime").getAsString().equals("null");
-            if (isNoTime) {
-                manager.updateTask(new Task(task.get("id").getAsInt(), task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString()));
-            } else {
-                manager.updateTask(new Task(task.get("id").getAsInt(), task.get("name").getAsString(),
-                        StatusesTask.valueOf(task.get("status").getAsString()), task.get("description").getAsString(),
-                        ZonedDateTime.parse(task.get("startTime").getAsString(), DATE_TIME_FORMATTER),
-                        task.get("durationMinutes").getAsInt()));
-            }
-        }
-
         private void handleRequestForPostSubtask(JsonObject subtask, HttpExchange exchange) {
-            boolean isNoId = subtask.get("id").getAsInt() == 0;
+            Subtask newSubtask = gson.fromJson(subtask, Subtask.class);
+            boolean isNoId = newSubtask.getId() == 0;
             if (isNoId) {
-                addSubtask(subtask);
+                manager.addSubtask(newSubtask);
                 writeResponse(exchange, "Subtask успешно добавлена", 200);
             } else {
-                updateSubtask(subtask);
+                manager.updateSubtask(newSubtask);
                 writeResponse(exchange, "Subtask успешно обновлена", 200);
             }
         }
 
-        private void addSubtask(JsonObject subtask) {
-            boolean isNoTime = subtask.get("startTime").getAsString().equals("null");
-            if (isNoTime) {
-                manager.addSubtask(new Subtask(subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(), subtask.get("idEpic").getAsInt()));
-            } else {
-                manager.addSubtask(new Subtask(subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(),
-                        ZonedDateTime.parse(subtask.get("startTime").getAsString(), DATE_TIME_FORMATTER),
-                        subtask.get("durationMinutes").getAsInt(), subtask.get("idEpic").getAsInt()));
-            }
-        }
-
-        private void updateSubtask(JsonObject subtask) {
-            boolean isNoTime = subtask.get("startTime").getAsString().equals("null");
-            if (isNoTime) {
-                manager.updateSubtask(new Subtask(subtask.get("id").getAsInt(), subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(), subtask.get("idEpic").getAsInt()));
-            } else {
-                manager.updateSubtask(new Subtask(subtask.get("id").getAsInt(), subtask.get("name").getAsString(),
-                        StatusesTask.valueOf(subtask.get("status").getAsString()),
-                        subtask.get("description").getAsString(),
-                        ZonedDateTime.parse(subtask.get("startTime").getAsString(), DATE_TIME_FORMATTER),
-                        subtask.get("durationMinutes").getAsInt(), subtask.get("idEpic").getAsInt()));
-            }
-        }
-
         private void handleRequestForPostEpic(JsonObject epic, HttpExchange exchange) {
-            boolean isNoId = epic.get("id").getAsInt() == 0;
+            Epic newEpic = gson.fromJson(epic, Epic.class);
+            boolean isNoId = newEpic.getId() == 0;
             if (isNoId) {
-                manager.addEpic(new Epic(epic.get("name").getAsString(),
-                        StatusesTask.valueOf(epic.get("status").getAsString()), epic.get("description").getAsString()));
+                manager.addEpic(newEpic);
                 writeResponse(exchange, "Epic успешно добавлен", 200);
             } else {
-                manager.updateEpic(new Epic(epic.get("id").getAsInt(), epic.get("name").getAsString(),
-                        StatusesTask.valueOf(epic.get("status").getAsString()), epic.get("description").getAsString()));
+                manager.updateEpic(newEpic);
                 writeResponse(exchange, "Epic успешно обновлен", 200);
             }
         }

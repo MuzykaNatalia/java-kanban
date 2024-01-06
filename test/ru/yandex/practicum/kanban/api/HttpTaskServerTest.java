@@ -21,7 +21,10 @@ public class HttpTaskServerTest {
             ZoneId.of("UTC+3"));
     protected ZonedDateTime startTime_17_00 =
             ZonedDateTime.of(LocalDateTime.of(2023, 12, 14, 17, 0),
-                    ZoneId.of("UTC+3"));
+            ZoneId.of("UTC+3"));
+    protected ZonedDateTime startTime_20_00 =
+            ZonedDateTime.of(LocalDateTime.of(2023, 12, 14, 20, 0),
+            ZoneId.of("UTC+3"));
     protected static final String URL_TASK_SERVER = "http://localhost:8080";
     protected static final String URL_KV_SERVER = "http://localhost:8078";
     protected HttpTaskManager manager;
@@ -37,7 +40,7 @@ public class HttpTaskServerTest {
     public void shouldSetForTest() throws IOException {
         kvServer = new KVServer();
         kvServer.start();
-        manager = new HttpTaskManager(URL_KV_SERVER);
+        manager = new HttpTaskManager(URL_KV_SERVER, false);
         taskServer = new HttpTaskServer(manager);
         taskServer.start();
         client = HttpClient.newBuilder().build();
@@ -325,9 +328,29 @@ public class HttpTaskServerTest {
         assertEquals(bodyTest, body);
     }
 
-    @DisplayName("Должен добавлять задачу для endpoint: POST /tasks/task/Body: {task}")
+    @DisplayName("Должен добавлять задачу с временем для endpoint: POST /tasks/task/Body: {task}")
     @Test
-    public void shouldAddTaskForEndpointPost() throws IOException, InterruptedException {
+    public void shouldAddWithTimeTaskForEndpointPost() throws IOException, InterruptedException {
+        Task taskTest = new Task("4", NEW, "k", startTime_20_00, 10);
+        String jsonTaskTest = gson.toJson(taskTest);
+
+        URI uri = URI.create(URL_TASK_SERVER + "/tasks/task/");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTaskTest))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String body = response.body();
+        String bodyTest = "Task успешно добавлена";
+
+        assertEquals(200, response.statusCode());
+        assertEquals(2, manager.getListOfTasks().size());
+        assertEquals(bodyTest, body);
+    }
+
+    @DisplayName("Должен добавлять задачу без времени для endpoint: POST /tasks/task/Body: {task}")
+    @Test
+    public void shouldAddWithNoTimeTaskForEndpointPost() throws IOException, InterruptedException {
         Task taskTest = new Task("4", NEW, "k");
         String jsonTaskTest = gson.toJson(taskTest);
 
@@ -345,9 +368,30 @@ public class HttpTaskServerTest {
         assertEquals(bodyTest, body);
     }
 
-    @DisplayName("Должен обновлять задачу для endpoint: POST /tasks/task/Body: {task}")
+    @DisplayName("Должен обновлять задачу с временем для endpoint: POST /tasks/task/Body: {task}")
     @Test
-    public void shouldUpdateTaskForEndpointPost() throws IOException, InterruptedException {
+    public void shouldUpdateWithTimeTaskForEndpointPost() throws IOException, InterruptedException {
+        Task taskTest = new Task(1,"4", DONE, "k", startTime_20_00, 10);
+        String jsonTaskTest = gson.toJson(taskTest);
+
+        URI uri = URI.create(URL_TASK_SERVER + "/tasks/task/");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonTaskTest))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String body = response.body();
+        String bodyTest = "Task успешно обновлена";
+
+        assertEquals(200, response.statusCode());
+        assertEquals(1, manager.getListOfTasks().size());
+        assertEquals(taskTest, manager.getTheTaskById(1));
+        assertEquals(bodyTest, body);
+    }
+
+    @DisplayName("Должен обновлять задачу без времени для endpoint: POST /tasks/task/Body: {task}")
+    @Test
+    public void shouldUpdateWithNoTimeTaskForEndpointPost() throws IOException, InterruptedException {
         Task taskTest = new Task(1,"4", DONE, "k");
         String jsonTaskTest = gson.toJson(taskTest);
 
@@ -409,10 +453,10 @@ public class HttpTaskServerTest {
         assertEquals(bodyTest, body);
     }
 
-    @DisplayName("Должен добавлять подзадачу для endpoint: POST /tasks/subtask/Body: {subtask}")
+    @DisplayName("Должен добавлять подзадачу с временем для endpoint: POST /tasks/subtask/Body: {subtask}")
     @Test
-    public void shouldAddSubtaskForEndpointPost() throws IOException, InterruptedException {
-        Subtask subtaskTest = new Subtask("6", NEW, "l", 2);
+    public void shouldAddWithTimeSubtaskForEndpointPost() throws IOException, InterruptedException {
+        Subtask subtaskTest = new Subtask("6", NEW, "l", startTime_20_00, 10, 2);
         String jsonSubtaskTest = gson.toJson(subtaskTest);
 
         URI uri = URI.create(URL_TASK_SERVER + "/tasks/subtask/");
@@ -429,10 +473,51 @@ public class HttpTaskServerTest {
         assertEquals(bodyTest, body);
     }
 
-    @DisplayName("Должен обновлять подзадачу для endpoint: POST /tasks/subtask/Body: {subtask}")
+    @DisplayName("Должен добавлять подзадачу без времени для endpoint: POST /tasks/subtask/Body: {subtask}")
     @Test
-    public void shouldUpdateSubtaskForEndpointPost() throws IOException, InterruptedException {
-        Subtask subtaskTest = new Subtask(3,"6", NEW, "l", 2);
+    public void shouldAddWithNoTimeSubtaskForEndpointPost() throws IOException, InterruptedException {
+        Subtask subtaskTest = new Subtask("6", NEW, "l",2);
+        String jsonSubtaskTest = gson.toJson(subtaskTest);
+
+        URI uri = URI.create(URL_TASK_SERVER + "/tasks/subtask/");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonSubtaskTest))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String body = response.body();
+        String bodyTest = "Subtask успешно добавлена";
+
+        assertEquals(200, response.statusCode());
+        assertEquals(2, manager.getListOfSubtask().size());
+        assertEquals(bodyTest, body);
+    }
+
+    @DisplayName("Должен обновлять подзадачу с временем для endpoint: POST /tasks/subtask/Body: {subtask}")
+    @Test
+    public void shouldUpdateWithTimeSubtaskForEndpointPost() throws IOException, InterruptedException {
+        Subtask subtaskTest = new Subtask(3,"", NEW, "i", startTime_20_00, 10, 2);
+        String jsonSubtaskTest = gson.toJson(subtaskTest);
+
+        URI uri = URI.create(URL_TASK_SERVER + "/tasks/subtask/");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonSubtaskTest))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String body = response.body();
+        String bodyTest = "Subtask успешно обновлена";
+
+        assertEquals(200, response.statusCode());
+        assertEquals(1, manager.getListOfSubtask().size());
+        assertEquals(subtaskTest, manager.getTheSubtaskById(3));
+        assertEquals(bodyTest, body);
+    }
+
+    @DisplayName("Должен обновлять подзадачу без времени для endpoint: POST /tasks/subtask/Body: {subtask}")
+    @Test
+    public void shouldUpdateWithNoTimeSubtaskForEndpointPost() throws IOException, InterruptedException {
+        Subtask subtaskTest = new Subtask(3,"6", NEW, "l",2);
         String jsonSubtaskTest = gson.toJson(subtaskTest);
 
         URI uri = URI.create(URL_TASK_SERVER + "/tasks/subtask/");

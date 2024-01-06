@@ -61,14 +61,14 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         return "Subtask{" +
-                "idEpic=" + idEpic +
-                ", id=" + id +
+                "id=" + id +
                 ", type=" + type +
                 ", name='" + name + '\'' +
                 ", status=" + status +
                 ", description='" + description + '\'' +
                 ", startTime=" + startTime +
                 ", durationMinutes=" + durationMinutes +
+                ", idEpic=" + idEpic +
                 '}';
     }
 }

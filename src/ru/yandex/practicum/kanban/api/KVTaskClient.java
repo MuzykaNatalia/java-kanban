@@ -2,6 +2,9 @@ package ru.yandex.practicum.kanban.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import ru.yandex.practicum.kanban.exception.ManagerLoadException;
+import ru.yandex.practicum.kanban.exception.ManagerSaveException;
+import ru.yandex.practicum.kanban.exception.RegisterApiTokenException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,7 +21,7 @@ public class KVTaskClient {
         this.apiToken = registerApiToken();
     }
 
-    private String registerApiToken() {
+    private String registerApiToken() throws RegisterApiTokenException {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(url + "/register"))
@@ -30,16 +33,16 @@ public class KVTaskClient {
                 System.out.println("Регистрация прошла успешно.");
                 return httpResponse.body();
             } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + httpResponse.statusCode());
+                throw new RegisterApiTokenException("Что-то пошло не так. Сервер вернул код состояния: "
+                        + httpResponse.statusCode());
             }
         } catch (IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса возникла ошибка.");
-            System.out.println("Проверьте, пожалуйста, адрес и повторите попытку.");
+            throw new RegisterApiTokenException("Во время выполнения запроса возникла ошибка. " +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
-        return "";
     }
 
-    public void put(String key, String json) {
+    public void put(String key, String json) throws ManagerSaveException {
         URI uri = URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -51,15 +54,16 @@ public class KVTaskClient {
             if (httpResponse.statusCode() == 200) {
                 System.out.println("Состояние менеджера задач сохранено.");
             } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + httpResponse.statusCode());
+                throw new ManagerSaveException("Что-то пошло не так. Сервер вернул код состояния: "
+                        + httpResponse.statusCode());
             }
         } catch (IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса возникла ошибка.");
-            System.out.println("Проверьте, пожалуйста, адрес и повторите попытку.");
+            throw new ManagerSaveException("Во время выполнения запроса возникла ошибка. " +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
     }
 
-    public String load(String key) {
+    public String load(String key) throws ManagerLoadException {
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
@@ -72,12 +76,12 @@ public class KVTaskClient {
                 JsonElement jsonElement = JsonParser.parseString(httpResponse.body());
                 return  jsonElement.getAsString();
             } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + httpResponse.statusCode());
+                throw new ManagerLoadException("Что-то пошло не так. Сервер вернул код состояния: "
+                        + httpResponse.statusCode());
             }
         } catch (IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса возникла ошибка.");
-            System.out.println("Проверьте, пожалуйста, адрес и повторите попытку.");
+            throw new ManagerLoadException("Во время выполнения запроса возникла ошибка. " +
+                    "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
-        return "";
     }
 }

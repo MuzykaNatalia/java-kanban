@@ -1,9 +1,0 @@
-id,type,name,status,description,duration,startTime,endTime,epicId
-1,EPIC,TZ-7,NEW,project,0,null,null
-2,EPIC,TZ-8,NEW,project,0,null,null
-3,SUBTASK,learn,NEW,java,0,null,null,1
-4,SUBTASK,read,NEW,book,0,null,null,1
-5,TASK,a,NEW,a-a,0,null,null
-6,TASK,a,NEW,a-a,0,null,null
-7,TASK,a,NEW,a-a,0,null,null
-

@@ -1,126 +1,92 @@
 package ru.yandex.practicum.kanban.manager;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import ru.yandex.practicum.kanban.api.KVTaskClient;
 import ru.yandex.practicum.kanban.manager.time.ZonedDateTimeAdapter;
 import ru.yandex.practicum.kanban.tasks.*;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class HttpTaskManager extends FileBackedTasksManager {
     protected final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .serializeNulls()
             .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeAdapter())
             .create();
     protected static final String KEY_TASK = "task";
     protected static final String KEY_SUBTASK = "subtask";
     protected static final String KEY_EPIC = "epic";
     protected static final String KEY_HISTORY = "history";
-    protected static KVTaskClient client;
+    protected KVTaskClient client;
 
-    public HttpTaskManager(String url) {
-        super(url);
+    public HttpTaskManager(String url, boolean load) {
+        super(Path.of("resources/http-file.csv"));
         client = new KVTaskClient(url);
-    }
-
-    protected void loadFromServer() {
-        createTasksFromJsonString(client.load(KEY_TASK));
-        createTasksFromJsonString(client.load(KEY_EPIC));
-        createTasksFromJsonString(client.load(KEY_SUBTASK));
-        createHistoryFromJsonString(client.load(KEY_HISTORY));
-    }
-
-    private void createTasksFromJsonString(String jsonString) {
-        if (jsonString.isEmpty()) {
-            return;
-        }
-
-        JsonElement jsonElement = JsonParser.parseString(jsonString);
-        if (!jsonElement.isJsonObject()) {
-            return;
-        }
-
-        JsonArray jsonArray = jsonElement.getAsJsonArray();
-        for (JsonElement element : jsonArray) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            addTasksInManager(jsonObject);
+        if (load) {
+            loadFromServer();
         }
     }
 
-    private void addTasksInManager(JsonObject jsonObject) {
-        TypeOfTasks type = TypeOfTasks.valueOf(jsonObject.get("type").getAsString());
-        int id = jsonObject.get("id").getAsInt();
-        String name = jsonObject.get("name").getAsString();
-        StatusesTask status = StatusesTask.valueOf(jsonObject.get("status").getAsString());
-        String description = jsonObject.get("description").getAsString();
-        int durationMinutes = jsonObject.get("durationMinutes").getAsInt();
+    private void loadFromServer() {
+        List<Task> tasks = gson.fromJson(client.load("task"), new TypeToken<ArrayList<Task>>() {
+        }.getType());
+        List<Epic> epics = gson.fromJson(client.load("epic"), new TypeToken<ArrayList<Epic>>() {
+        }.getType());
+        List<Subtask> subtasks = gson.fromJson(client.load("subtask"), new TypeToken<ArrayList<Subtask>>() {
+        }.getType());
+        addAllTasksInManager(tasks, epics, subtasks);
+        List<Integer> history = gson.fromJson(client.load("history"), new TypeToken<ArrayList<Integer>>() {
+        }.getType());
+        addHistoryInManager(history);
+    }
 
-        String time = jsonObject.get("startTime").getAsString();
-        ZonedDateTime startTime = null;
-        if (!time.equals("null")) {
-            startTime = ZonedDateTime.parse(time, ZonedDateTimeAdapter.DATE_TIME_FORMATTER);
+    private void addAllTasksInManager(List<Task> tasks, List<Epic> epics, List<Subtask> subtasks) {
+        for (Task task : tasks) {
+            if (task.getId() == 0) {
+                addTask(task);
+            } else {
+                mapTasks.put(task.getId(), task);
+                generateMaxId(task.getId());
+            }
         }
 
-        switch (type) {
-            case TASK:
-                addTask(new Task(id, name, status, description, startTime, durationMinutes));
-                break;
-            case EPIC:
-                addEpic(new Epic(id, name, status, description));
-                break;
-            case SUBTASK:
-                int idEpic = jsonObject.get("id").getAsInt();
-                addSubtask(new Subtask(id, name, status, description, startTime, durationMinutes, idEpic));
-                break;
+        for (Epic epic : epics) {
+             if (epic.getId() == 0) {
+                 addEpic(epic);
+             } else {
+                 mapEpic.put(epic.getId(), epic);
+                 generateMaxId(epic.getId());
+             }
+        }
+
+        for (Subtask subtask : subtasks) {
+            if (subtask.getId() == 0) {
+                addSubtask(subtask);
+            } else {
+                mapSubtask.put(subtask.getId(), subtask);
+                generateMaxId(subtask.getId());
+            }
         }
     }
 
-    private void createHistoryFromJsonString(String jsonString) {
-        if (jsonString.isEmpty()) {
-            return;
-        }
-
-        JsonElement jsonElement = JsonParser.parseString(jsonString);
-        if (!jsonElement.isJsonObject()) {
-            return;
-        }
-
-        JsonArray jsonArray = jsonElement.getAsJsonArray();
-        for (JsonElement element : jsonArray) {
-            JsonPrimitive primitive = element.getAsJsonPrimitive();
-            addTasksToHistoryById(primitive.getAsInt());
+    private void addHistoryInManager(List<Integer> history) {
+        for (Integer idHistory : history) {
+            addTasksToHistoryById(idHistory);
         }
     }
 
     @Override
     protected void saveManager() {
-        client.put(KEY_TASK, createJsonStringTasks());
-        client.put(KEY_EPIC, createJsonStringEpics());
-        client.put(KEY_SUBTASK, createJsonStringSubtasks());
-        client.put(KEY_HISTORY, createJsonStringHistory());
-    }
+        String jsonStringTasks = gson.toJson(new ArrayList<>(mapTasks.values()));
+        String jsonStringEpics = gson.toJson(new ArrayList<>(mapEpic.values()));
+        String jsonStringSubtasks = gson.toJson(new ArrayList<>(mapSubtask.values()));
+        String jsonStringHistory = gson.toJson(getHistory().stream().map(Task::getId).collect(Collectors.toList()));
 
-    private String createJsonStringTasks() {
-        List<Task> listTasks = super.getListOfTasks();
-        return gson.toJson(listTasks);
-    }
-
-    private String createJsonStringSubtasks() {
-        List<Subtask> listSubtasks = super.getListOfSubtask();
-        return gson.toJson(listSubtasks);
-    }
-
-    private String createJsonStringEpics() {
-        List<Epic> listEpics = super.getListOfEpic();
-        return gson.toJson(listEpics);
-    }
-
-    private String createJsonStringHistory() {
-        List<Integer> historyId = super.getHistory().stream()
-                .map(Task::getId)
-                .collect(Collectors.toList());
-        return gson.toJson(historyId);
+        client.put(KEY_TASK, jsonStringTasks);
+        client.put(KEY_EPIC, jsonStringEpics);
+        client.put(KEY_SUBTASK, jsonStringSubtasks);
+        client.put(KEY_HISTORY, jsonStringHistory);
     }
 }
