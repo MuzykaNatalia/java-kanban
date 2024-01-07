@@ -21,7 +21,7 @@ public class KVTaskClient {
         this.apiToken = registerApiToken();
     }
 
-    private String registerApiToken() throws RegisterApiTokenException {
+    private String registerApiToken() {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()
                 .uri(URI.create(url + "/register"))
@@ -42,7 +42,7 @@ public class KVTaskClient {
         }
     }
 
-    public void put(String key, String json) throws ManagerSaveException {
+    public void put(String key, String json) {
         URI uri = URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -63,7 +63,7 @@ public class KVTaskClient {
         }
     }
 
-    public String load(String key) throws ManagerLoadException {
+    public String load(String key) {
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken);
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .GET()

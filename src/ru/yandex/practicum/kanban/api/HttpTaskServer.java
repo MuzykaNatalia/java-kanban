@@ -171,10 +171,7 @@ public class HttpTaskServer {
                 default: writeResponse(exchange, "Такой категории не существует", 404);
             }
         }
-    /** значение для int по-умолчанию 0, поэтому для новых задач, у которых нет id , null исключен,
-     * при тестировании это проверяется в POST запросах )).
-     * Если даже просто попытаться сделать такую проверку,
-     * то программа ругается: "Оператор '!=' не может быть применен к 'int', 'null'" */
+
         private void handleRequestForPostTasks(JsonObject task, HttpExchange exchange) {
             Task newTask = gson.fromJson(task, Task.class);
             boolean isNoId = newTask.getId() == 0;

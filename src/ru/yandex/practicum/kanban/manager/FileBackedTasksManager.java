@@ -18,7 +18,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.path = path;
     }
 
-    public static FileBackedTasksManager loadFromFile(String file) throws ManagerReadException {
+    public static FileBackedTasksManager loadFromFile(String file) {
         Path path = Path.of(file);
         if (Files.exists(path)) {
             FileBackedTasksManager manager = new FileBackedTasksManager(path);
@@ -86,7 +86,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    protected void saveManager() throws ManagerSaveException {
+    protected void saveManager() {
         Set<Task> allTasks = super.getAllTheTasksSorted();
         String allTasksIntoString = connectAllTasksIntoString(allTasks);
 

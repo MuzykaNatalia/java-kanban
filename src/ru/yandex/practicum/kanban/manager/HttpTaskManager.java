@@ -21,40 +21,40 @@ public class HttpTaskManager extends FileBackedTasksManager {
     protected static final String KEY_HISTORY = "history";
     protected KVTaskClient client;
 
-    public HttpTaskManager(String url, boolean load) {
+    public HttpTaskManager(String url, boolean isItLoad) {
         super(Path.of("resources/http-file.csv"));
         client = new KVTaskClient(url);
-        if (load) {
+        if (isItLoad) {
             loadFromServer();
         }
     }
 
     private void loadFromServer() {
-        List<Task> tasks = tasksFromJson();
-        List<Epic> epics = epicsFromJson();
-        List<Subtask> subtasks = subtasksFromJson();
+        List<Task> tasks = loadAndConvertTasksFromJson();
+        List<Epic> epics = loadAndConvertEpicsFromJson();
+        List<Subtask> subtasks = loadAndConvertSubtasksFromJson();
 
         addAllTasksInManager(tasks);
         addAllEpicsInManager(epics);
         addAllSubtasksInManager(subtasks);
 
-        List<Integer> history = historyFromJson();
+        List<Integer> history = loadAndConvertHistoryFromJson();
         addHistoryInManager(history);
     }
 
-    private List<Task> tasksFromJson() {
+    private List<Task> loadAndConvertTasksFromJson() {
         return gson.fromJson(client.load("task"), new TypeToken<ArrayList<Task>>() {}.getType());
     }
 
-    private List<Epic> epicsFromJson() {
+    private List<Epic> loadAndConvertEpicsFromJson() {
         return gson.fromJson(client.load("epic"), new TypeToken<ArrayList<Epic>>() {}.getType());
     }
 
-    private List<Subtask> subtasksFromJson() {
+    private List<Subtask> loadAndConvertSubtasksFromJson() {
         return gson.fromJson(client.load("subtask"), new TypeToken<ArrayList<Subtask>>() {}.getType());
     }
 
-    private List<Integer> historyFromJson() {
+    private List<Integer> loadAndConvertHistoryFromJson() {
         return gson.fromJson(client.load("history"), new TypeToken<ArrayList<Integer>>() {}.getType());
     }
 
